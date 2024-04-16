@@ -9,6 +9,7 @@ const MOUSE_MODES = {
 let mouseMode = MOUSE_MODES.SELECT;
 
 function setMouseMode(mode) {
+    mouseModeOff(getMouseMode());
     mouseMode = mode;
 }
 
@@ -16,7 +17,25 @@ function getMouseMode() {
     return mouseMode;
 }
 
-function mousePressed() {
+function mouseModeOff(mouseMode) {
+    setCurrentShape();
+    switch (mouseMode) {
+        case MOUSE_MODES.SELECT:
+            return selectModeOff();
+        case MOUSE_MODES.POINT:
+            return pointModeOff();
+        case MOUSE_MODES.RULER:
+            return rulerModeOff();
+        case MOUSE_MODES.COMPASS:
+            return compassModeOff();
+        case MOUSE_MODES.ERASER:
+            return eraserModeOff();
+    }
+}
+
+function mousePressed(e) {
+    if (e.target !== canvas)
+        return;
     switch (getMouseMode()) {
         case MOUSE_MODES.SELECT:
             return selectMousePressed();
@@ -94,9 +113,13 @@ function selectMouseMoved() {
 
 }
 
+function selectModeOff() {
+
+}
+
 // Point tool mouse events
 function pointMousePressed() {
-
+    addPoint(mouseX, mouseY);
 }
 
 function pointMouseReleased() {
@@ -111,9 +134,36 @@ function pointMouseMoved() {
 
 }
 
-// Ruler tool mouse events
-function rulerMousePressed() {
+function addPoint(x, y) {
+    addShape({
+        type: SHAPE_TYPES.POINT,
+        x: x,
+        y: y
+    })
+}
 
+function pointModeOff() {
+
+}
+
+// Ruler tool mouse events
+
+let _line_p1 = null; // for line being added
+
+function rulerMousePressed() {
+    const p = {x: mouseX, y: mouseY};
+    if (_line_p1) {
+        addLine(_line_p1, p);
+        setCurrentShape();
+        _line_p1 = null;
+    } else {
+        _line_p1 = p;
+        setCurrentShape({
+            type: SHAPE_TYPES.LINE,
+            p1: _line_p1,
+            p2: _line_p1
+        });
+    }
 }
 
 function rulerMouseReleased() {
@@ -125,10 +175,32 @@ function rulerMouseDragged() {
 }
 
 function rulerMouseMoved() {
+    if (_line_p1) {
+        setCurrentShape({
+            type: SHAPE_TYPES.LINE,
+            p1: _line_p1,
+            p2: {
+                x: mouseX,
+                y: mouseY
+            }
+        });
+    }
+}
 
+function addLine(p1, p2) {
+    addShape({
+        type: SHAPE_TYPES.LINE,
+        p1: p1,
+        p2: p2
+    })
+}
+
+function rulerModeOff() {
+    _line_p1 = null;
 }
 
 // Compass tool mouse events
+
 function compassMousePressed() {
 
 }
@@ -145,7 +217,12 @@ function compassMouseMoved() {
 
 }
 
+function compassModeOff() {
+
+}
+
 // Eraser tool mouse events
+
 function eraserMousePressed() {
 
 }
@@ -159,5 +236,9 @@ function eraserMouseDragged() {
 }
 
 function eraserMouseMoved() {
+
+}
+
+function eraserModeOff() {
 
 }

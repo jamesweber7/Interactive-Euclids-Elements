@@ -28,6 +28,8 @@ var shapes = [
     */
 ];
 
+let current_shape = null;
+
 const SHAPE_TYPES = {
     POINT: 'POINT',
     LINE: 'LINE',
@@ -55,6 +57,7 @@ function drawShapes() {
     shapes.forEach(shape => {
         drawShape(shape);
     })
+    drawCurrentShape();
 
     pop();
 }
@@ -76,11 +79,26 @@ function drawPoint(pt) {
 }
 
 function drawLine(line_) {
+    stroke(0);
+    strokeWeight(2);
     line(line_.p1.x, line_.p1.y, line_.p2.x, line_.p2.y);
 }
 
 function drawArc(arc_) {
     arc(arc_.x, arc_.y, arc_.r, arc_.r, arc_.start_theta, arc_.end_theta);
+}
+
+function addShape(shape) {
+    shapes.push(shape);
+}
+
+function setCurrentShape(shape=null) {
+    current_shape = shape;
+}
+
+function drawCurrentShape() {
+    if (current_shape)
+        drawShape(current_shape);
 }
 
 function drawCursor() {

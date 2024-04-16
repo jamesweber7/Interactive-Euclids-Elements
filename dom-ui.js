@@ -12,7 +12,9 @@ function setupTools() {
 
 function setupToolFunctionalities() {
     [...document.getElementsByTagName('tool')].forEach(tool => {
-        tool.addEventListener('click', () => {
+        tool.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
             switch (tool.id) {
                 case 'select-tool':
                     return setMouseMode(MOUSE_MODES.SELECT);
