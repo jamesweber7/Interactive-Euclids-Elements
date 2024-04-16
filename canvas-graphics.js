@@ -14,5 +14,5 @@ function windowResized() {
 
 function draw() {
     background(255);
-    circle(mouseX, mouseY, 10)
+    circle(mouseX, mouseY, 10);
 }

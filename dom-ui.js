@@ -13,8 +13,17 @@ function setupTools() {
 function setupToolFunctionalities() {
     [...document.getElementsByTagName('tool')].forEach(tool => {
         switch (tool.id) {
-            case '':
-                
+            case 'select-tool':
+                return setMouseMode(MOUSE_MODES.SELECT);
+            case 'point-tool':
+                return setMouseMode(MOUSE_MODES.POINT);
+            case 'ruler-tool':
+                return setMouseMode(MOUSE_MODES.RULER);
+            case 'compass-tool':
+                return setMouseMode(MOUSE_MODES.COMPASS);
+            case 'eraser-tool':
+                return setMouseMode(MOUSE_MODES.ERASER);
+
         }
     })
 }
