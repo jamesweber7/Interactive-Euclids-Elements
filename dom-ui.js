@@ -26,7 +26,6 @@ function setupToolFunctionalities() {
                     return setMouseMode(MOUSE_MODES.COMPASS);
                 case 'eraser-tool':
                     return setMouseMode(MOUSE_MODES.ERASER);
-    
             }
         })
     })

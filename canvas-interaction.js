@@ -8,28 +8,18 @@ const MOUSE_MODES = {
 
 let mouseMode = MOUSE_MODES.SELECT;
 
-function setMouseMode(mode) {
-    mouseModeOff(getMouseMode());
-    mouseMode = mode;
-}
-
-function getMouseMode() {
-    return mouseMode;
-}
-
-function mouseModeOff(mouseMode) {
-    setCurrentShape();
-    switch (mouseMode) {
-        case MOUSE_MODES.SELECT:
-            return selectModeOff();
-        case MOUSE_MODES.POINT:
-            return pointModeOff();
-        case MOUSE_MODES.RULER:
-            return rulerModeOff();
-        case MOUSE_MODES.COMPASS:
-            return compassModeOff();
-        case MOUSE_MODES.ERASER:
-            return eraserModeOff();
+function keyPressed() {
+    switch (key) {
+        case 's':
+            return setMouseMode(MOUSE_MODES.SELECT);
+        case 'p':
+            return setMouseMode(MOUSE_MODES.POINT);
+        case 'r':
+            return setMouseMode(MOUSE_MODES.RULER);
+        case 'c':
+            return setMouseMode(MOUSE_MODES.COMPASS);
+        case 'e':
+            return setMouseMode(MOUSE_MODES.ERASER);
     }
 }
 
@@ -95,6 +85,30 @@ function mouseMoved() {
     }
 }
 
+function setMouseMode(mode) {
+    mouseModeOff(getMouseMode());
+    mouseMode = mode;
+}
+
+function getMouseMode() {
+    return mouseMode;
+}
+
+function mouseModeOff(mouseMode) {
+    setCurrentShape();
+    switch (mouseMode) {
+        case MOUSE_MODES.SELECT:
+            return selectModeOff();
+        case MOUSE_MODES.POINT:
+            return pointModeOff();
+        case MOUSE_MODES.RULER:
+            return rulerModeOff();
+        case MOUSE_MODES.COMPASS:
+            return compassModeOff();
+        case MOUSE_MODES.ERASER:
+            return eraserModeOff();
+    }
+}
 
 // Select tool mouse events
 function selectMousePressed() {
