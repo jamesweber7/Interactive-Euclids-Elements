@@ -8,7 +8,9 @@ const MOUSE_MODES = {
 
 let mouseMode = MOUSE_MODES.SELECT;
 
-function keyPressed() {
+function keyPressed(e) {
+    if (e.ctrlKey)
+        return;
     switch (key) {
         case 's':
             return setMouseMode(MOUSE_MODES.SELECT);
