@@ -6,7 +6,16 @@ const MOUSE_MODES = {
     ERASER: 'ERASER',
 }
 
+const MOUSE_EVENTS = {
+    PRESSED: 'PRESSED',
+    RELEASED: 'RELEASED',
+    MOVED: 'MOVED',
+    DRAGGED: 'DRAGGED'
+}
+
 let mouseMode = MOUSE_MODES.SELECT;
+let mouse_data = {};
+let p_mouse_data = mouse_data;
 
 function keyPressed(e) {
     if (e.ctrlKey)
@@ -40,6 +49,10 @@ function keyPressed(e) {
 function mousePressed(e) {
     if (e.target !== canvas)
         return;
+    updateMouseData({
+        down: true,
+        event: MOUSE_EVENTS.PRESSED,
+    });
     switch (getMouseMode()) {
         case MOUSE_MODES.SELECT:
             return selectMousePressed();
@@ -55,6 +68,10 @@ function mousePressed(e) {
 }
 
 function mouseReleased() {
+    updateMouseData({
+        down: false,
+        event: MOUSE_EVENTS.RELEASED,
+    });
     switch (getMouseMode()) {
         case MOUSE_MODES.SELECT:
             return selectMouseReleased();
@@ -70,6 +87,10 @@ function mouseReleased() {
 }
 
 function mouseDragged() {
+    updateMouseData({
+        down: true,
+        event: MOUSE_EVENTS.DRAGGED,
+    });
     switch (getMouseMode()) {
         case MOUSE_MODES.SELECT:
             return selectMouseDragged();
@@ -85,6 +106,9 @@ function mouseDragged() {
 }
 
 function mouseMoved() {
+    updateMouseData({
+        event: MOUSE_EVENTS.MOVED,
+    });
     switch (getMouseMode()) {
         case MOUSE_MODES.SELECT:
             return selectMouseMoved();
@@ -97,6 +121,48 @@ function mouseMoved() {
         case MOUSE_MODES.ERASER:
             return eraserMouseMoved();
     }
+}
+
+function closestPoint(pt) {
+    let best_pt = {
+        valid: false,
+        dist_sq: Number.MAX_SAFE_INTEGER
+    };
+    shapes.forEach(getProximityToShapePoints);
+    intersection_points.forEach(getProximityToPoint);
+
+    if (best_pt.valid)
+        best_pt.dist = sqrt(best_pt.dist_sq);
+    return best_pt;
+
+    function getProximityToShapePoints(shape) {
+        switch (shape.type) {
+            case SHAPE_TYPES.POINT:
+                getProximityToPoint(shape);
+                break;
+            case SHAPE_TYPES.LINE:
+                getProximityToPoint(shape.p1);
+                getProximityToPoint(shape.p2);
+                break;
+        }
+    }
+    function getProximityToPoint(point) {
+        const dist_sq = getDiffVec(pt, point).magSq();
+        if (!best_pt || dist_sq < best_pt.dist_sq)
+            best_pt = {
+                x: point.x,
+                y: point.y,
+                dist_sq: dist_sq,
+                valid: true
+            };
+    }
+}
+
+// only returns closest point if it is less than min dist
+function proximityPoint(pt, min_dist=20) {
+    let closest_pt = closestPoint(pt);
+    closest_pt.proximity = (closest_pt.valid && closest_pt.dist < min_dist);
+    return closest_pt;
 }
 
 function setMouseMode(mode) {
@@ -129,6 +195,34 @@ function mousePt() {
         x: mouseX,
         y: mouseY
     }
+}
+
+function updateMouseData(options={}) {
+    p_mouse_data = mouse_data;
+    const pt = {
+        x: overwriteDefault(options.x, mousePt().x),
+        y: overwriteDefault(options.y, mousePt().y)
+    };
+
+    // snap to point
+    const closest_pt = proximityPoint(pt);
+    if (closest_pt.proximity) {
+        pt.x = closest_pt.x;
+        pt.y = closest_pt.y;
+    }
+
+    mouse_data = {
+        pt: pt,
+        down: overwriteDefault(options.down, mouseIsPressed),
+        event: overwriteDefault(options.event, null),
+        button: overwriteDefault(options.button, mouseButton)
+    };
+}
+
+function overwriteDefault(overwrite_val, default_val) {
+    if (overwrite_val === undefined)
+        return default_val;
+    return overwrite_val;
 }
 
 function ptToVec(pt) {
@@ -174,7 +268,7 @@ function selectKeyPressed() {
 
 // Point tool mouse events
 function pointMousePressed() {
-    addPoint(mouseX, mouseY);
+    addPoint(mouse_data.pt.x, mouse_data.pt.y);
 }
 
 function pointMouseReleased() {
@@ -218,7 +312,7 @@ function pointKeyPressed() {
 let _line_p1 = null; // for line being added
 
 function rulerMousePressed() {
-    const p = mousePt();
+    const p = mouse_data.pt;
     if (_line_p1) {
         addLine(_line_p1, p);
         setCurrentShape();
@@ -246,7 +340,7 @@ function rulerMouseMoved() {
         setCurrentShape({
             type: SHAPE_TYPES.LINE,
             p1: _line_p1,
-            p2: mousePt()
+            p2: mouse_data.pt
         });
     }
 }
@@ -282,7 +376,7 @@ let _compass_params = {};
 
 function compassMousePressed() {
     if (_compass_params.origin) {
-        const p = mousePt();
+        const p = mouse_data.pt;
         const diff_vec = getDiffVec(p, _compass_params.origin);
         const r = diff_vec.mag()*2;
         const theta = diff_vec.heading();
@@ -291,7 +385,7 @@ function compassMousePressed() {
         setCurrentShape()
         _compass_params = {};
     } else {
-        _compass_params.origin = mousePt();
+        _compass_params.origin = mouse_data.pt;
         setCurrentShape({
             type: SHAPE_TYPES.ARC,
             origin: _compass_params.origin,
@@ -310,7 +404,7 @@ function compassMouseDragged() {
 
 function compassMouseMoved() {
     if (_compass_params.origin) {
-        const p = mousePt();
+        const p = mouse_data.pt;
         setCurrentShape({
             type: SHAPE_TYPES.ARC,
             origin: _compass_params.origin,

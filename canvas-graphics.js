@@ -27,6 +27,8 @@ var shapes = [
     */
 ];
 
+var intersection_points = [];
+
 // call events on draw
 var draw_events = [];
 
@@ -71,7 +73,10 @@ function drawShapes() {
     shapes.forEach(shape => {
         drawShape(shape);
     })
+
     drawCurrentShape();
+
+    drawProximityPoint();
 
     pop();
 }
@@ -89,6 +94,14 @@ function drawShape(shape) {
 
 function drawPoint(pt) {
     const r = unit*2;
+    circle(pt.x, pt.y, r);
+}
+
+function drawProximityPoint() {
+    const pt = proximityPoint(mousePt());
+    if (!pt.proximity)
+        return;
+    const r = unit*5;
     circle(pt.x, pt.y, r);
 }
 
