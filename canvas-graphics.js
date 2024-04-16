@@ -74,6 +74,10 @@ function drawShapes() {
         drawShape(shape);
     })
 
+    intersection_points.forEach(pt => {
+        drawPoint(pt);
+    });
+
     drawCurrentShape();
 
     drawProximityPoint();
@@ -112,7 +116,7 @@ function drawLine(line_) {
 }
 
 function drawArc(arc_) {
-    arc(arc_.origin.x, arc_.origin.y, arc_.r, arc_.r, arc_.start_theta, arc_.stop_theta);
+    arc(arc_.origin.x, arc_.origin.y, arc_.r*2, arc_.r*2, arc_.start_theta, arc_.stop_theta);
     const pt_r = unit*2;
     circle(arc_.origin.x, arc_.origin.y, pt_r);
 }
@@ -120,7 +124,7 @@ function drawArc(arc_) {
 function addShape(shape) {
     if (shapes.length)
         shape.id = shapes[shapes.length-1].id+1;
-    shape.id = 0;
+    shape.id = 1; // I want to start this above 0 so I can !!id for checking validity
     shapes.push(shape);
     return shape;
 }

@@ -144,6 +144,9 @@ function closestPoint(pt) {
                 getProximityToPoint(shape.p1);
                 getProximityToPoint(shape.p2);
                 break;
+            case SHAPE_TYPES.ARC:
+                getProximityToPoint(shape.origin);
+                break;
         }
     }
     function getProximityToPoint(point) {
@@ -243,7 +246,7 @@ function vecToPt(vec) {
 
 
 function selectMousePressed() {
-
+    console.log(mouseX, mouseY);
 }
 
 function selectMouseReleased() {
@@ -378,7 +381,7 @@ function compassMousePressed() {
     if (_compass_params.origin) {
         const p = mouse_data.pt;
         const diff_vec = getDiffVec(p, _compass_params.origin);
-        const r = diff_vec.mag()*2;
+        const r = diff_vec.mag();
         const theta = diff_vec.heading();
         const arc = arcShape(_compass_params.origin, r, theta, theta);
         finishCompassRotation(arc);
@@ -433,8 +436,9 @@ function compassMouseMoved() {
     // }
 }
 
-function addArc(origin, r, start_theta, stop_theta) {
-    addShape(arcShape(origin, r, start_theta, stop_theta))
+function addArc(arc_) {
+    addArcIntersectionPoints(arc_);
+    addShape(arc_);
 }
 
 function arcShape(origin, r, start_theta, stop_theta) {
@@ -470,7 +474,7 @@ function finishCompassRotation(arc_=getCurrentShape()) {
     if (!arc_ || arc_.type !== SHAPE_TYPES.ARC)
         return;
     _compass_params = {};
-    addShape(arc_);
+    addArc(arc_);
     setCurrentShape();
     const epsilon = 2**-10;
     const delta = PI*0.1;
@@ -492,13 +496,13 @@ function finishCompassRotation(arc_=getCurrentShape()) {
         if (rotating_forward) {
             arc_.stop_theta = min(arc_.stop_theta + delta, arc_.start_theta+TWO_PI);
 
-            const pencil_pt = trigPointRA(arc_.origin, arc_.r/2, arc_.stop_theta);
+            const pencil_pt = trigPointRA(arc_.origin, arc_.r, arc_.stop_theta);
             drawCompass(arc_.origin, pencil_pt)
         } else {
             arc_.start_theta = max(arc_.start_theta - delta, arc_.stop_theta-TWO_PI);
             theta = arc_.start_theta;
 
-            const pencil_pt = trigPointRA(arc_.origin, arc_.r/2, arc_.start_theta);
+            const pencil_pt = trigPointRA(arc_.origin, arc_.r, arc_.start_theta);
             drawCompass(arc_.origin, pencil_pt)
         }
         
@@ -534,6 +538,80 @@ function getMidpoint(p1, p2) {
         ptToVec(p1).add(diff)
     );
 }
+
+function addArcIntersectionPoints(arc_) {
+    shapes.forEach(shape => {
+        switch (shape.type) {
+            case SHAPE_TYPES.LINE:
+                return addArcLineIntersectionPoints(arc_, shape);
+            case SHAPE_TYPES.ARC:
+                return addArcArcIntersectionPoints(arc_, shape);
+        }
+    })
+}
+
+function addArcLineIntersectionPoints(arc, line) {
+
+}
+
+function addArcArcIntersectionPoints(arc1, arc2) {
+    const pts = findArcArcIntersectionPoints(arc1, arc2);
+    intersection_points.push(...pts);
+}
+
+function findArcArcIntersectionPoints(arc1, arc2) {
+    return findCircleCircleIntersectionPoints(arc1.origin, arc1.r, arc2.origin, arc2.r);
+}
+
+function findCircleCircleIntersectionPoints(p1, r1, p2, r2) {
+    const epsilon = 2**-10;
+    const d = sqrt((p2.x-p1.x)**2+(p2.y-p1.y)**2);
+
+    if (d === 0 && r1 === r2)    // infinitely many intersections (circles coincide)
+        return [];
+    if (d < abs(r1-r2))    // no intersections (one circle within other and they don't intersect)
+        return [];
+    if (d > r1+r2)  // no intersections (too far away)
+        return [];
+    if (withinEpsilon(d, r1+r2, epsilon))   // one intersection
+        return [
+            vecToPt(
+                ptToVec(p1).add(diff_vec.setMag(r1))
+            )
+        ];
+
+    // two intersections
+
+    // (x-p1.x)²+(y-p1.y)²=r1²
+    // (x-p2.x)²+(y-p2.y)²=r2²
+    
+    const a = (r1**2-r2**2+d**2) / (2*d);
+    const P = {
+        x: p1.x + (a / d)*(p2.x-p1.x),
+        y: p1.y + (a / d)*(p2.y-p1.y),
+    }
+    const h = sqrt(r1**2-a**2);
+    const addSubTerms = {
+        x: h/d * (p2.y-p1.y),
+        y: h/d * (p2.x-p1.x),
+    };
+    return [
+        {
+            x: P.x+addSubTerms.x,
+            y: P.y-addSubTerms.y,
+        },
+        {
+            x: P.x-addSubTerms.x,
+            y: P.y+addSubTerms.y,
+        }
+    ]    
+}
+
+function withinEpsilon(a, b, epsilon=2**-10) {
+    return a >= b-epsilon && a <= b+epsilon;
+}
+  
+  
 
 /*=============================================
 =              ERASER MODE EVENTS             =
