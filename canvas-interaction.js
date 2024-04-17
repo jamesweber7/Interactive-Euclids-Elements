@@ -17,6 +17,8 @@ let mouseMode = MOUSE_MODES.SELECT;
 let mouse_data = {};
 let p_mouse_data = mouse_data;
 
+var cursor_type = 'default';
+
 function keyPressed(e) {
     if (e.ctrlKey)
         return;
@@ -123,47 +125,60 @@ function mouseMoved() {
     }
 }
 
-function closestPoint(pt) {
+function closestPoint(pt, type_restriction=null) {
     let best_pt = {
         valid: false,
         dist_sq: Number.MAX_SAFE_INTEGER
     };
-    shapes.forEach(getProximityToShapePoints);
-    intersection_points.forEach(getProximityToPoint);
+    shapes.forEach(updateBestPointOnShapePoints);
+    if (!type_restriction || type_restriction === SHAPE_TYPES.POINT)
+        intersection_points.forEach(updateBestPoint);
 
     if (best_pt.valid)
         best_pt.dist = sqrt(best_pt.dist_sq);
     return best_pt;
 
-    function getProximityToShapePoints(shape) {
+    function updateBestPointOnShapePoints(shape) {
+        if (type_restriction && shape.type != type_restriction)
+            return;
         switch (shape.type) {
             case SHAPE_TYPES.POINT:
-                getProximityToPoint(shape);
+                updateBestPoint(shape, SHAPE_TYPES.POINT, shape);
                 break;
             case SHAPE_TYPES.LINE:
-                getProximityToPoint(shape.p1);
-                getProximityToPoint(shape.p2);
+                updateBestPoint(shape.p1, SHAPE_TYPES.LINE, shape);
+                updateBestPoint(shape.p2, SHAPE_TYPES.POINT, shape);
                 break;
             case SHAPE_TYPES.ARC:
-                getProximityToPoint(shape.origin);
+                updateBestPoint(shape.origin, SHAPE_TYPES.ARC, shape);
                 break;
         }
     }
-    function getProximityToPoint(point) {
-        const dist_sq = getDiffVec(pt, point).magSq();
+    function updateBestPoint(point, type=null, parent_shape=null) {
+        const dist_sq = getPointDistSq(pt, point);
         if (!best_pt || dist_sq < best_pt.dist_sq)
             best_pt = {
                 x: point.x,
                 y: point.y,
                 dist_sq: dist_sq,
-                valid: true
+                valid: true,
+                type: type,
+                parent_shape: parent_shape,
             };
     }
 }
 
+function getPointDist(p1, p2) {
+    return getDiffVec(p1, p2).mag();
+}
+
+function getPointDistSq(p1, p2) {
+    return getDiffVec(p1, p2).magSq();
+}
+
 // only returns closest point if it is less than min dist
-function proximityPoint(pt, min_dist=20) {
-    let closest_pt = closestPoint(pt);
+function proximityPoint(pt, min_dist=20, type_restriction=null) {
+    let closest_pt = closestPoint(pt, type_restriction);
     closest_pt.proximity = (closest_pt.valid && closest_pt.dist < min_dist);
     return closest_pt;
 }
@@ -313,13 +328,21 @@ function pointKeyPressed() {
 
 
 let _line_p1 = null; // for line being added
+let _extend_btn_info = {};
+resetExtendLineBtnInfo();
 
 function rulerMousePressed() {
     const p = mouse_data.pt;
     if (_line_p1) {
-        addLine(_line_p1, p);
+        if (isExtendLineBtn(p)) {
+            const info = getExtendLineBtnInfo();
+            extendLine(info.parent_line, info.forward);
+        } else {
+            addLine(_line_p1, p);
+        }
         setCurrentShape();
         _line_p1 = null;
+        resetExtendLineBtnInfo();
     } else {
         _line_p1 = p;
         setCurrentShape({
@@ -327,6 +350,8 @@ function rulerMousePressed() {
             p1: _line_p1,
             p2: _line_p1
         });
+        if (isLineEndpoint(p))
+            updateExtendLineBtnInfo();
     }
 }
 
@@ -339,7 +364,7 @@ function rulerMouseDragged() {
 }
 
 function rulerMouseMoved() {
-    if (_line_p1) {
+    if (rulerP1Selected()) {
         setCurrentShape({
             type: SHAPE_TYPES.LINE,
             p1: _line_p1,
@@ -364,10 +389,98 @@ function lineShape(p1, p2) {
 
 function rulerModeOff() {
     _line_p1 = null;
+    resetExtendLineBtnInfo();
+}
+
+function rulerP1Selected() {
+    return !!_line_p1;
 }
 
 function rulerKeyPressed() {
     
+}
+
+function getCurrentLineP1() {
+    return _line_p1;
+}
+
+function getExtendLineBtnInfo() {
+    return _extend_btn_info;
+}
+
+function updateExtendLineBtnInfo() {
+    if (![MOUSE_MODES.SELECT, MOUSE_MODES.RULER].includes(getMouseMode()))
+        return resetExtendLineBtnInfo();
+    if (!rulerP1Selected())
+        return resetExtendLineBtnInfo();
+    const connected_pt = getCurrentLineP1();
+    let parent_line;
+    let endpoint, back_endpoint;
+    let forward;
+    const epsilon = 2**-10;
+    getLines().forEach(line => {
+        if (getPointDistSq(connected_pt, line.p1) < epsilon) {
+            parent_line = line;
+            endpoint = line.p1;
+            back_endpoint = line.p2;
+            forward = false;
+        }
+        if (getPointDistSq(connected_pt, line.p2) < epsilon) {
+            parent_line = line;
+            endpoint = line.p2;
+            back_endpoint = line.p1;
+            forward = true;
+        }
+    })
+    if (!parent_line) 
+        return resetExtendLineBtnInfo();
+
+    const pos = _extendLineBtnPos(parent_line, forward);
+    intersection_points.push({
+        x: pos.x,
+        y: pos.y,
+        extend_line_btn: true
+    });
+    const interact_radius = 20;
+    _extend_btn_info = {
+        endpoint: endpoint,
+        back_endpoint: back_endpoint,
+        forward: forward,
+        parent_line: parent_line,
+        pos: pos,
+        interact_radius: interact_radius,
+        valid: true,
+    }
+}
+
+function _extendLineBtnPos(line, forward) {
+    const amt_forward = 100;
+    if (forward) {
+        const diff_vec = getDiffVec(line.p2, line.p1);
+        return trigPointRA(line.p2, amt_forward, diff_vec.heading());
+    } else {
+        const diff_vec = getDiffVec(line.p1, line.p2);
+        return trigPointRA(line.p1, amt_forward, diff_vec.heading());
+    }
+}
+
+function resetExtendLineBtnInfo() {
+    if (!_extend_btn_info)
+        _extend_btn_info = {};
+    if (!_extend_btn_info.valid)
+        return;
+    intersection_points.forEach((pt, index) => {
+        if (pt.extend_line_btn)
+            intersection_points.splice(index, 1);
+    })
+    _extend_btn_info = {valid: false};
+}
+
+function isExtendLineBtn(pt) {
+    if (!getExtendLineBtnInfo().valid)
+        return;
+    const epsilon = 2**-10;
+    return getPointDistSq(pt, getExtendLineBtnInfo().pos) < epsilon;
 }
 
 function addLineIntersectionPoints(line_) {
@@ -413,7 +526,6 @@ function findLineLineIntersectionPoints(line1, line2) {
         }
     ]
 }
-
 
 /*=============================================
 =             COMPASS MODE EVENTS             =

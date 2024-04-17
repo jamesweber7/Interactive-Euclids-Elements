@@ -48,6 +48,7 @@ function setup() {
 }
 
 function draw() {
+    cursor_type = 'default';
     background(255);
 
     drawShapes();
@@ -83,6 +84,8 @@ function drawShapes() {
 
     drawProximityPoint();
 
+    drawRulerExtendOption();
+
     pop();
 }
 
@@ -113,10 +116,91 @@ function drawProximityPoint() {
     circle(pt.x, pt.y, r);
 }
 
+function drawRulerExtendOption() {
+    const info = getExtendLineBtnInfo();
+    if (!info.valid)
+        return;
+
+    const heading = getDiffVec(info.back_endpoint, info.endpoint).heading();
+    push();
+        let x = info.pos.x;
+        let y = info.pos.y;
+
+        translate(x, y);
+        rotate(heading);
+
+        textAlign(CENTER, CENTER);
+        fill(0);
+        noStroke();
+
+        const EXTEND_MSG = "Extend";
+
+        if (info.endpoint.x > info.back_endpoint.x) {
+            push();
+                rotate(PI);
+                text(EXTEND_MSG, 0, 0);
+            pop();
+        } else {
+            text(EXTEND_MSG, 0, 0);
+        }
+
+        const ARROW_MAG = 20;
+        const ARROW_OFFSET = 10;
+        translate(0, ARROW_OFFSET);
+        scale(ARROW_MAG);
+        rotate(PI);
+
+        stroke(0);
+        strokeWeight(1/ARROW_MAG);
+
+        line(-0.5, 0, 0.5, 0);
+        const HEAD_THETA = PI*0.225;
+        const HEAD_DIST = 0.2;
+        line(0.5, 0, 0.5-HEAD_DIST*cos(HEAD_THETA), 0-HEAD_DIST*sin(HEAD_THETA));
+        line(0.5, 0, 0.5-HEAD_DIST*cos(HEAD_THETA), 0+HEAD_DIST*sin(HEAD_THETA));
+    pop();
+}
+
+function extendLine(line, forward) {
+    if (forward) {
+        line.extends_forward = true;
+    } else {
+        line.extends_backward = true;
+    }
+}
+
+function drawArrow(x, y, heading, mag) {
+    const wt = 1/mag;
+    push();
+    translate(x, y);
+    rotate(heading);
+    scale(mag);
+    strokeWeight(wt);
+    stroke(0);
+    line(0, 0, 1, 0);
+    const HEAD_THETA = PI*0.225;
+    const HEAD_DIST = 0.2;
+    line(1, 0, 1-HEAD_DIST*cos(HEAD_THETA), 0-HEAD_DIST*sin(HEAD_THETA));
+    line(1, 0, 1-HEAD_DIST*cos(HEAD_THETA), 0+HEAD_DIST*sin(HEAD_THETA));
+    pop();
+}
+
 function drawLine(line_) {
     stroke(0);
     strokeWeight(2);
     line(line_.p1.x, line_.p1.y, line_.p2.x, line_.p2.y);
+    if (line_.extends_forward || line_.extends_backward) {
+        if (line_.extends_forward) {
+            const diff_vec = getDiffVec(line_.p2, line_.p1);
+            const forward_point = trigPointRA(line_.p2, max(width, height)*2, diff_vec.heading());
+            line(line_.p2.x, line_.p2.y, forward_point.x, forward_point.y);
+        }
+        if (line_.extends_backward) {
+            const diff_vec = getDiffVec(line_.p1, line_.p2);
+            const backward_point = trigPointRA(line_.p1, max(width, height)*2, diff_vec.heading());
+            line(line_.p1.x, line_.p1.y, backward_point.x, backward_point.y);
+        }
+    }
 }
 
 function drawArc(arc_) {
@@ -201,6 +285,7 @@ function addDrawEvent(event, options={}) {
 function drawCursor() {
     fill(0);
     text(getMouseMode()[0], mouseX+5, mouseY)
+    cursor(cursor_type);
 }
 
 function windowResized() {
@@ -210,4 +295,27 @@ function windowResized() {
 
 function setSizing() {
     unit = width / 1500;
+}
+
+function getShapesOfType(type) {
+    const typed_shapes = [];
+    shapes.forEach(shape => {
+        if (shape.type === type)
+            typed_shapes.push(shape);
+    })
+    return typed_shapes;
+}
+
+function getLines() {
+    return getShapesOfType(SHAPE_TYPES.LINE);
+}
+
+function isLineEndpoint(pt) {
+    const epsilon = 2**-10;
+    for (const line of getLines()) {
+        for (const pt2 of [line.p1, line.p2])
+            if (getPointDistSq(pt2, pt) < epsilon)
+                return true;
+    }
+    return false;
 }
