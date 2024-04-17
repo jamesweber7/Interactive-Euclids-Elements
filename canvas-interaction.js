@@ -349,7 +349,9 @@ function rulerMouseMoved() {
 }
 
 function addLine(p1, p2) {
-    addShape(lineShape(p1, p2));
+    const line = lineShape(p1, p2);
+    addLineIntersectionPoints(line);
+    addShape(line);
 }
 
 function lineShape(p1, p2) {
@@ -368,6 +370,20 @@ function rulerKeyPressed() {
     
 }
 
+function addLineIntersectionPoints(line_) {
+    shapes.forEach(shape => {
+        switch (shape.type) {
+            case SHAPE_TYPES.LINE:
+                return addLineLineIntersectionPoints(line_, shape);
+            case SHAPE_TYPES.ARC:
+                return addArcLineIntersectionPoints(shape, line_);
+        }
+    })
+}
+
+function addLineLineIntersectionPoints(line1, line2) {
+
+}
 
 
 /*=============================================
@@ -492,7 +508,6 @@ function finishCompassRotation(arc_=getCurrentShape()) {
         }
     })
     function rotate_arc() {
-        let theta;
         if (rotating_forward) {
             arc_.stop_theta = min(arc_.stop_theta + delta, arc_.start_theta+TWO_PI);
 
@@ -551,7 +566,62 @@ function addArcIntersectionPoints(arc_) {
 }
 
 function addArcLineIntersectionPoints(arc, line) {
+    const pts = findArcLineIntersectionPoints(arc, line);
+    intersection_points.push(...pts);
+}
 
+function findArcLineIntersectionPoints(arc, line) {
+    const pts = findCircleLineIntersectionPoints(arc.origin, arc.r, line.p1, line.p2);
+    return pts;
+}
+
+function findCircleLineIntersectionPoints(origin, r, p1, p2) {
+    // Δ
+    const Delta = {
+        x: p2.x - p1.x,
+        y: p2.y - p1.y
+    }
+
+    // Ax+By+C=0
+    const A = Delta.y;
+    const B = -Delta.x;
+    const C = Delta.x*p1.y - Delta.y*p1.x;
+
+    // distance from origin to line
+    const dist = abs(A*origin.x+B*origin.y+C)/sqrt(A**2+B**2);
+
+    if (dist > r) // no intersection
+        return [];
+    
+    // closest point on line to origin center
+    const closest_pt = {
+        x: origin.x - A * (A * origin.x + B * origin.y + C) / (A**2 + B**2),
+        y: origin.y - B * (A * origin.x + B * origin.y + C) / (A**2 + B**2),
+    }
+
+    // offset distance from closest point to intersection points
+    const offset_dist = sqrt(r**2-dist**2);
+
+    if (withinEpsilon(dist, offset_dist)) // exactly one intersection point (closest point)
+        return [closest_pt];
+
+    // two intersection points
+
+    const intersection_offsets = {
+        x: offset_dist * -B / sqrt(A**2 + B**2),
+        y: offset_dist * A / sqrt(A**2 + B**2),
+    }
+
+    return [
+        {
+            x: closest_pt.x + intersection_offsets.x,
+            y: closest_pt.y + intersection_offsets.y,
+        },
+        {
+            x: closest_pt.x - intersection_offsets.x,
+            y: closest_pt.y - intersection_offsets.y,
+        }
+    ]
 }
 
 function addArcArcIntersectionPoints(arc1, arc2) {

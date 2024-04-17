@@ -6,3 +6,8 @@ I don't know what I want to do here, but I feel like I could definitely do somet
 - Something to do with Greek math
 - Greek gods
 - Euclid's Elements Visualizations
+
+For Proposition 2:
+Need to 
+1. extend a line in a direction
+2. Get intersections between lines and arcs (and perhaps lines and lines)

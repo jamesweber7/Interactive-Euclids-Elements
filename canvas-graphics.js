@@ -40,9 +40,11 @@ const SHAPE_TYPES = {
     ARC: 'ARC',
 }
 
+var HOVER_COLOR = 0;
 function setup() {
     createCanvas(windowWidth*0.999, windowHeight*0.999);
     setSizing();
+    HOVER_COLOR = color(50, 100, 255);
 }
 
 function draw() {
@@ -57,7 +59,6 @@ function drawShapes() {
     push();
     translate(tr.x, tr.y);
     scale(tr.sc);
-    noFill();
 
     draw_events.forEach((ev, i) => {
         const params = ev.options.params ? ev.options.params : [];
@@ -96,8 +97,9 @@ function drawShape(shape) {
     }
 }
 
-function drawPoint(pt) {
-    const r = unit*2;
+function drawPoint(pt, r=unit*4) {
+    fill(0);
+    noStroke();
     circle(pt.x, pt.y, r);
 }
 
@@ -105,7 +107,9 @@ function drawProximityPoint() {
     const pt = proximityPoint(mousePt());
     if (!pt.proximity)
         return;
-    const r = unit*5;
+    noStroke();
+    fill(HOVER_COLOR);
+    const r = unit*10;
     circle(pt.x, pt.y, r);
 }
 
@@ -116,9 +120,14 @@ function drawLine(line_) {
 }
 
 function drawArc(arc_) {
+    noFill();
+    stroke(0);
+    strokeWeight(2);
+    // draw circumference
     arc(arc_.origin.x, arc_.origin.y, arc_.r*2, arc_.r*2, arc_.start_theta, arc_.stop_theta);
-    const pt_r = unit*2;
-    circle(arc_.origin.x, arc_.origin.y, pt_r);
+    // draw point at origin
+    const pt_r = unit*4;
+    drawPoint(arc_.origin, pt_r);
 }
 
 function addShape(shape) {
@@ -173,6 +182,10 @@ function drawCompass(origin, pencil_pt) {
 
     const compass_r = diff_r / (2 * sin(joint_angle / 2));
     const compass_joint = trigPointRA(midpoint, compass_r, joint_pt_theta);
+
+    noFill();
+    stroke(0);
+    strokeWeight(2);
 
     line(origin.x, origin.y, compass_joint.x, compass_joint.y);
     line(compass_joint.x, compass_joint.y, pencil_pt.x, pencil_pt.y);
