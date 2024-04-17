@@ -110,7 +110,7 @@ function drawPoint(pt, r=unit*4) {
 }
 
 function drawProximityPoint() {
-    const pt = proximityPoint(mousePt());
+    const pt = proximityPoint(mouse_data.pt);
     if (!pt.proximity)
         return;
     noStroke();
@@ -341,4 +341,14 @@ function isLineEndpoint(pt) {
                 return true;
     }
     return false;
+}
+
+function transformPt(pt) {
+    const transformed = ptToVec(pt);
+    transformed.sub(createVector(tr.x, tr.y));
+    transformed.mult(1/tr.sc);
+    return {
+        x: transformed.x,
+        y: transformed.y
+    };
 }

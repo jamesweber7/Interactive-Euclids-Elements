@@ -125,6 +125,10 @@ function mouseMoved() {
     }
 }
 
+function mouseWheel(e) {
+    tr.sc -= e.delta / 1000;
+}
+
 function closestPoint(pt, type_restriction=null) {
     let best_pt = {
         valid: false,
@@ -215,11 +219,15 @@ function mousePt() {
     }
 }
 
+function transformedMousePt() {
+    return transformPt(mousePt());
+}
+
 function updateMouseData(options={}) {
     p_mouse_data = mouse_data;
     const pt = {
-        x: overwriteDefault(options.x, mousePt().x),
-        y: overwriteDefault(options.y, mousePt().y)
+        x: overwriteDefault(options.x, transformedMousePt().x),
+        y: overwriteDefault(options.y, transformedMousePt().y)
     };
 
     // snap to point
@@ -784,28 +792,26 @@ function findCircleCircleIntersectionPoints(p1, r1, p2, r2) {
         return [];
     if (d > r1+r2)  // no intersections (too far away)
         return [];
-    if (withinEpsilon(d, r1+r2, epsilon))   // one intersection
-        return [
-            vecToPt(
-                ptToVec(p1).add(diff_vec.setMag(r1))
-            )
-        ];
-
-    // two intersections
 
     // (x-p1.x)²+(y-p1.y)²=r1²
     // (x-p2.x)²+(y-p2.y)²=r2²
     
     const a = (r1**2-r2**2+d**2) / (2*d);
+    // midpoint on line passing through both points
     const P = {
         x: p1.x + (a / d)*(p2.x-p1.x),
         y: p1.y + (a / d)*(p2.y-p1.y),
     }
+
+    if (withinEpsilon(d, r1+r2, epsilon))   // one intersection
+        return [P];
+
     const h = sqrt(r1**2-a**2);
     const addSubTerms = {
         x: h/d * (p2.y-p1.y),
         y: h/d * (p2.x-p1.x),
     };
+    // two intersections
     return [
         {
             x: P.x+addSubTerms.x,
