@@ -177,7 +177,7 @@ function getPointDistSq(p1, p2) {
 }
 
 // only returns closest point if it is less than min dist
-function proximityPoint(pt, min_dist=20, type_restriction=null) {
+function proximityPoint(pt, min_dist=INTERACTION_RADIUS, type_restriction=null) {
     let closest_pt = closestPoint(pt, type_restriction);
     closest_pt.proximity = (closest_pt.valid && closest_pt.dist < min_dist);
     return closest_pt;

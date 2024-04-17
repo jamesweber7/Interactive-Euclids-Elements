@@ -40,7 +40,10 @@ const SHAPE_TYPES = {
     ARC: 'ARC',
 }
 
+const INTERACTION_RADIUS = 20;
+
 var HOVER_COLOR = 0;
+
 function setup() {
     createCanvas(windowWidth*0.999, windowHeight*0.999);
     setSizing();
@@ -84,7 +87,7 @@ function drawShapes() {
 
     drawProximityPoint();
 
-    drawRulerExtendOption();
+    drawLineExtendBtn();
 
     pop();
 }
@@ -116,12 +119,18 @@ function drawProximityPoint() {
     circle(pt.x, pt.y, r);
 }
 
-function drawRulerExtendOption() {
+function drawLineExtendBtn() {
     const info = getExtendLineBtnInfo();
     if (!info.valid)
         return;
 
     const heading = getDiffVec(info.back_endpoint, info.endpoint).heading();
+    if (isExtendLineBtn(mouse_data.pt)) {
+        strokeWeight(4);
+        stroke(0);
+        drawLineExtension(info.back_endpoint, info.endpoint);
+        cursor_type = HAND;
+    }
     push();
         let x = info.pos.x;
         let y = info.pos.y;
@@ -129,13 +138,20 @@ function drawRulerExtendOption() {
         translate(x, y);
         rotate(heading);
 
+        fill(255);
+        strokeWeight(3);
+        stroke(0);
+        circle(0, 0, 50); // cover intersection point
+
         textAlign(CENTER, CENTER);
         fill(0);
         noStroke();
 
         const EXTEND_MSG = "Extend";
 
-        if (info.endpoint.x > info.back_endpoint.x) {
+        const flip_y = info.endpoint.x > info.back_endpoint.x ? -1 : 1;
+
+        if (flip_y < 0) {
             push();
                 rotate(PI);
                 text(EXTEND_MSG, 0, 0);
@@ -146,7 +162,7 @@ function drawRulerExtendOption() {
 
         const ARROW_MAG = 20;
         const ARROW_OFFSET = 10;
-        translate(0, ARROW_OFFSET);
+        translate(0, ARROW_OFFSET*flip_y);
         scale(ARROW_MAG);
         rotate(PI);
 
@@ -169,6 +185,19 @@ function extendLine(line, forward) {
     }
 }
 
+// draws line extending forward from p1 past p2
+function drawLineExtension(p1, p2, both_ways=false) {
+    const diff_vec = getDiffVec(p2, p1);
+    const forward_point = trigPointRA(p2, max(width, height)*2, diff_vec.heading());
+    const draw_line = {
+        p1: p2,
+        p2: forward_point
+    }
+    drawLine(draw_line, forward_point.x, forward_point.y);
+    if (both_ways)
+        return drawLineExtension(p2, p1);
+}
+
 function drawArrow(x, y, heading, mag) {
     const wt = 1/mag;
     push();
@@ -189,17 +218,11 @@ function drawLine(line_) {
     stroke(0);
     strokeWeight(2);
     line(line_.p1.x, line_.p1.y, line_.p2.x, line_.p2.y);
-    if (line_.extends_forward || line_.extends_backward) {
-        if (line_.extends_forward) {
-            const diff_vec = getDiffVec(line_.p2, line_.p1);
-            const forward_point = trigPointRA(line_.p2, max(width, height)*2, diff_vec.heading());
-            line(line_.p2.x, line_.p2.y, forward_point.x, forward_point.y);
-        }
-        if (line_.extends_backward) {
-            const diff_vec = getDiffVec(line_.p1, line_.p2);
-            const backward_point = trigPointRA(line_.p1, max(width, height)*2, diff_vec.heading());
-            line(line_.p1.x, line_.p1.y, backward_point.x, backward_point.y);
-        }
+    if (line_.extends_forward) {
+        drawLineExtension(line_.p1, line_.p2);
+    }
+    if (line_.extends_backward) {
+        drawLineExtension(line_.p2, line_.p1);
     }
 }
 
