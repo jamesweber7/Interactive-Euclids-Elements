@@ -372,6 +372,8 @@ function rulerKeyPressed() {
 
 function addLineIntersectionPoints(line_) {
     shapes.forEach(shape => {
+        if (line_.id && shape.id && line_.id === shape.id)
+            return;
         switch (shape.type) {
             case SHAPE_TYPES.LINE:
                 return addLineLineIntersectionPoints(line_, shape);
@@ -382,7 +384,34 @@ function addLineIntersectionPoints(line_) {
 }
 
 function addLineLineIntersectionPoints(line1, line2) {
+    const pts = findLineLineIntersectionPoints(line1, line2);
+    intersection_points.push(...pts);
+}
 
+function findLineLineIntersectionPoints(line1, line2) {
+    // Ax+By+C=0
+
+    const A1 = line1.p2.y - line1.p1.y;
+    const B1 = line1.p1.x - line1.p2.x;
+    const C1 = A1*line1.p1.x + B1*line1.p1.y;
+
+    const A2 = line2.p2.y - line2.p1.y;
+    const B2 = line2.p1.x - line2.p2.x;
+    const C2 = A2*line2.p1.x + B2*line2.p1.y;
+
+    // determinant
+    const determinant = A1*B2 - A2*B1;
+
+    if (withinEpsilon(determinant, 0)) // parallel or coincident; 0 or inf many points
+        return [];
+
+    // lines intersect at exactly one point
+    return [
+        {
+            x: (B2*C1-B1*C2)/determinant,
+            y: (A1*C2-A2*C1)/determinant,
+        }
+    ]
 }
 
 
