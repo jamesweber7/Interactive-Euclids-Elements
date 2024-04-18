@@ -51,12 +51,11 @@ function setup() {
 }
 
 function draw() {
-    cursor_type = 'default';
     background(255);
 
-    drawShapes();
-
     drawCursor();
+
+    drawShapes();
 }
 
 function drawShapes() {
@@ -129,7 +128,7 @@ function drawLineExtendBtn() {
         strokeWeight(4);
         stroke(0);
         drawLineExtension(info.back_endpoint, info.endpoint);
-        cursor_type = HAND;
+        cursor(HAND);
     }
     push();
         let x = info.pos.x;
@@ -308,6 +307,9 @@ function addDrawEvent(event, options={}) {
 function drawCursor() {
     fill(0);
     text(getMouseMode()[0], mouseX+5, mouseY)
+    let cursor_type = mouse_data.cursor;
+    if (!cursor_type)
+        cursor_type = ARROW;
     cursor(cursor_type);
 }
 

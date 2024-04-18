@@ -17,8 +17,6 @@ let mouseMode = MOUSE_MODES.SELECT;
 let mouse_data = {};
 let p_mouse_data = mouse_data;
 
-var cursor_type = 'default';
-
 function keyPressed(e) {
     if (e.ctrlKey)
         return;
@@ -88,14 +86,14 @@ function mouseReleased() {
     }
 }
 
-function mouseDragged() {
+function mouseDragged(e) {
     updateMouseData({
         down: true,
         event: MOUSE_EVENTS.DRAGGED,
     });
     switch (getMouseMode()) {
         case MOUSE_MODES.SELECT:
-            return selectMouseDragged();
+            return selectMouseDragged(e);
         case MOUSE_MODES.POINT:
             return pointMouseDragged();
         case MOUSE_MODES.RULER:
@@ -236,12 +234,12 @@ function updateMouseData(options={}) {
         pt.x = closest_pt.x;
         pt.y = closest_pt.y;
     }
-
     mouse_data = {
         pt: pt,
         down: overwriteDefault(options.down, mouseIsPressed),
         event: overwriteDefault(options.event, null),
-        button: overwriteDefault(options.button, mouseButton)
+        button: overwriteDefault(options.button, mouseButton),
+        cursor: overwriteDefault(options.cursor, ARROW),
     };
 }
 
@@ -276,8 +274,12 @@ function selectMouseReleased() {
 
 }
 
-function selectMouseDragged() {
-
+function selectMouseDragged(e) {
+    if (!p_mouse_data.down)
+        return;
+    tr.x += e.movementX;
+    tr.y += e.movementY;
+    mouse_data.cursor = HAND;
 }
 
 function selectMouseMoved() {
