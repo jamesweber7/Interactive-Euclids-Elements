@@ -11,3 +11,8 @@ For Proposition 2:
 Need to 
 1. extend a line in a direction
 2. Get intersections between lines and arcs (and perhaps lines and lines)
+
+TODO
+- add seperate point category, perhaps "snap points", that I can add extends button to instead of intersection_points. Intersection points are now more explicitly for handling intersections and deal with the addition and removal of shapes, etc, so non-intersection points should be removed to avoid side effects
+
+- just noticed I've been using foreach wrong - fix any foreach loop that uses splice; this will skip the next element

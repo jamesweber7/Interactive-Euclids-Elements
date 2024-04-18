@@ -515,14 +515,9 @@ function isExtendLineBtn(pt) {
 }
 
 function addLineIntersectionPoints(line_) {
-    console.log("ADDING PTS")
-    console.log(line_)
-    console.log(shapes)
     shapes.forEach(shape => {
-        console.log(shape);
         if (line_.id && shape.id && line_.id === shape.id)
             return;
-        console.log(shape);
         switch (shape.type) {
             case SHAPE_TYPES.LINE:
                 return addLineLineIntersectionPoints(line_, shape);
@@ -540,13 +535,11 @@ function addLineLineIntersectionPoints(line1, line2) {
 
 function findLineLineIntersectionPoints(line1, line2) {
     const pts = findExtendedLineLineIntersectionPoints(line1, line2);
-    console.log(pts);
     // I know this will only be one or zero, I'm just setting it up this way for consistency with intersection schemas involving arcs
     pts.forEach((pt, index) => { 
         if (!linePointInBounds(pt, line1) || !linePointInBounds(pt, line2))
             pts.splice(index, 1);
     })
-    console.log(pts);
     return pts;
 }
 
@@ -815,11 +808,21 @@ function addArcLineIntersectionPoints(arc, line) {
 }
 
 function findArcLineIntersectionPoints(arc, line) {
-    const pts = findCircleLineIntersectionPoints(arc.origin, arc.r, line.p1, line.p2);
+    const pts = findCircleLineIntersectionPoints(arc, line);
     return pts;
 }
 
-function findCircleLineIntersectionPoints(origin, r, p1, p2) {
+function findCircleLineIntersectionPoints(arc, line) {
+    const pts = findCircleInfLineIntersectionPoints(arc.origin, arc.r, line.p1, line.p2);
+    // all points definitely on circle; just need to make sure they're in line bounds
+    for (let i = 0; i < pts.length; i++) {
+        while (i < pts.length && !linePointInBounds(pts[i], line))
+            pts.splice(i, 1);
+    }
+    return pts;
+}
+
+function findCircleInfLineIntersectionPoints(origin, r, p1, p2) {
     // Δ
     const Delta = {
         x: p2.x - p1.x,
