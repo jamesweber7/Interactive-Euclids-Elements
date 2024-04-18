@@ -141,7 +141,7 @@ function drawLineExtendBtn() {
         fill(255);
         strokeWeight(3);
         stroke(0);
-        circle(0, 0, 50); // cover intersection point
+        circle(0, 0, 50);
 
         textAlign(CENTER, CENTER);
         fill(0);
@@ -370,6 +370,10 @@ function transformPt(pt) {
 
 function isBetweenBitonic(num, a, b) {
     return min(a,b) <= num && num <= max(a,b);
+}
+
+function addSnapPoint(pt) {
+    snap_points.push(pt);
 }
 
 function addIntersectionPoints(pts, parents) {

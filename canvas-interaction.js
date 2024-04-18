@@ -451,11 +451,11 @@ function updateExtendLineBtnInfo() {
         return resetExtendLineBtnInfo();
 
     const pos = _extendLineBtnPos(parent_line, forward);
-    addIntersectionPoints([{
+    addSnapPoint({
         x: pos.x,
         y: pos.y,
         extend_line_btn: true
-    }], parent_line);
+    });
     const interact_radius = 20;
     _extend_btn_info = {
         endpoint: endpoint,
@@ -484,9 +484,9 @@ function resetExtendLineBtnInfo() {
         _extend_btn_info = {};
     if (!_extend_btn_info.valid)
         return;
-    for (let i = 0; i < intersection_points.length; i++) {
-        while (i < intersection_points.length && intersection_points[i].extend_line_btn)
-            intersection_points.splice(i, 1);
+    for (let i = 0; i < snap_points.length; i++) {
+        while (i < snap_points.length && snap_points[i].extend_line_btn)
+            snap_points.splice(i, 1);
     }
     _extend_btn_info = {valid: false};
 }
