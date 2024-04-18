@@ -27,7 +27,8 @@ var shapes = [
     */
 ];
 
-var intersection_points = [];
+var intersection_points = []; // intersections between shapes
+var snap_points = []; // points that mouse can snap to
 
 // call events on draw
 var draw_events = [];
@@ -342,6 +343,11 @@ function getLines() {
     return getShapesOfType(SHAPE_TYPES.LINE);
 }
 
+// ONLY points within shapes that have explicit type POINT. If you want more, perhaps use allPoints
+function getPoints() {
+    return getShapesOfType(SHAPE_TYPES.POINT);
+}
+
 function isLineEndpoint(pt) {
     const epsilon = 2**-10;
     for (const line of getLines()) {
@@ -424,4 +430,35 @@ function deleteChildIntersectionPoints(parent) {
         });
     }
     return matches;
+}
+
+function allPoints() {
+    const all_points = [];
+    all_points.push(...getShapePoints());
+    all_points.push(...intersection_points);
+    all_points.push(...snap_points);
+    return all_points;
+}
+
+function getShapePoints() {
+    const shape_points = [];
+    shapes.forEach(shape => {
+        switch (shape.type) {
+            case SHAPE_TYPES.POINT:
+                addShapePoint(shape);
+                break;
+            case SHAPE_TYPES.LINE:
+                addShapePoint(shape.p1);
+                addShapePoint(shape.p2);
+                break;
+            case SHAPE_TYPES.ARC:
+                addShapePoint(shape.origin);
+                break;
+        }
+        function addShapePoint(pt) {
+            pt.parent_shape = shape;
+            shape_points.push(pt);
+        }
+    });
+    return shape_points;
 }

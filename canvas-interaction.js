@@ -143,31 +143,16 @@ function closestPoint(pt, type_restriction=null) {
         valid: false,
         dist_sq: Number.MAX_SAFE_INTEGER
     };
-    shapes.forEach(updateBestPointOnShapePoints);
-    if (!type_restriction || type_restriction === SHAPE_TYPES.POINT)
-        intersection_points.forEach(updateBestPoint);
+    allPoints().forEach(updateBestPoint);
+    intersection_points.forEach(updateBestPoint);
 
     if (best_pt.valid)
         best_pt.dist = sqrt(best_pt.dist_sq);
     return best_pt;
 
-    function updateBestPointOnShapePoints(shape) {
-        if (type_restriction && shape.type != type_restriction)
+    function updateBestPoint(point) {
+        if (type_restriction && (point.parent_shape && type_restriction === point.parent_shape.type))
             return;
-        switch (shape.type) {
-            case SHAPE_TYPES.POINT:
-                updateBestPoint(shape, SHAPE_TYPES.POINT, shape);
-                break;
-            case SHAPE_TYPES.LINE:
-                updateBestPoint(shape.p1, SHAPE_TYPES.LINE, shape);
-                updateBestPoint(shape.p2, SHAPE_TYPES.POINT, shape);
-                break;
-            case SHAPE_TYPES.ARC:
-                updateBestPoint(shape.origin, SHAPE_TYPES.ARC, shape);
-                break;
-        }
-    }
-    function updateBestPoint(point, type=null, parent_shape=null) {
         const dist_sq = getPointDistSq(pt, point);
         if (!best_pt || dist_sq < best_pt.dist_sq)
             best_pt = {
@@ -175,8 +160,7 @@ function closestPoint(pt, type_restriction=null) {
                 y: point.y,
                 dist_sq: dist_sq,
                 valid: true,
-                type: type,
-                parent_shape: parent_shape,
+                parent_shape: point.parent_shape,
             };
     }
 }
