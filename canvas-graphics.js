@@ -381,7 +381,7 @@ function addIntersectionPoints(pts, parents) {
                 pts.splice(pt, index);
                 for (let i = 0; i < parents.length; i++) {
                     let found = false;
-                    for (let j = 0; j < pt2.parent_shapes.length && !found; pt2++) {
+                    for (let j = 0; j < pt2.parent_shapes.length && !found; j++) {
                         if (pt2.parent_shapes[j] === parents[i])
                             found = true;
                     }
