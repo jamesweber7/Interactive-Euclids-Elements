@@ -129,61 +129,61 @@ function drawProximityPoint() {
 }
 
 function drawLineExtendBtn() {
-    const info = getExtendLineBtnInfo();
-    if (!info.valid)
-        return;
+    const info_btns = getExtendLineBtnInfo();
 
-    const heading = getDiffVec(info.back_endpoint, info.endpoint).heading();
-    if (isExtendLineBtn(mouse_data.pt)) {
-        strokeWeight(4);
-        stroke(0);
-        drawLineExtension(info.back_endpoint, info.endpoint);
-        cursor(HAND);
-    }
-    push();
-        let x = info.pos.x;
-        let y = info.pos.y;
-
-        translate(x, y);
-        rotate(heading);
-
-        fill(255);
-        strokeWeight(3);
-        stroke(0);
-        circle(0, 0, 50);
-
-        textAlign(CENTER, CENTER);
-        fill(0);
-        noStroke();
-
-        const EXTEND_MSG = "Extend";
-
-        const flip_y = info.endpoint.x > info.back_endpoint.x ? -1 : 1;
-
-        if (flip_y < 0) {
-            push();
-                rotate(PI);
-                text(EXTEND_MSG, 0, 0);
-            pop();
-        } else {
-            text(EXTEND_MSG, 0, 0);
+    info_btns.forEach(info => {
+        const heading = getDiffVec(info.back_endpoint, info.endpoint).heading();
+        if (isExtendLineBtn(mouse_data.pt, info)) {
+            strokeWeight(4);
+            stroke(0);
+            drawLineExtension(info.back_endpoint, info.endpoint);
+            cursor(HAND);
         }
+        push();
+            let x = info.pos.x;
+            let y = info.pos.y;
 
-        const ARROW_MAG = 20;
-        const ARROW_OFFSET = 10;
-        translate(0, ARROW_OFFSET*flip_y);
-        scale(ARROW_MAG);
-        rotate(PI);
+            translate(x, y);
+            rotate(heading);
 
-        stroke(0);
-        strokeWeight(1/ARROW_MAG);
+            fill(255);
+            strokeWeight(3);
+            stroke(0);
+            circle(0, 0, 50);
 
-        line(-0.5, 0, 0.5, 0);
-        const HEAD_THETA = PI*0.225;
-        const HEAD_DIST = 0.2;
-        line(0.5, 0, 0.5-HEAD_DIST*cos(HEAD_THETA), 0-HEAD_DIST*sin(HEAD_THETA));
-        line(0.5, 0, 0.5-HEAD_DIST*cos(HEAD_THETA), 0+HEAD_DIST*sin(HEAD_THETA));
-    pop();
+            textAlign(CENTER, CENTER);
+            fill(0);
+            noStroke();
+
+            const EXTEND_MSG = "Extend";
+
+            const flip_y = info.endpoint.x > info.back_endpoint.x ? -1 : 1;
+
+            if (flip_y < 0) {
+                push();
+                    rotate(PI);
+                    text(EXTEND_MSG, 0, 0);
+                pop();
+            } else {
+                text(EXTEND_MSG, 0, 0);
+            }
+
+            const ARROW_MAG = 20;
+            const ARROW_OFFSET = 10;
+            translate(0, ARROW_OFFSET*flip_y);
+            scale(ARROW_MAG);
+            rotate(PI);
+
+            stroke(0);
+            strokeWeight(1/ARROW_MAG);
+
+            line(-0.5, 0, 0.5, 0);
+            const HEAD_THETA = PI*0.225;
+            const HEAD_DIST = 0.2;
+            line(0.5, 0, 0.5-HEAD_DIST*cos(HEAD_THETA), 0-HEAD_DIST*sin(HEAD_THETA));
+            line(0.5, 0, 0.5-HEAD_DIST*cos(HEAD_THETA), 0+HEAD_DIST*sin(HEAD_THETA));
+        pop();
+    });
 }
 
 function extendLine(line, forward) {

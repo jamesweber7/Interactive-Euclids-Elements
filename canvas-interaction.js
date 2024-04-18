@@ -344,14 +344,14 @@ function pointKeyPressed() {
 
 
 let _line_p1 = null; // for line being added
-let _extend_btn_info = {};
+let _extend_btns_info = [];
 resetExtendLineBtnInfo();
 
 function rulerMousePressed() {
     const p = mouse_data.pt;
     if (_line_p1) {
         if (isExtendLineBtn(p)) {
-            const info = getExtendLineBtnInfo();
+            const info = getClosestExtendLineBtnInfo(p);
             extendLine(info.parent_line, info.forward);
         } else {
             addLine(_line_p1, p);
@@ -421,51 +421,60 @@ function getCurrentLineP1() {
 }
 
 function getExtendLineBtnInfo() {
-    return _extend_btn_info;
+    return _extend_btns_info;
+}
+
+function getClosestExtendLineBtnInfo(pt) {
+    let closest = {valid: false};
+    let dist_sq = Number.MAX_SAFE_INTEGER;
+    for (const btn of getExtendLineBtnInfo()) {
+        if (getPointDistSq(pt, btn.pos) < dist_sq)
+            closest = btn;
+    }
+    return closest;
 }
 
 function updateExtendLineBtnInfo() {
+    resetExtendLineBtnInfo();
     if (![MOUSE_MODES.SELECT, MOUSE_MODES.RULER].includes(getMouseMode()))
-        return resetExtendLineBtnInfo();
+        return;
     if (!rulerP1Selected())
-        return resetExtendLineBtnInfo();
+        return;
     const connected_pt = getCurrentLineP1();
-    let parent_line;
-    let endpoint, back_endpoint;
-    let forward;
     const epsilon = 2**-10;
-    getLines().forEach(line => {
-        if (getPointDistSq(connected_pt, line.p1) < epsilon) {
-            parent_line = line;
-            endpoint = line.p1;
-            back_endpoint = line.p2;
-            forward = false;
+    
+    getLines().forEach(parent_line => {
+        if (getPointDistSq(connected_pt, parent_line.p1) < epsilon) {
+            const forward = false;
+            if (!parent_line.extends_backward)
+                addBtn(parent_line, forward);
         }
-        if (getPointDistSq(connected_pt, line.p2) < epsilon) {
-            parent_line = line;
-            endpoint = line.p2;
-            back_endpoint = line.p1;
-            forward = true;
+        if (getPointDistSq(connected_pt, parent_line.p2) < epsilon) {
+            const forward = true;
+            if (!parent_line.extends_forward)
+                addBtn(parent_line, forward);
         }
     })
-    if (!parent_line) 
-        return resetExtendLineBtnInfo();
 
-    const pos = _extendLineBtnPos(parent_line, forward);
-    addSnapPoint({
-        x: pos.x,
-        y: pos.y,
-        extend_line_btn: true
-    });
-    const interact_radius = 20;
-    _extend_btn_info = {
-        endpoint: endpoint,
-        back_endpoint: back_endpoint,
-        forward: forward,
-        parent_line: parent_line,
-        pos: pos,
-        interact_radius: interact_radius,
-        valid: true,
+    function btnInfo(parent_line, forward) {
+        const pos = _extendLineBtnPos(parent_line, forward);
+        addSnapPoint({
+            x: pos.x,
+            y: pos.y,
+            extend_line_btn: true
+        });
+        return {
+            parent_line: parent_line,
+            endpoint: forward ? parent_line.p2 : parent_line.p1,
+            back_endpoint: forward ? parent_line.p1 : parent_line.p2,
+            forward: forward,
+            pos: pos,
+            valid: true
+        };
+    }
+
+    function addBtn(parent_line, forward) {
+        _extend_btns_info.push(btnInfo(parent_line, forward));
     }
 }
 
@@ -481,22 +490,21 @@ function _extendLineBtnPos(line, forward) {
 }
 
 function resetExtendLineBtnInfo() {
-    if (!_extend_btn_info)
-        _extend_btn_info = {};
-    if (!_extend_btn_info.valid)
-        return;
+    _extend_btns_info = [];
     for (let i = 0; i < snap_points.length; i++) {
         while (i < snap_points.length && snap_points[i].extend_line_btn)
             snap_points.splice(i, 1);
     }
-    _extend_btn_info = {valid: false};
 }
 
-function isExtendLineBtn(pt) {
-    if (!getExtendLineBtnInfo().valid)
-        return;
+function isExtendLineBtn(pt, which=null) {
     const epsilon = 2**-10;
-    return getPointDistSq(pt, getExtendLineBtnInfo().pos) < epsilon;
+    for (const btn of getExtendLineBtnInfo()) {
+        if (!which || which === btn)
+            if (getPointDistSq(pt, btn.pos) < epsilon)
+                return true;
+    }
+    return false;
 }
 
 function addLineIntersectionPoints(line_) {
