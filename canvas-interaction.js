@@ -628,28 +628,39 @@ function linePointInBounds(pt, line) {
         return true;
     if (isBetweenBitonic(pt.x, line.p1.x, line.p2.x) && isBetweenBitonic(pt.y, line.p1.y, line.p2.y))
         return true;
-    if (line.extends_forward) {
-        if (pt.x > line.p2.x && line.p2.x > line.p1.x)
+    if (line.extends_forward)
+        if (pointForwardsOnLine(pt, line))
             return true;
-        if (pt.x < line.p2.x && line.p2.x < line.p1.x)
+    if (line.extends_backward) 
+        if (pointBackwardsOnLine(pt, line))
             return true;
-        if (pt.y > line.p2.y && line.p2.y > line.p1.y)
-            return true;
-        if (pt.y < line.p2.y && line.p2.y < line.p1.y)
-            return true;
-    }
-    if (line.extends_backward) {
-        if (pt.x > line.p1.x && line.p1.x > line.p2.x)
-            return true;
-        if (pt.x < line.p1.x && line.p1.x < line.p2.x)
-            return true;
-        if (pt.y > line.p1.y && line.p1.y > line.p2.y)
-            return true;
-        if (pt.y < line.p1.y && line.p1.y < line.p2.y)
-            return true;
-    }
     return false;
 }
+
+function pointForwardsOnLine(pt, line) {
+    if (pt.x > line.p2.x && line.p2.x > line.p1.x)
+        return true;
+    if (pt.x < line.p2.x && line.p2.x < line.p1.x)
+        return true;
+    if (pt.y > line.p2.y && line.p2.y > line.p1.y)
+        return true;
+    if (pt.y < line.p2.y && line.p2.y < line.p1.y)
+        return true;
+    return false;
+}
+
+function pointBackwardsOnLine(pt, line) {
+    const backwards_line = {
+        p1: line.p2,
+        p2: line.p1
+    };
+    return pointForwardsOnLine(pt, backwards_line);
+}
+
+function pointOverLineExtension(pt, line) {
+    return pointForwardsOnLine(pt, line) || pointBackwardsOnLine(pt, line);
+}
+
 
 function addLineExtensionIntersectionPoints(line) {
     deleteChildIntersectionPoints(line);
@@ -1102,5 +1113,28 @@ function eraseProximityShape(pt) {
     const proximity_shape = proximityShape(pt);
     if (!proximity_shape.proximity)
         return;
-    deleteShape(proximity_shape.shape);
+    eraseShape(proximity_shape.shape, pt);
+}
+
+function eraseShape(shape, pt) {
+    // if over line extension, just delete that
+    if (shape.type === SHAPE_TYPES.LINE) {
+        eraseLineSegment(shape, pt);
+    } else {
+        deleteShape(shape);
+    }
+}
+
+function eraseLineSegment(line, pt) {
+    const closest_pt = getClosestPointOnLine(pt, line);
+    // over extension
+    if (pointForwardsOnLine(closest_pt, line)) {
+        line.extends_forward = false;
+        return;
+    }
+    if (pointBackwardsOnLine(closest_pt, line)) {
+        line.extends_backward = false;
+        return;
+    }
+    deleteShape(line);
 }

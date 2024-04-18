@@ -287,10 +287,31 @@ function highlightLine(line) {
         stroke: HIGHLIGHT_COLOR,
         stroke_weight: unit*8
     };
-    drawLine(line, options);
-    // redraw line normally over highlight
-    drawLine(line);
+
+    // possibly just highlight extension
+    const pt = mouse_data.pt;
+    const closest_pt = getClosestPointOnLine(pt, line);
+    if (pointOverLineExtension(closest_pt, line)) {
+        let p1, p2;
+        if (pointForwardsOnLine(closest_pt, line)) {
+            p1 = line.p1;
+            p2 = line.p2;
+        } else {
+            p1 = line.p2;
+            p2 = line.p1;
+        }
+        drawLineExtension(p1, p2, options);
+        // redraw line normally over highlight
+        drawLineExtension(p1, p2);
+    } else {
+        drawLine(line, options);
+        // redraw line normally over highlight
+        drawLine(line);
+    }
+    
+    
 }
+
 
 function highlightArc(arc) {
     const options = {
