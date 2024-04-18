@@ -57,6 +57,8 @@ function draw() {
     drawCursor();
 
     drawShapes();
+
+    drawCompass({x: width*0.25, y: height/2}, {x: width*0.75, y: height/2})
 }
 
 function drawShapes() {
@@ -274,28 +276,89 @@ function drawCurrentArc(arc_) {
     drawCompass(arc_.origin, arc_.pencil_pt);
 }
 
-function drawCompass(origin, pencil_pt) {
-    drawPoint(origin)
+function drawCompass(needle_pt, pencil_pt) {
+    drawPoint(needle_pt);
     drawPoint(pencil_pt);
 
-    const diff_vec = getDiffVec(origin, pencil_pt);
+    const diff_vec = getDiffVec(needle_pt, pencil_pt);
     const diff_theta = diff_vec.heading();
     const diff_r = diff_vec.mag();
 
     const joint_angle = PI;
     const joint_pt_theta = diff_theta+PI/2;
 
-    const midpoint = getMidpoint(origin, pencil_pt);
+    const midpoint = getMidpoint(needle_pt, pencil_pt);
 
     const compass_r = diff_r / (2 * sin(joint_angle / 2));
     const compass_joint = trigPointRA(midpoint, compass_r, joint_pt_theta);
 
-    noFill();
-    stroke(0);
-    strokeWeight(2);
+    const needle_joint_vec = getDiffVec(needle_pt, compass_joint);
+    const pencil_joint_vec = getDiffVec(pencil_pt, compass_joint);
 
-    line(origin.x, origin.y, compass_joint.x, compass_joint.y);
+    const unit = compass_r/100;
+    stroke(0);
+    strokeWeight(2*unit);
+
+    noFill();
+
+    line(needle_pt.x, needle_pt.y, compass_joint.x, compass_joint.y);
     line(compass_joint.x, compass_joint.y, pencil_pt.x, pencil_pt.y);
+
+    // larger line after needle
+    const needle_off = 20*unit;
+    const needle_off_pt = trigPointRA(needle_pt, needle_off, PI+needle_joint_vec.heading());
+
+    strokeWeight(8*unit);
+    line(needle_off_pt.x, needle_off_pt.y, compass_joint.x, compass_joint.y);
+
+    // pencil
+    // triangle ends near compass point
+    const pencil_height = 15*unit;
+    const pencil_width = 7*unit;
+    const pencil_off1 = createVector(pencil_width/2, pencil_height);
+    const pencil_off2 = createVector(-pencil_width/2, pencil_height);
+    const pencil_off_heading1 = pencil_off1.heading();
+    const pencil_off_heading2 = pencil_off2.heading();
+    const pencil_off_mag = pencil_off1.mag();
+    const pencil_off_pt1 = trigPointRA(pencil_pt, pencil_off_mag, PI/2+pencil_joint_vec.heading()+pencil_off_heading1);
+    const pencil_off_pt2 = trigPointRA(pencil_pt, pencil_off_mag, PI/2+pencil_joint_vec.heading()+pencil_off_heading2);
+    noStroke();
+    fill(0);
+    triangle(
+        pencil_pt.x, pencil_pt.y, 
+        pencil_off_pt1.x, pencil_off_pt1.y, 
+        pencil_off_pt2.x, pencil_off_pt2.y
+    );
+
+    // pencil body
+    const pencil_rect_end_off1 = createVector(pencil_width/2, 0);
+    const pencil_rect_end_off2 = createVector(-pencil_width/2, 0);
+    const pencil_rect_off_heading1 = pencil_rect_end_off1.heading();
+    const pencil_rect_off_heading2 = pencil_rect_end_off2.heading();
+    const pencil_rect_off_mag = pencil_rect_end_off1.mag();
+    const pencil_rect_end1 = trigPointRA(compass_joint, pencil_rect_off_mag, PI/2+pencil_joint_vec.heading()+pencil_rect_off_heading1);
+    const pencil_rect_end2 = trigPointRA(compass_joint, pencil_rect_off_mag, PI/2+pencil_joint_vec.heading()+pencil_rect_off_heading2);
+    quad(
+        pencil_off_pt1.x, pencil_off_pt1.y, 
+        pencil_off_pt2.x, pencil_off_pt2.y,
+        pencil_rect_end2.x, pencil_rect_end2.y,
+        pencil_rect_end1.x, pencil_rect_end1.y,
+    );
+
+    stroke(0);
+    strokeWeight(4*unit);
+
+    // knob bar thing at end of joint
+    const bar_off = unit*30;
+    const bar_end = trigPointRA(compass_joint, bar_off, joint_pt_theta);
+
+
+    line(bar_end.x, bar_end.y, compass_joint.x, compass_joint.y)
+
+    // circle at joint
+    fill(255);
+    strokeWeight(2*unit);
+    circle(compass_joint.x, compass_joint.y, 30*unit);
 }
 
 function addDrawEvent(event, options={}) {
@@ -307,6 +370,7 @@ function addDrawEvent(event, options={}) {
 
 function drawCursor() {
     fill(0);
+    noStroke();
     text(getMouseMode()[0], mouseX+5, mouseY)
     let cursor_type = mouse_data.cursor;
     if (!cursor_type) {
@@ -551,4 +615,8 @@ function getBounds() {
         bottom_bound: bottom_bound,
         left_bound: left_bound
     };
+}
+
+function avg(a, b) {
+    return (b-a)/2+a;
 }
