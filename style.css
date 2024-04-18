@@ -18,6 +18,12 @@ tool button {
     cursor: pointer;
     border: none;
     border-radius: 5px;
+
+    /* Don't highlight when double clicking canvas */
+    user-select: none; /* Standard syntax */
+    -moz-user-select: none; /* Firefox */
+    -webkit-user-select: none; /* Safari and Chrome */
+    -ms-user-select: none; /* IE 10+ */
 }
 
 tool button:hover {
