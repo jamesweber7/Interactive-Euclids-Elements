@@ -368,6 +368,16 @@ function transformPt(pt) {
     };
 }
 
+function untransformPt(pt) {
+    const untransformed = ptToVec(pt);
+    untransformed.mult(tr.sc);
+    untransformed.add(createVector(tr.x, tr.y));
+    return {
+        x: untransformed.x,
+        y: untransformed.y
+    };
+}
+
 function isBetweenBitonic(num, a, b) {
     return min(a,b) <= num && num <= max(a,b);
 }
