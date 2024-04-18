@@ -25,3 +25,9 @@ right clicking extend button deletes it
 Eraser mode functionality
 
 Tutotial/walkthrough for propositions
+
+Experienced one-time bug where rulers weren't making intersection points unless extended. Bug went away on reload, but watch out for this
+
+Label functionality
+
+Maybe add label tool for manually labeling/relabeling things

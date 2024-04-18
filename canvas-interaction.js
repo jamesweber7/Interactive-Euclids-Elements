@@ -145,14 +145,13 @@ function closestPoint(pt, type_restriction=null) {
         dist_sq: Number.MAX_SAFE_INTEGER
     };
     allPoints().forEach(updateBestPoint);
-    intersection_points.forEach(updateBestPoint);
 
     if (best_pt.valid)
         best_pt.dist = sqrt(best_pt.dist_sq);
     return best_pt;
 
     function updateBestPoint(point) {
-        if (type_restriction && (point.parent_shape && type_restriction === point.parent_shape.type))
+        if (type_restriction && (!point.parent_shape || type_restriction !== point.parent_shape.type))
             return;
         const dist_sq = getPointDistSq(pt, point);
         if (!best_pt || dist_sq < best_pt.dist_sq)
@@ -174,7 +173,7 @@ function getPointDistSq(p1, p2) {
     return getDiffVec(p1, p2).magSq();
 }
 
-// only returns closest point if it is less than min dist
+// only proximity if closest point is less than min dist
 function proximityPoint(pt, min_dist=INTERACTION_RADIUS, type_restriction=null) {
     let closest_pt = closestPoint(pt, type_restriction);
     closest_pt.proximity = (closest_pt.valid && closest_pt.dist < min_dist);
@@ -243,6 +242,13 @@ function overwriteDefault(overwrite_val, default_val) {
     if (overwrite_val === undefined)
         return default_val;
     return overwrite_val;
+}
+
+function configureDefaults(options, default_vals) {
+    Object.keys(default_vals).forEach(key => {
+        options[key] = overwriteDefault(options[key], default_vals[key]);
+    })
+    return options;
 }
 
 function ptToVec(pt) {
@@ -636,6 +642,45 @@ function extendedForwardPoint(p1, p2) {
     return trigPointRA(p2, big_dist, diff_vec.heading());
 }
 
+function getLineDist(pt, line) {
+    const closest_pt = getClosestPointOnLine(pt, line);
+    return getPointDist(pt, closest_pt);
+}
+
+function getClosestPointOnLine(pt, line) {
+    const closest_inf = getClosestPointOnInfLine(pt, line);
+    if (linePointInBounds(closest_inf, line))
+        return closest_inf;
+    // off the end of line, therefore will be closest to an endpont
+    const d_p1 = getPointDist(pt, line.p1);
+    const d_p2 = getPointDist(pt, line.p2);
+    if (d_p1 < d_p2)
+        return line.p1;
+    return line.p2;
+}
+
+function getClosestPointOnInfLine(pt, line) {
+    const lineVec = getLineDiffVec(line);
+    const ptVec = ptToVec(pt);
+    const line_heading = lineVec.heading();
+    const orthog_line_heading = line_heading+PI/2;
+    const orthog_line_delta = lineVec.copy().setHeading(orthog_line_heading);
+    const orthog_line_vec = ptVec.add(orthog_line_delta);
+    // orthogonal line passing through pt
+    const orthog_line = {
+        p1: pt,
+        p2: vecToPt(orthog_line_vec)
+    };
+    const pts = findInfLineLineIntersectionPoints(line, orthog_line);
+    if (!pts.length)
+        throw 'bad';
+    return pts[0];
+}
+
+function getLineDiffVec(line) {
+    return getDiffVec(line.p1, line.p2);
+}
+
 /*=============================================
 =             COMPASS MODE EVENTS             =
 =============================================*/
@@ -938,8 +983,21 @@ function findCircleCircleIntersectionPoints(p1, r1, p2, r2) {
 function withinEpsilon(a, b, epsilon=2**-10) {
     return a >= b-epsilon && a <= b+epsilon;
 }
-  
-  
+
+function getArcDist(pt, arc) {
+    const origin_dist = getPointDist(pt, arc.origin);
+    const circum_dist = getArcCircumferenceDist(pt, arc);
+    return min(origin_dist, circum_dist);
+}
+
+function getArcCircumferenceDist(pt, arc) {
+    return getCircleCircumferenceDist(pt, arc);
+}
+
+function getCircleCircumferenceDist(pt, circle) {
+    const diff_vec = getDiffVec(pt, circle.origin);
+    return abs(diff_vec.mag()-circle.r);
+}
 
 /*=============================================
 =              ERASER MODE EVENTS             =
@@ -947,7 +1005,7 @@ function withinEpsilon(a, b, epsilon=2**-10) {
 
 
 function eraserMousePressed() {
-
+    eraseProximityShape(mouse_data.pt);
 }
 
 function eraserMouseReleased() {
@@ -955,7 +1013,7 @@ function eraserMouseReleased() {
 }
 
 function eraserMouseDragged() {
-
+    eraseProximityShape(mouse_data.pt);
 }
 
 function eraserMouseMoved() {
@@ -968,4 +1026,50 @@ function eraserModeOff() {
 
 function eraserKeyPressed() {
     
+}
+
+function closestShape(pt) {
+    let best_shape = {
+        valid: false,
+        dist: Number.MAX_SAFE_INTEGER
+    };
+
+    shapes.forEach(updateBestShape);
+
+    return best_shape;
+
+    function updateBestShape(shape) {
+        const dist = getShapeDist(pt, shape);
+        if (!best_shape || dist < best_shape.dist)
+            best_shape = {
+                shape: shape,
+                dist: dist,
+                valid: true,
+            };
+    }
+}
+
+// only proximity if closest shape is less than min dist
+function proximityShape(pt, min_dist=INTERACTION_RADIUS) {
+    let closest_shape = closestShape(pt);
+    closest_shape.proximity = (closest_shape.valid && closest_shape.dist < min_dist);
+    return closest_shape;
+}
+
+function getShapeDist(pt, shape) {
+    switch (shape.type) {
+        case SHAPE_TYPES.POINT:
+            return getPointDist(pt, shape);
+        case SHAPE_TYPES.ARC:
+            return getArcDist(pt, shape);
+        case SHAPE_TYPES.LINE:
+            return getLineDist(pt, shape);
+    }
+}
+
+function eraseProximityShape(pt) {
+    const proximity_shape = proximityShape(pt);
+    if (!proximity_shape.proximity)
+        return;
+    deleteShape(proximity_shape.shape);
 }

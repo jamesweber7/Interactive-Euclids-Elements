@@ -44,6 +44,7 @@ const SHAPE_TYPES = {
 const INTERACTION_RADIUS = 20;
 
 var HOVER_COLOR = 0;
+var HIGHLIGHT_COLOR = 0;
 
 var icons = {};
 function preload() {
@@ -58,6 +59,7 @@ function setup() {
     createCanvas(windowWidth*0.999, windowHeight*0.999);
     setSizing();
     HOVER_COLOR = color(50, 100, 255);
+    HIGHLIGHT_COLOR = color(255, 0, 0);
 }
 
 function draw() {
@@ -94,7 +96,7 @@ function drawShapes() {
 
     drawCurrentShape();
 
-    drawProximityPoint();
+    drawVisualMouseInteractions();
 
     drawLineExtendBtn();
 
@@ -112,20 +114,22 @@ function drawShape(shape) {
     }
 }
 
-function drawPoint(pt, r=unit*4) {
-    fill(0);
-    noStroke();
-    circle(pt.x, pt.y, r);
+function highlightProximityShape() {
+    const proximity_shape = proximityShape(mouse_data.pt);
+    if (!proximity_shape.proximity)
+        return;
+    highlightShape(proximity_shape.shape);
 }
 
-function drawProximityPoint() {
-    const pt = proximityPoint(mouse_data.pt);
-    if (!pt.proximity)
-        return;
-    noStroke();
-    fill(HOVER_COLOR);
-    const r = unit*10;
-    circle(pt.x, pt.y, r);
+function highlightShape(shape) {
+    switch (shape.type) {
+        case SHAPE_TYPES.POINT:
+            return highlightPoint(shape);
+        case SHAPE_TYPES.LINE:
+            return highlightLine(shape);
+        case SHAPE_TYPES.ARC:
+            return highlightArc(shape);
+    }
 }
 
 function drawLineExtendBtn() {
@@ -196,15 +200,108 @@ function extendLine(line, forward) {
 }
 
 // draws line extending forward from p1 past p2
-function drawLineExtension(p1, p2, both_ways=false) {
+function drawLineExtension(p1, p2, options={}) {
     const forward_point = extendedForwardPoint(p1, p2);
     const draw_line = {
         p1: p2,
         p2: forward_point
     }
-    drawLine(draw_line, forward_point.x, forward_point.y);
-    if (both_ways)
+    drawLine(draw_line, options);
+    if (options.both_ways)
         return drawLineExtension(p2, p1);
+}
+
+function drawPoint(pt, options={}) {
+    configureDefaults(options, {
+        fill: 0,
+        r: unit*8
+    });
+    fill(options.fill);
+    noStroke();
+    circle(pt.x, pt.y, options.r);
+}
+
+function drawLine(line_, options={}) {
+    configureDefaults(options, {
+        'stroke': 0,
+        'stroke_weight': 2
+    });
+    stroke(options.stroke);
+    strokeWeight(options.stroke_weight);
+    line(line_.p1.x, line_.p1.y, line_.p2.x, line_.p2.y);
+    if (line_.extends_forward) {
+        drawLineExtension(line_.p1, line_.p2, options);
+    }
+    if (line_.extends_backward) {
+        drawLineExtension(line_.p2, line_.p1, options);
+    }
+}
+
+function drawArc(arc_, options={}) {
+    configureDefaults(options, {
+        'stroke': 0,
+        'stroke_weight': 2,
+        'pt_r': unit*4,
+        'pt_fill': 0
+    });
+    noFill();
+    stroke(options.stroke);
+    strokeWeight(options.stroke_weight);
+    // draw circumference
+    arc(arc_.origin.x, arc_.origin.y, arc_.r*2, arc_.r*2, arc_.start_theta, arc_.stop_theta);
+    // draw point at origin
+    drawPoint(arc_.origin, {r: options.pt_r, fill: options.pt_fill});
+}
+
+function drawVisualMouseInteractions() {
+    if ([MOUSE_MODES.ERASER].includes(getMouseMode())) {
+        highlightProximityShape();
+    } else {
+        drawProximityPoint();
+    }
+}
+
+function drawProximityPoint() {
+    const pt = proximityPoint(mouse_data.pt);
+    if (!pt.proximity)
+        return;
+    const options = {
+        fill: HOVER_COLOR,
+        r: unit*10,
+    }
+    drawPoint(pt, options)
+}
+
+function highlightPoint(pt) {
+    const options = {
+        fill: HIGHLIGHT_COLOR,
+        r: unit*24,
+    };
+    drawPoint(pt, options)
+    // redraw point normally over highlight
+    drawPoint(pt);
+}
+
+function highlightLine(line) {
+    const options = {
+        stroke: HIGHLIGHT_COLOR,
+        stroke_weight: unit*8
+    };
+    drawLine(line, options);
+    // redraw line normally over highlight
+    drawLine(line);
+}
+
+function highlightArc(arc) {
+    const options = {
+        stroke: HIGHLIGHT_COLOR,
+        stroke_weight: unit*8,
+        pt_fill: HIGHLIGHT_COLOR,
+        pt_r: unit*16
+    };
+    drawArc(arc, options);
+    // redraw arc normally over highlight
+    drawArc(arc);
 }
 
 function drawArrow(x, y, heading, mag) {
@@ -223,35 +320,19 @@ function drawArrow(x, y, heading, mag) {
     pop();
 }
 
-function drawLine(line_) {
-    stroke(0);
-    strokeWeight(2);
-    line(line_.p1.x, line_.p1.y, line_.p2.x, line_.p2.y);
-    if (line_.extends_forward) {
-        drawLineExtension(line_.p1, line_.p2);
-    }
-    if (line_.extends_backward) {
-        drawLineExtension(line_.p2, line_.p1);
-    }
-}
-
-function drawArc(arc_) {
-    noFill();
-    stroke(0);
-    strokeWeight(2);
-    // draw circumference
-    arc(arc_.origin.x, arc_.origin.y, arc_.r*2, arc_.r*2, arc_.start_theta, arc_.stop_theta);
-    // draw point at origin
-    const pt_r = unit*4;
-    drawPoint(arc_.origin, pt_r);
-}
-
 function addShape(shape) {
     shape.id = 1; // I want to start this above 0 so I can !!id for checking validity
     if (shapes.length)
         shape.id = shapes[shapes.length-1].id+1;
     shapes.push(shape);
     return shape;
+}
+
+function deleteShape(shape) {
+    for (let i = 0; i < shapes.length; i++)
+        while (i < shapes.length && shapes[i] === shape)
+            shapes.splice(i, 1);
+    deleteChildIntersectionPoints(shape);
 }
 
 function setCurrentShape(shape=null) {
@@ -532,21 +613,29 @@ function deleteChildIntersectionPoints(parent) {
     const matches = [];
     for (let i = 0; i < intersection_points.length; i++) {
         const pt = intersection_points[i];
-        if (!pt.parent_shapes || !pt.parent_shapes.includes(parent))
-            return;
+        let pt_deleted = false;
+        let is_match = false;
+        // delete all instances of parent being in pt's parent shapes
+        while (pt.parent_shapes && pt.parent_shapes.includes(parent) && !pt_deleted) {
+            is_match = true;
 
-        const parents_index = pt.parent_shapes.indexOf(parent);
-        pt.parent_shapes.splice(parents_index, 1);
-        const is_still_intersection = pt.parent_shapes.length >= 2; // if ≥ 2, pt is still intersection of other shapes
+            // delete parent from pt's parent shapes
+            const parents_index = pt.parent_shapes.indexOf(parent);
+            pt.parent_shapes.splice(parents_index, 1);
 
-        if (!is_still_intersection) {
-            intersection_points.splice(i, 1);
-            i--;
+            // if less than two shapes, not an intersection
+            pt_deleted = pt.parent_shapes.length < 2; 
         }
-        matches.push({
-            pt: pt,
-            deleted: !is_still_intersection
-        });
+        if (is_match) {
+            matches.push({
+                pt: pt,
+                deleted: pt_deleted
+            });
+            if (pt_deleted) {
+                intersection_points.splice(i, 1);
+                i--;
+            }
+        }
     }
     return matches;
 }
