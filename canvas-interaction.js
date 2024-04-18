@@ -467,11 +467,11 @@ function updateExtendLineBtnInfo() {
         return resetExtendLineBtnInfo();
 
     const pos = _extendLineBtnPos(parent_line, forward);
-    intersection_points.push({
+    addIntersectionPoints([{
         x: pos.x,
         y: pos.y,
         extend_line_btn: true
-    });
+    }], parent_line);
     const interact_radius = 20;
     _extend_btn_info = {
         endpoint: endpoint,
@@ -515,9 +515,14 @@ function isExtendLineBtn(pt) {
 }
 
 function addLineIntersectionPoints(line_) {
+    console.log("ADDING PTS")
+    console.log(line_)
+    console.log(shapes)
     shapes.forEach(shape => {
+        console.log(shape);
         if (line_.id && shape.id && line_.id === shape.id)
             return;
+        console.log(shape);
         switch (shape.type) {
             case SHAPE_TYPES.LINE:
                 return addLineLineIntersectionPoints(line_, shape);
@@ -530,16 +535,18 @@ function addLineIntersectionPoints(line_) {
 // I know this will only be one or zero, I'm just setting it up this way for consistency with intersection schemas involving arcs
 function addLineLineIntersectionPoints(line1, line2) {
     const pts = findLineLineIntersectionPoints(line1, line2);
-    intersection_points.push(...pts);
+    addIntersectionPoints(pts, [line1, line2]);
 }
 
 function findLineLineIntersectionPoints(line1, line2) {
     const pts = findExtendedLineLineIntersectionPoints(line1, line2);
+    console.log(pts);
     // I know this will only be one or zero, I'm just setting it up this way for consistency with intersection schemas involving arcs
     pts.forEach((pt, index) => { 
         if (!linePointInBounds(pt, line1) || !linePointInBounds(pt, line2))
             pts.splice(index, 1);
     })
+    console.log(pts);
     return pts;
 }
 
@@ -604,7 +611,6 @@ function linePointInBounds(pt, line) {
             return true;
         if (pt.y < line.p2.y && line.p2.y < line.p1.y)
             return true;
-        return false;
     }
     if (line.extends_backward) {
         if (pt.x > line.p1.x && line.p1.x > line.p2.x)
@@ -615,9 +621,13 @@ function linePointInBounds(pt, line) {
             return true;
         if (pt.y < line.p1.y && line.p1.y < line.p2.y)
             return true;
-        return false;
     }
     return false;
+}
+
+function addLineExtensionIntersectionPoints(line) {
+    deleteChildIntersectionPoints(line);
+    addLineIntersectionPoints(line);
 }
 
 /*=============================================
@@ -801,7 +811,7 @@ function addArcIntersectionPoints(arc_) {
 
 function addArcLineIntersectionPoints(arc, line) {
     const pts = findArcLineIntersectionPoints(arc, line);
-    intersection_points.push(...pts);
+    addIntersectionPoints(pts, [arc, line]);
 }
 
 function findArcLineIntersectionPoints(arc, line) {
@@ -860,7 +870,7 @@ function findCircleLineIntersectionPoints(origin, r, p1, p2) {
 
 function addArcArcIntersectionPoints(arc1, arc2) {
     const pts = findArcArcIntersectionPoints(arc1, arc2);
-    intersection_points.push(...pts);
+    addIntersectionPoints(pts, [arc1, arc2]);
 }
 
 function findArcArcIntersectionPoints(arc1, arc2) {

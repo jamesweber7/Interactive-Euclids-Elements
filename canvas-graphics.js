@@ -182,6 +182,7 @@ function extendLine(line, forward) {
     } else {
         line.extends_backward = true;
     }
+    addLineExtensionIntersectionPoints(line);
 }
 
 // draws line extending forward from p1 past p2
@@ -237,9 +238,9 @@ function drawArc(arc_) {
 }
 
 function addShape(shape) {
+    shape.id = 1; // I want to start this above 0 so I can !!id for checking validity
     if (shapes.length)
         shape.id = shapes[shapes.length-1].id+1;
-    shape.id = 1; // I want to start this above 0 so I can !!id for checking validity
     shapes.push(shape);
     return shape;
 }
@@ -363,4 +364,37 @@ function transformPt(pt) {
 
 function isBetweenBitonic(num, a, b) {
     return min(a,b) <= num && num <= max(a,b);
+}
+
+function addIntersectionPoints(pts, parents) {
+    if (arguments.length > 2)
+        throw 'bad';
+    if (!Array.isArray(pts))
+        pts = [pts];
+    if (!Array.isArray(parents))
+        parents = [parents];
+    pts.forEach(pt => {
+        pt.parent_shapes = parents;
+    })
+    intersection_points.push(...pts);
+}
+
+function deleteChildIntersectionPoints(parent) {
+    const matches = [];
+    intersection_points.forEach((pt, index) => {
+        if (!pt.parent_shapes || !pt.parent_shapes.includes(parent))
+            return;
+
+        const parents_index = pt.parent_shapes.indexOf(parent);
+        pt.parent_shapes.splice(parents_index, 1);
+        const is_still_intersection = pt.parent_shapes.length >= 2; // if ≥ 2, pt is still intersection of other shapes
+
+        if (!is_still_intersection)
+            intersection_points.splice(index, 1);
+        matches.push({
+            pt: pt,
+            deleted: !is_still_intersection
+        });
+    })
+    return matches;
 }
