@@ -308,8 +308,14 @@ function drawCursor() {
     fill(0);
     text(getMouseMode()[0], mouseX+5, mouseY)
     let cursor_type = mouse_data.cursor;
-    if (!cursor_type)
-        cursor_type = ARROW;
+    if (!cursor_type) {
+        if (spaceIsPressed()) { // dragging canvas
+            cursor_type = HAND;
+        } else {
+            cursor_type = ARROW; // default
+        }
+    }
+
     cursor(cursor_type);
 }
 

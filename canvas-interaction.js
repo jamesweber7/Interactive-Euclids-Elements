@@ -48,6 +48,11 @@ function keyPressed(e) {
     }
 }
 
+function spaceIsPressed() {
+    const SPACE_KEYCODE = 32;
+    return keyIsDown(SPACE_KEYCODE)
+}
+
 function mousePressed(e) {
     if (e.target !== canvas)
         return;
@@ -55,6 +60,8 @@ function mousePressed(e) {
         down: true,
         event: MOUSE_EVENTS.PRESSED,
     });
+    if (spaceIsPressed())
+        return; // dragging canvas - don't do anything
     switch (getMouseMode()) {
         case MOUSE_MODES.SELECT:
             return selectMousePressed();
@@ -93,6 +100,8 @@ function mouseDragged(e) {
         down: true,
         event: MOUSE_EVENTS.DRAGGED,
     });
+    if (spaceIsPressed())
+        return translateDrag(e);
     switch (getMouseMode()) {
         case MOUSE_MODES.SELECT:
             return selectMouseDragged(e);
@@ -283,6 +292,10 @@ function selectMouseReleased() {
 }
 
 function selectMouseDragged(e) {
+    translateDrag(e);
+}
+
+function translateDrag(e) {
     if (!p_mouse_data.down)
         return;
     tr.x += e.movementX;
