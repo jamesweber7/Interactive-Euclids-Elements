@@ -9,12 +9,19 @@ extracontrols {
 
 tool {
     display: block;
-    margin-top: 10px;
 }
 
 tool button {
     width: 60px;
     height: 40px;
+    background: none;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+tool button:hover {
+    background: rgba(0,0,0,0.1);
 }
 
 tool img {
