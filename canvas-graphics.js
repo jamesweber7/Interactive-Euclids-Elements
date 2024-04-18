@@ -188,8 +188,7 @@ function extendLine(line, forward) {
 
 // draws line extending forward from p1 past p2
 function drawLineExtension(p1, p2, both_ways=false) {
-    const diff_vec = getDiffVec(p2, p1);
-    const forward_point = trigPointRA(p2, max(width, height)*2, diff_vec.heading());
+    const forward_point = extendedForwardPoint(p1, p2);
     const draw_line = {
         p1: p2,
         p2: forward_point
@@ -378,6 +377,30 @@ function untransformPt(pt) {
     };
 }
 
+function transformX(x) {
+    x -= tr.x;
+    x /= tr.sc;
+    return x;
+}
+
+function untransformX(x) {
+    x += tr.x;
+    x *= tr.sc;
+    return x;
+}
+
+function transformY(y) {
+    y -= tr.y;
+    y /= tr.sc;
+    return y;
+}
+
+function untransformY(y) {
+    y += tr.y;
+    y *= tr.sc;
+    return y;
+}
+
 function isBetweenBitonic(num, a, b) {
     return min(a,b) <= num && num <= max(a,b);
 }
@@ -475,4 +498,57 @@ function getShapePoints() {
         }
     });
     return shape_points;
+}
+
+function getBounds() {
+    const n = (0);
+    const e = (width);
+    const s = (height);
+    const w = (0);
+    const ne = {
+        x: e,
+        y: n
+    };
+    const se = {
+        x: e,
+        y: s
+    };
+    const sw = {
+        x: w,
+        y: s
+    };
+    const nw = {
+        x: w,
+        y: n
+    };
+    const top_bound = {
+        p1: nw,
+        p2: ne
+    };
+    const right_bound = {
+        p1: ne,
+        p2: se
+    };
+    const bottom_bound = {
+        p1: sw,
+        p2: se
+    };
+    const left_bound = {
+        p1: nw,
+        p2: sw
+    };
+    return {
+        n: n,
+        e: e,
+        s: s,
+        w: w,
+        ne: ne,
+        nw: nw,
+        se: se,
+        sw: sw,
+        top_bound: top_bound,
+        right_bound: right_bound,
+        bottom_bound: bottom_bound,
+        left_bound: left_bound
+    };
 }

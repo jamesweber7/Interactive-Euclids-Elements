@@ -136,6 +136,7 @@ function mouseMoved() {
 
 function mouseWheel(e) {
     tr.sc -= e.delta / 1000;
+    tr.sc = max(tr.sc, 0.01);
 }
 
 function closestPoint(pt, type_restriction=null) {
@@ -518,7 +519,7 @@ function addLineLineIntersectionPoints(line1, line2) {
 }
 
 function findLineLineIntersectionPoints(line1, line2) {
-    const pts = findExtendedLineLineIntersectionPoints(line1, line2);
+    const pts = findInfLineLineIntersectionPoints(line1, line2);
     // I know this will only be one or zero, I'm just setting it up this way for consistency with intersection schemas involving arcs
     for (let i = 0; i < pts.length; i++) { 
         while (i < pts.length && (!linePointInBounds(pts[i], line1) || !linePointInBounds(pts[i], line2)))
@@ -527,7 +528,7 @@ function findLineLineIntersectionPoints(line1, line2) {
     return pts;
 }
 
-function findExtendedLineLineIntersectionPoints(line1, line2) {
+function findInfLineLineIntersectionPoints(line1, line2) {
     // Ax+By+C=0
 
     const A1 = line1.p2.y - line1.p1.y;
@@ -605,6 +606,23 @@ function linePointInBounds(pt, line) {
 function addLineExtensionIntersectionPoints(line) {
     deleteChildIntersectionPoints(line);
     addLineIntersectionPoints(line);
+}
+
+function intersection(line1, line2) {
+    const pts = findInfLineLineIntersectionPoints(line1, line2);
+    if (pts.length)
+        return pts[0];
+}
+
+function extendedForwardPoint(p1, p2) {
+    const bounds = getBounds();
+    const dx_w = abs(p2.x-bounds.w);
+    const dx_e = abs(p2.x-bounds.e);
+    const dy_n = abs(p2.y-bounds.n);
+    const dy_s = abs(p2.y-bounds.s);
+    const big_dist = 1.1*((dx_w+dx_e)**2+(dy_n+dy_s)**2);
+    const diff_vec = getDiffVec(p2, p1);
+    return trigPointRA(p2, big_dist, diff_vec.heading());
 }
 
 /*=============================================
