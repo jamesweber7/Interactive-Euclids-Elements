@@ -57,8 +57,6 @@ function draw() {
     drawCursor();
 
     drawShapes();
-
-    drawCompass({x: width*0.25, y: height/2}, {x: width*0.75, y: height/2})
 }
 
 function drawShapes() {
