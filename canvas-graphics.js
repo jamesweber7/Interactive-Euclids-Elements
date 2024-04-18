@@ -373,12 +373,16 @@ function addIntersectionPoints(pts, parents) {
         pts = [pts];
     if (!Array.isArray(parents))
         parents = [parents];
-    pts.forEach((pt, index) => {
+    for (let i = 0; i < pts.length; i++) {
+        const pt1 = pts[i];
+        let removed = false;
         // check to see if point is already an existing intersection point
-        for (const pt2 of intersection_points) {
+        for (let j = 0; j < intersection_points && !removed; j++) {
+            const pt2 = intersection_points[j];
             // point already within intersection points; remove it
-            if (pt2.parent_shapes && withinEpsilon(0, getPointDistSq(pt, pt2))) {
-                pts.splice(pt, index);
+            if (pt2.parent_shapes && withinEpsilon(0, getPointDistSq(pt1, pt2))) {
+                pts.splice(i, 1);
+                removed = true;
                 for (let i = 0; i < parents.length; i++) {
                     let found = false;
                     for (let j = 0; j < pt2.parent_shapes.length && !found; j++) {
@@ -388,17 +392,21 @@ function addIntersectionPoints(pts, parents) {
                     if (!found)
                         pt2.parent_shapes.push(parents[i]);
                 }
-                return;
             }
         }
-        pt.parent_shapes = parents;
-    })
+        if (removed) {
+            i--;
+        } else {
+            pt1.parent_shapes = parents;
+        }
+    }
     intersection_points.push(...pts);
 }
 
 function deleteChildIntersectionPoints(parent) {
     const matches = [];
-    intersection_points.forEach((pt, index) => {
+    for (let i = 0; i < intersection_points.length; i++) {
+        const pt = intersection_points[i];
         if (!pt.parent_shapes || !pt.parent_shapes.includes(parent))
             return;
 
@@ -406,12 +414,14 @@ function deleteChildIntersectionPoints(parent) {
         pt.parent_shapes.splice(parents_index, 1);
         const is_still_intersection = pt.parent_shapes.length >= 2; // if ≥ 2, pt is still intersection of other shapes
 
-        if (!is_still_intersection)
-            intersection_points.splice(index, 1);
+        if (!is_still_intersection) {
+            intersection_points.splice(i, 1);
+            i--;
+        }
         matches.push({
             pt: pt,
             deleted: !is_still_intersection
         });
-    })
+    }
     return matches;
 }

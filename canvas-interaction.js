@@ -500,10 +500,10 @@ function resetExtendLineBtnInfo() {
         _extend_btn_info = {};
     if (!_extend_btn_info.valid)
         return;
-    intersection_points.forEach((pt, index) => {
-        if (pt.extend_line_btn)
-            intersection_points.splice(index, 1);
-    })
+    for (let i = 0; i < intersection_points.length; i++) {
+        while (i < intersection_points.length && intersection_points[i].extend_line_btn)
+            intersection_points.splice(i, 1);
+    }
     _extend_btn_info = {valid: false};
 }
 
@@ -536,10 +536,10 @@ function addLineLineIntersectionPoints(line1, line2) {
 function findLineLineIntersectionPoints(line1, line2) {
     const pts = findExtendedLineLineIntersectionPoints(line1, line2);
     // I know this will only be one or zero, I'm just setting it up this way for consistency with intersection schemas involving arcs
-    pts.forEach((pt, index) => { 
-        if (!linePointInBounds(pt, line1) || !linePointInBounds(pt, line2))
-            pts.splice(index, 1);
-    })
+    for (let i = 0; i < pts.length; i++) { 
+        while (i < pts.length && (!linePointInBounds(pts[i], line1) || !linePointInBounds(pts[i], line2)))
+            pts.splice(i, 1);
+    }
     return pts;
 }
 
