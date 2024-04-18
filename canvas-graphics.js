@@ -360,3 +360,7 @@ function transformPt(pt) {
         y: transformed.y
     };
 }
+
+function isBetweenBitonic(num, a, b) {
+    return min(a,b) <= num && num <= max(a,b);
+}

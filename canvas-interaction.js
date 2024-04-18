@@ -527,12 +527,23 @@ function addLineIntersectionPoints(line_) {
     })
 }
 
+// I know this will only be one or zero, I'm just setting it up this way for consistency with intersection schemas involving arcs
 function addLineLineIntersectionPoints(line1, line2) {
     const pts = findLineLineIntersectionPoints(line1, line2);
     intersection_points.push(...pts);
 }
 
 function findLineLineIntersectionPoints(line1, line2) {
+    const pts = findExtendedLineLineIntersectionPoints(line1, line2);
+    // I know this will only be one or zero, I'm just setting it up this way for consistency with intersection schemas involving arcs
+    pts.forEach((pt, index) => { 
+        if (!linePointInBounds(pt, line1) || !linePointInBounds(pt, line2))
+            pts.splice(index, 1);
+    })
+    return pts;
+}
+
+function findExtendedLineLineIntersectionPoints(line1, line2) {
     // Ax+By+C=0
 
     const A1 = line1.p2.y - line1.p1.y;
@@ -556,6 +567,57 @@ function findLineLineIntersectionPoints(line1, line2) {
             y: (A1*C2-A2*C1)/determinant,
         }
     ]
+}
+
+function onLine(pt, line) {
+    return onInfLine(pt, line) && linePointInBounds(pt, line);
+}
+
+function onInfLine(pt, line) {
+    // Δ
+    const Delta = {
+        x: line.p2.x - line.p1.x,
+        y: line.p2.y - line.p2.y
+    }
+
+    // Ax+By+C=0
+    const A = Delta.y;
+    const B = -Delta.x;
+    const C = Delta.x*line.p1.y - Delta.y*line.p1.x;
+
+    const pt_val = A*pt.x+B*pt.y+C;
+    return withinEpsilon(pt_val, 0);
+}
+
+// ASSUMES POINT IS SOMEWHERE ON LINE
+function linePointInBounds(pt, line) {
+    if (line.extends_forward && line.extends_backward)
+        return true;
+    if (isBetweenBitonic(pt.x, line.p1.x, line.p2.x) && isBetweenBitonic(pt.y, line.p1.y, line.p2.y))
+        return true;
+    if (line.extends_forward) {
+        if (pt.x > line.p2.x && line.p2.x > line.p1.x)
+            return true;
+        if (pt.x < line.p2.x && line.p2.x < line.p1.x)
+            return true;
+        if (pt.y > line.p2.y && line.p2.y > line.p1.y)
+            return true;
+        if (pt.y < line.p2.y && line.p2.y < line.p1.y)
+            return true;
+        return false;
+    }
+    if (line.extends_backward) {
+        if (pt.x > line.p1.x && line.p1.x > line.p2.x)
+            return true;
+        if (pt.x < line.p1.x && line.p1.x < line.p2.x)
+            return true;
+        if (pt.y > line.p1.y && line.p1.y > line.p2.y)
+            return true;
+        if (pt.y < line.p1.y && line.p1.y < line.p2.y)
+            return true;
+        return false;
+    }
+    return false;
 }
 
 /*=============================================
