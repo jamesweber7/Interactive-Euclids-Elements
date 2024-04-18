@@ -4,10 +4,17 @@ document.addEventListener('DOMContentLoaded', setupUI);
 
 function setupUI() {
     setupTools();
+    preventRightClick();
 }
 
 function setupTools() {
     setupToolFunctionalities();
+}
+
+function preventRightClick() {
+    document.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+    });
 }
 
 function setupToolFunctionalities() {

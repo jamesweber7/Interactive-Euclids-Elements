@@ -354,6 +354,8 @@ let _extend_btns_info = [];
 resetExtendLineBtnInfo();
 
 function rulerMousePressed() {
+    if (mouseButton === RIGHT)
+        return rulerRightMousePressed();
     const p = mouse_data.pt;
     if (_line_p1) {
         if (isExtendLineBtn(p)) {
@@ -374,6 +376,17 @@ function rulerMousePressed() {
         });
         if (isLineEndpoint(p))
             updateExtendLineBtnInfo();
+    }
+}
+
+function rulerRightMousePressed() {
+    const p = mouse_data.pt;
+    if (_line_p1) {
+        if (isExtendLineBtn(p)) {
+            // delete closest extend line button
+            const btn = getClosestExtendLineBtnInfo(p);
+            resetExtendLineBtn(btn);
+        }
     }
 }
 
@@ -466,13 +479,22 @@ function updateExtendLineBtnInfo() {
     })
 
     function btnInfo(parent_line, forward) {
+        let id;
+        if (_extend_btns_info.length) {
+            id = _extend_btns_info[_extend_btns_info.length-1].id+1;
+        } else {
+            id = 1;
+        }
+
         const pos = _extendLineBtnPos(parent_line, forward);
         addSnapPoint({
             x: pos.x,
             y: pos.y,
-            extend_line_btn: true
+            extend_line_btn: true,
+            extend_line_btn_id: id,
         });
         return {
+            id: id,
             parent_line: parent_line,
             endpoint: forward ? parent_line.p2 : parent_line.p1,
             back_endpoint: forward ? parent_line.p1 : parent_line.p2,
@@ -499,10 +521,19 @@ function _extendLineBtnPos(line, forward) {
 }
 
 function resetExtendLineBtnInfo() {
-    _extend_btns_info = [];
-    for (let i = 0; i < snap_points.length; i++) {
-        while (i < snap_points.length && snap_points[i].extend_line_btn)
-            snap_points.splice(i, 1);
+    _extend_btns_info.forEach(resetExtendLineBtn);
+}
+
+function resetExtendLineBtn(btn) {
+    for (let i = 0; i < _extend_btns_info.length; i++) {
+        while (i < _extend_btns_info.length && btn === _extend_btns_info[i]) {
+            _extend_btns_info.splice(i, 1);
+            for (let j = 0; j < snap_points.length; j++) {
+                while (j < snap_points.length && snap_points[j].extend_line_btn && snap_points[j].extend_line_btn_id === btn.id) {
+                    snap_points.splice(j, 1);
+                }
+            }
+        }
     }
 }
 
