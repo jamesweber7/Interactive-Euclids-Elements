@@ -45,6 +45,15 @@ const INTERACTION_RADIUS = 20;
 
 var HOVER_COLOR = 0;
 
+var icons = {};
+function preload() {
+    icons.select = loadImage('icons/select.svg');
+    icons.point = loadImage('icons/point.svg');
+    icons.ruler = loadImage('icons/ruler.svg');
+    icons.compass = loadImage('icons/compass.svg');
+    icons.eraser = loadImage('icons/eraser.svg');
+}
+
 function setup() {
     createCanvas(windowWidth*0.999, windowHeight*0.999);
     setSizing();
@@ -367,9 +376,6 @@ function addDrawEvent(event, options={}) {
 }
 
 function drawCursor() {
-    fill(0);
-    noStroke();
-    text(getMouseMode()[0], mouseX+5, mouseY)
     let cursor_type = mouse_data.cursor;
     if (!cursor_type) {
         if (spaceIsPressed()) { // dragging canvas
@@ -378,8 +384,22 @@ function drawCursor() {
             cursor_type = ARROW; // default
         }
     }
-
     cursor(cursor_type);
+    const mode_cursor_icon = getModeCursorIcon();
+    if (mode_cursor_icon.valid) { // default
+        push();
+        translate(mouseX, mouseY);
+        if (mode_cursor_icon.offset_x)
+            translate(mode_cursor_icon.offset_x, 0);
+        if (mode_cursor_icon.offset_y)
+            translate(0, mode_cursor_icon.offset_y);
+
+        scale(0.25);
+        if (mode_cursor_icon.scale)
+            scale(mode_cursor_icon.scale);
+        image(mode_cursor_icon.icon, 0, 0);
+        pop();
+    }
 }
 
 function windowResized() {
@@ -617,4 +637,41 @@ function getBounds() {
 
 function avg(a, b) {
     return (b-a)/2+a;
+}
+
+function getModeCursorIcon() {
+    if (mouse_data.cursor != ARROW)
+        return {valid: false}; // something happening with cursor
+    const info = {};
+    switch (mouseMode) {
+        case MOUSE_MODES.SELECT:
+            info.valid = false; // no cursor icon for select
+            break;
+        case MOUSE_MODES.POINT:
+            info.valid = true;
+            info.icon = icons.point;
+            info.scale = 1.25;
+            info.offset_x = 14;
+            info.offset_y = 4;
+            break;
+        case MOUSE_MODES.RULER:
+            info.valid = true;
+            info.icon = icons.ruler;
+            info.offset_x = 14;
+            info.offset_y = 8;
+            break;
+        case MOUSE_MODES.COMPASS:
+            info.valid = true;
+            info.icon = icons.compass;
+            info.scale = 1.25;
+            info.offset_x = 10;
+            break;
+        case MOUSE_MODES.ERASER:
+            info.valid = true;
+            info.icon = icons.eraser;
+            info.scale = 1.5;
+            info.offset_x = 7;
+            break;
+    }
+    return info;
 }
