@@ -7,8 +7,16 @@ extracontrols {
 }
 
 
-tools tool {
+tool {
     display: block;
-    height: 40px;
     margin-top: 10px;
+}
+
+tool button {
+    width: 60px;
+    height: 40px;
+}
+
+tool img {
+    width: 40px;
 }
