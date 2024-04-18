@@ -136,7 +136,7 @@ function mouseMoved() {
 
 function mouseWheel(e) {
     tr.sc -= e.delta / 1000;
-    tr.sc = max(tr.sc, 0.01);
+    tr.sc = max(tr.sc, 0.1);
 }
 
 function closestPoint(pt, type_restriction=null) {
