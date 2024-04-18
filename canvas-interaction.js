@@ -428,8 +428,11 @@ function getClosestExtendLineBtnInfo(pt) {
     let closest = {valid: false};
     let dist_sq = Number.MAX_SAFE_INTEGER;
     for (const btn of getExtendLineBtnInfo()) {
-        if (getPointDistSq(pt, btn.pos) < dist_sq)
+        const btn_dist_sq = getPointDistSq(pt, btn.pos);
+        if (btn_dist_sq < dist_sq) {
+            dist_sq = btn_dist_sq;
             closest = btn;
+        }
     }
     return closest;
 }
