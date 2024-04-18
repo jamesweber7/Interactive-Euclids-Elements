@@ -373,7 +373,24 @@ function addIntersectionPoints(pts, parents) {
         pts = [pts];
     if (!Array.isArray(parents))
         parents = [parents];
-    pts.forEach(pt => {
+    pts.forEach((pt, index) => {
+        // check to see if point is already an existing intersection point
+        for (const pt2 of intersection_points) {
+            // point already within intersection points; remove it
+            if (pt2.parent_shapes && withinEpsilon(0, getPointDistSq(pt, pt2))) {
+                pts.splice(pt, index);
+                for (let i = 0; i < parents.length; i++) {
+                    let found = false;
+                    for (let j = 0; j < pt2.parent_shapes.length && !found; pt2++) {
+                        if (pt2.parent_shapes[j] === parents[i])
+                            found = true;
+                    }
+                    if (!found)
+                        pt2.parent_shapes.push(parents[i]);
+                }
+                return;
+            }
+        }
         pt.parent_shapes = parents;
     })
     intersection_points.push(...pts);
