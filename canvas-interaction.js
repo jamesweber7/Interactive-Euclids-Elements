@@ -31,6 +31,8 @@ function keyPressed(e) {
             return setMouseMode(MOUSE_MODES.COMPASS);
         case 'e':
             return setMouseMode(MOUSE_MODES.ERASER);
+        case 'Escape':
+            return escapeAction();
     }
     switch (getMouseMode()) {
         case MOUSE_MODES.SELECT:
@@ -258,6 +260,12 @@ function vecToPt(vec) {
         x: vec.x,
         y: vec.y
     };
+}
+
+function escapeAction() {
+    const mode = getMouseMode();
+    mouseModeOff(mode);
+    setMouseMode(mode);
 }
 
 
