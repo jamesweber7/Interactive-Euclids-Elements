@@ -158,6 +158,7 @@ function displayPropositionCompleteAnimation(pass_info) {
         y: tr.y,
         sc: tr.sc
     };
+    const linger_time = 1000;
     function propositionCompleteAnimation() {
         const time_elapsed = millis()-start_time;
         const linear_amt = min(time_elapsed / anim_time, 1);
@@ -177,7 +178,7 @@ function displayPropositionCompleteAnimation(pass_info) {
         tr.y = lerp(original_tr.y, 0, ease_amt);
         tr.sc = lerp(original_tr.sc, 1, ease_amt);
 
-        if (linear_amt >= 1) {
+        if (time_elapsed > anim_time+linger_time) {
             deleteAllShapesExceptPassing(pass_info.passing_shapes);
             deleteDrawEvent(ev_id);
             displayPropositionCompleteMenu();

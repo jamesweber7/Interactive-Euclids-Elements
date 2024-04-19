@@ -47,6 +47,7 @@ function createPropositionCompleteMenu(prop_number, options={}) {
     const menu = document.createElement('div');
     menu.id = id;
     menu.className = 'prop-menu';
+    fadeInEl(menu, 0.5);
 
     const title = document.createElement('div');
     title.innerText = `Proposition ${prop_number} Complete`;
@@ -134,4 +135,12 @@ function viewportFlexContainer() {
     viewport_container.id = id;
     document.body.prepend(viewport_container);
     return viewport_container;
+}
+
+function fadeInEl(el, t=1) {
+    el.style.opacity = 0;
+    el.style.transition = `opacity linear ${t}s`;
+    setTimeout(() => {
+        el.style.opacity = 1;
+    }, 0);
 }

@@ -1,12 +1,14 @@
 body {
     overflow: hidden;
     margin: 0;
-    padding: none;
+    padding: 0;
     font-family: 'Times New Roman', Times, serif;
 }
 
 extracontrols {
     position: fixed;
+    margin-left: 10px;
+    margin-top: 10px;
 }
 
 button {
@@ -59,6 +61,7 @@ tool img {
     justify-content: center;
     overflow-y: hidden;
     flex-direction: column;
+    transition: opacity 1s linear;
 }
 
 .prop-menu div {
