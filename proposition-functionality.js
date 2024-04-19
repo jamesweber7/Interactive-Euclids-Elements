@@ -115,22 +115,37 @@ function prop1PassInfo() {
                     if (pointsWithinEpsilon(p1, p2))
                         num_equal ++;
                 });
-            
             });
             // exactly one equal
             if (num_equal !== 1) {
                 return;
             }
         }
+
+        // check to make sure exactly three endpoints between the lines
+        let endpoints = [];
+        line_set.forEach(line => {
+            [line.p1, line.p2].forEach(pt => {
+                let new_endpoint = true;
+                endpoints.forEach(endpoint => {
+                    new_endpoint = new_endpoint && !pointsWithinEpsilon(pt, endpoint);
+                })
+                if (new_endpoint)
+                    endpoints.push(pt);
+            })
+        })
+        if (endpoints.length !== 3) // exactly 3 endpoints
+            return;
+
         triangle_sets.push(line_set);
     })
 
     // check lengths
     const equilateral_triangle_sets = [];
     triangle_sets.forEach(triangle_set => {
-        const side_length = getPointDistSq(triangle_set[0].p1, triangle_set[0].p2);
+        const side_length_sq = getPointDistSq(triangle_set[0].p1, triangle_set[0].p2);
         for (let i = 1; i < triangle_set.length; i++)
-            if (getPointDistSq(triangle_set[0].p1, triangle_set[0].p2) != side_length)
+            if (!withinEpsilon(getPointDistSq(triangle_set[i].p1, triangle_set[i].p2), side_length_sq))
                 return;
         equilateral_triangle_sets.push(triangle_set);
     })
