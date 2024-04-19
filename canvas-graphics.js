@@ -48,6 +48,11 @@ const SHAPE_TYPES = {
     ARC: 'ARC',
 }
 
+const MODES = {
+    PROPOSITION: 'PROPOSITION',
+    FREEFORM: 'FREEFORM'
+}
+
 const INTERACTION_RADIUS = 20;
 
 var HOVER_COLOR = 0;
@@ -963,4 +968,14 @@ function translateTransform() {
 // as opposed to using proposition
 function freeformMode() {
     noProposition();
+}
+
+function propositionMode() {
+    return !noProposition();
+}
+
+function mode() {
+    if (noProposition())
+        return MODES.FREEFORM;
+    return MODES.PROPOSITION;
 }
