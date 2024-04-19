@@ -84,8 +84,7 @@ function draw() {
 
 function drawShapes() {
     push();
-    translate(tr.x, tr.y);
-    scale(tr.sc);
+    translateTransform();
 
     runDrawShapesEvents();
 
@@ -954,4 +953,9 @@ function equalSets(set1, set2) {
         if (!set2.has(el))
             return false;
     return true;
+}
+
+function translateTransform() {
+    translate(tr.x, tr.y);
+    scale(tr.sc);
 }

@@ -144,9 +144,12 @@ function displayPassingShapes(pass_info) {
 
     function displayShapes() {
         background(255, params.opacity);
+        push();
+        translateTransform();
         pass_info.passing_shapes.forEach(shape => {
             drawShape(shape);
         })
-        params.opacity += 2;
+        pop();
+        params.opacity += 5;
     }
 }
