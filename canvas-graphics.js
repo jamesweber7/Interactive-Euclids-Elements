@@ -785,3 +785,75 @@ function getModeCursorIcon() {
     }
     return info;
 }
+
+function clearCanvas() {
+    shapes.forEach(shape => {
+        deleteShape(shape);
+    })
+    // intersection points should already be empty, but check anyways
+    intersection_points.splice(0);
+}
+
+// returns array each possible set of shapes, as array, where each shape in set is unique and corresponds with type in shape_types
+function getShapeSets(shape_types) {
+    if (!Array.isArray(shape_types))
+        return getShapeSets([...arguments]);
+
+    // prune current_shapes - make sure they only contain shape_types
+    const remaining_shapes = [];
+    for (const shape of shapes)
+        if (shape_types.includes(shape.type))
+            remaining_shapes.push(shape);
+    
+    // all combinations, including duplicates
+    const shape_combinations = getShapeCombinations(shape_types, remaining_shapes);
+
+    // check for duplicates by casting to sets
+    const shape_sets = [];
+    shape_combinations.forEach(combination => {
+        const comb_set = new Set(combination);
+        for (const existing_set of shape_sets) {
+            if (equalSets(existing_set, comb_set))
+                return;
+        }
+        shape_sets.push(comb_set);
+    });
+
+    // convert sets back to arrays
+    const shape_arrs = Array(shape_sets.length);
+    for (let i = 0; i < shape_arrs.length; i++) {
+        shape_arrs[i] = [...shape_sets[i]];
+    }
+    return shape_arrs;
+}
+
+// recursively get combinations, including duplicates, of shapes w/ types matching to shape_types
+function getShapeCombinations(shape_types, current_shapes) {
+    const shape_type = shape_types[0];
+    const remaining_types = shape_types.slice(1);
+    if (!shape_types.length)
+        return [[]];
+
+    const shape_combs = [];
+    for (let i = 0; i < current_shapes.length; i++) {
+        const current_shape = current_shapes[i];
+        if (current_shape.type === shape_type) {
+            const remaining_shapes = current_shapes.slice(0,i).concat(current_shapes.slice(i+1));
+            const combinations = getShapeCombinations(remaining_types, remaining_shapes);
+            combinations.forEach(combination => {
+                combination.push(current_shape);
+                shape_combs.push(combination);
+            })
+        }
+    }
+    return shape_combs;
+}
+
+function equalSets(set1, set2) {
+    if (set1.size != set2.size)
+        return false;
+    for (const el of set1)
+        if (!set2.has(el))
+            return false;
+    return true;
+}

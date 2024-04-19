@@ -1026,6 +1026,10 @@ function withinEpsilon(a, b, epsilon=2**-10) {
     return a >= b-epsilon && a <= b+epsilon;
 }
 
+function pointsWithinEpsilon(p1, p2, epsilon=2**-10) {
+    return withinEpsilon(getPointDistSq(p1, p2), 0, epsilon);
+}
+
 function getArcDist(pt, arc) {
     const origin_dist = getPointDist(pt, arc.origin);
     const circum_dist = getArcCircumferenceDist(pt, arc);
