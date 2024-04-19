@@ -1,17 +1,34 @@
 
 var proposition_info = {};
 
-function checkPass() {
+function checkPropositionPass() {
+    if (proposition_info.passed)    // already passed
+        return;
+    const pass_info = propositionPassInfo();
+    if (!pass_info || !pass_info.pass)
+        return;
+    // proposition passed
+    proposition_info.passed = true;
+    displayPassingShapes(pass_info);
+}
+
+function propositionPassInfo() {
     switch (proposition_info.number) {
         case 1:
-            return checkProp1Pass();
+            return prop1PassInfo();
     }
+}
+
+function initProposition(prop_number) {
+    setProposition(getPropositionInfo(prop_number));
 }
 
 function setProposition(prop_info) {
     proposition_info = prop_info;
     clearProposition();
-    prop_info.shapes.forEach(shape => {
+    if (!proposition_info)
+        return;
+    prop_info.given_shapes.forEach(shape => {
         addShape(shape);
     });
 }
@@ -44,12 +61,12 @@ function getProp1Info() {
         given_shapes: [
             lineShape(
                 {
-                    x: 0,
+                    x: width*0.4,
                     y: height/2,
                     label: 'A',
                 },
                 {
-                    x: width,
+                    x: width*0.6,
                     y: height/2,
                     label: 'B',
                 }
@@ -58,7 +75,7 @@ function getProp1Info() {
     }
 }
 
-function checkProp1Pass() {
+function prop1PassInfo() {
     // should be equilateral triangle on line AB
 
     // find sets of three lines
@@ -80,7 +97,6 @@ function checkProp1Pass() {
             // exactly one of line1's points equals exactly one of line2's points
             [line1.p1, line1.p2].forEach(p1 => {
                 [line2.p1, line2.p2].forEach(p2 => {
-                    console.log(p1, p2, pointsWithinEpsilon(p1, p2))
                     if (pointsWithinEpsilon(p1, p2))
                         num_equal ++;
                 });
@@ -109,5 +125,28 @@ function checkProp1Pass() {
             pass: true,
             passing_shapes: equilateral_triangle_sets[0]
         };
+    }
+}
+
+function displayPassingShapes(pass_info) {
+    const params = {
+        opacity: 0,
+    }
+    const options = {
+        when: DRAW_STAGES.END,
+    }
+    const ev_id = addDrawEvent(displayShapes, options).id;
+    setTimeout(() => {
+        document.addEventListener('click', () => {
+            deleteDrawEvent(ev_id);
+        });
+    }, 100);
+
+    function displayShapes() {
+        background(255, params.opacity);
+        pass_info.passing_shapes.forEach(shape => {
+            drawShape(shape);
+        })
+        params.opacity += 2;
     }
 }

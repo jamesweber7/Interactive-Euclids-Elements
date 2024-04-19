@@ -31,7 +31,14 @@ var intersection_points = []; // intersections between shapes
 var snap_points = []; // points that mouse can snap to
 
 // call events on draw
-var draw_events = [];
+const DRAW_STAGES = {
+    START: 'START',
+    DRAW_SHAPES: 'DRAW_SHAPES',
+    END: 'END',
+}
+var draw_shapes_events = [];
+var draw_start_events = [];
+var draw_end_events = [];
 
 let current_shape = null;
 
@@ -60,14 +67,19 @@ function setup() {
     setSizing();
     HOVER_COLOR = color(50, 100, 255);
     HIGHLIGHT_COLOR = color(255, 0, 0);
+    initProposition(1);
 }
 
 function draw() {
+    runDrawStartEvents();
+
     background(255);
 
     drawCursor();
 
     drawShapes();
+
+    runDrawEndEvents();
 }
 
 function drawShapes() {
@@ -75,16 +87,7 @@ function drawShapes() {
     translate(tr.x, tr.y);
     scale(tr.sc);
 
-    draw_events.forEach((ev, i) => {
-        const params = ev.options.params ? ev.options.params : [];
-        if (ev.options.stop && ev.options.stop(...params)) {
-            if (ev.options.onstop)
-                ev.options.onstop(...params);
-            draw_events.splice(i, 1);
-            return;
-        }
-        ev.event(...params);
-    });
+    runDrawShapesEvents();
 
     shapes.forEach(shape => {
         drawShape(shape);
@@ -223,12 +226,23 @@ function drawPoint(pt, options={}) {
 
 function drawLine(line_, options={}) {
     configureDefaults(options, {
-        'stroke': 0,
-        'stroke_weight': 2
+        stroke: 0,
+        stroke_weight: 2,
+        label_text_size: 20,
     });
     stroke(options.stroke);
     strokeWeight(options.stroke_weight);
     line(line_.p1.x, line_.p1.y, line_.p2.x, line_.p2.y);
+    if (line_.p1.label || line_.p2.label) {
+        noStroke();
+        fill(options.stroke);
+        textSize(options.label_text_size);
+        textAlign(CENTER);
+        if (line_.p1.label)
+            text(line_.p1.label, line_.p1.x, line_.p1.y+options.label_text_size);
+        if (line_.p2.label)
+            text(line_.p2.label, line_.p2.x, line_.p2.y+options.label_text_size);
+    }
     if (line_.extends_forward) {
         drawLineExtension(line_.p1, line_.p2, options);
     }
@@ -254,6 +268,8 @@ function drawArc(arc_, options={}) {
 }
 
 function drawVisualMouseInteractions() {
+    if (!mouse_data.pt)
+        return;
     if ([MOUSE_MODES.ERASER].includes(getMouseMode())) {
         highlightProximityShape();
     } else {
@@ -346,6 +362,7 @@ function addShape(shape) {
     if (shapes.length)
         shape.id = shapes[shapes.length-1].id+1;
     shapes.push(shape);
+    checkPropositionPass();
     return shape;
 }
 
@@ -471,10 +488,91 @@ function drawCompass(needle_pt, pencil_pt) {
 }
 
 function addDrawEvent(event, options={}) {
-    draw_events.push({
+    const default_func = () => {return false};
+    options = configureDefaults(options, {
+        when: DRAW_STAGES.DRAW_SHAPES,
+        stop: default_func,
+        onstop: default_func,
+    })
+    let events = [];
+    switch (options.when) {
+        case DRAW_STAGES.START:
+            events = draw_start_events;
+            break;
+        case DRAW_STAGES.DRAW_SHAPES:
+            events = draw_shapes_events;
+            break;
+        case DRAW_STAGES.END:
+            events = draw_end_events;
+            break;
+    }
+    const event_obj = {
+        id: getNewDrawEventId(events, options.when),
         event: event,
-        options: options
-    });
+        options: options,
+    };
+    events.push(event_obj);
+    return event_obj;
+}
+
+function getNewDrawEventId(events, when) {
+    let id_num;
+    if (!events.length) {
+        id_num = 1;
+    } else {
+        id_num = events[events.length - 1].id.match(/\d+$/);
+    }
+    return when+id_num;
+}
+
+function runDrawStartEvents() {
+    return runDrawEvents(draw_start_events);
+}
+
+function runDrawShapesEvents() {
+    return runDrawEvents(draw_shapes_events);
+}
+
+function runDrawEndEvents() {
+    return runDrawEvents(draw_end_events);
+}
+
+function runDrawEvents(draw_events) {
+    const infos = [];
+    for (let i = 0; i < draw_events.length; i++) {
+        const ev = draw_events[i];
+        const params = overwriteDefault(ev.options.params, []);
+        const info = [];
+
+        if (ev.options.stop(...params)) {
+            ev.options.onstop(...params);
+            draw_events.splice(i, 1);
+            i--;
+        } else {
+            info.push(...runDrawEvent(ev));
+            infos.push(...info);
+        }
+    }
+    return infos;
+}
+
+function runDrawEvent(ev) {
+    const params = overwriteDefault(ev.options.params, []);
+    let info = [];
+    ev.event(...params);
+    return info;
+}
+
+function deleteDrawEvent(id) {
+    deleteDrawEventFromEvents(id, draw_start_events);
+    deleteDrawEventFromEvents(id, draw_shapes_events);
+    deleteDrawEventFromEvents(id, draw_end_events);
+}
+
+function deleteDrawEventFromEvents(id, events) {
+    for (let i = 0; i < events.length; i++)
+        while (i < events.length && events[i].id === id)
+            events.splice(i, 1);
 }
 
 function drawCursor() {
