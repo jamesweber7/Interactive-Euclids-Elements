@@ -135,6 +135,8 @@ function mouseMoved() {
 }
 
 function mouseWheel(e) {
+    if (e.target !== canvas)
+        return;
     tr.sc -= e.delta / 1000;
     tr.sc = max(tr.sc, 0.1);
 }

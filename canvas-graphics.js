@@ -67,7 +67,7 @@ function setup() {
     setSizing();
     HOVER_COLOR = color(50, 100, 255);
     HIGHLIGHT_COLOR = color(255, 0, 0);
-    initProposition(1);
+    setProposition(1);
 }
 
 function draw() {
@@ -158,6 +158,7 @@ function drawLineExtendBtn() {
             circle(0, 0, 50);
 
             textAlign(CENTER, CENTER);
+            textSize(14);
             fill(0);
             noStroke();
 
@@ -884,9 +885,8 @@ function getModeCursorIcon() {
 }
 
 function clearCanvas() {
-    shapes.forEach(shape => {
-        deleteShape(shape);
-    })
+    while (shapes.length)
+        deleteShape(shapes[0]);
     // intersection points should already be empty, but check anyways
     intersection_points.splice(0);
 }
@@ -958,4 +958,9 @@ function equalSets(set1, set2) {
 function translateTransform() {
     translate(tr.x, tr.y);
     scale(tr.sc);
+}
+
+// as opposed to using proposition
+function freeformMode() {
+    noProposition();
 }

@@ -1,11 +1,17 @@
 body {
     overflow: hidden;
+    margin: 0;
+    padding: none;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 extracontrols {
     position: fixed;
 }
 
+button {
+    cursor: pointer;
+}
 
 tool {
     display: block;
@@ -15,7 +21,6 @@ tool button {
     width: 60px;
     height: 40px;
     background: none;
-    cursor: pointer;
     border: none;
     border-radius: 5px;
 
@@ -33,3 +38,80 @@ tool button:hover {
 tool img {
     width: 40px;
 }
+
+#viewport-flex-container {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.prop-menu {
+    font-size: 40px;
+    background: white;
+    width: 60%;
+    height: 60%;
+    border: 4px solid black;
+    border-radius: 12px; 
+    display: flex;
+    justify-content: center;
+    overflow-y: hidden;
+    flex-direction: column;
+}
+
+.prop-menu div {
+    display: block;
+    text-align: center;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.prop-menu .next-proposition {
+    border: 2px solid black;
+    border-radius: 4px;
+    background: white;
+    font-size: 32px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.prop-menu .next-proposition:hover {
+    background: #ddd;
+}
+
+.prop-menu .other-btns {
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.prop-menu .other-btns button {
+    background: none;
+    color: gray;
+    border-bottom: 2px solid gray;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+}
+
+.prop-menu .center-section {
+    height: -webkit-fill-available;
+    overflow-y: scroll;
+}
+
+.prop-menu .center-section::-webkit-scrollbar {
+    display: none;
+}
+
+.prop-menu .center-section table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.prop-menu .center-section table tr {
+    font-size: 20px;
+}
+

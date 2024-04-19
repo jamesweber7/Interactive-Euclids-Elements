@@ -37,3 +37,101 @@ function setupToolFunctionalities() {
         })
     })
 }
+
+function createPropositionCompleteMenu(prop_number, options={}) {
+    const id = 'proposition-complete-menu';
+    while (document.getElementById(id))
+        document.getElementById(id).remove();
+    const viewport_container = viewportFlexContainer();
+
+    const menu = document.createElement('div');
+    menu.id = id;
+    menu.className = 'prop-menu';
+
+    const title = document.createElement('div');
+    title.innerText = `Proposition ${prop_number} Complete`;
+    title.style.marginTop = '20px';
+    menu.append(title);
+
+    const center_section = document.createElement('div');
+    center_section.className = 'center-section';
+
+    if (options.objective && Array.isArray(options.steps)) {
+        const objective = document.createElement('div');
+        objective.style.fontSize = "28px";
+        objective.style.marginTop = "12px";
+        objective.style.marginBottom = "20px";
+        objective.innerText = options.objective;
+        center_section.append(objective);
+
+        // steps
+        const steps_table = document.createElement('table');
+        steps_table.className = 'steps-table';
+
+        options.steps.forEach(step => {
+            const tr = document.createElement('tr');
+            tr.innerText = step;
+            steps_table.append(tr);
+        })
+
+        center_section.append(steps_table);
+    }
+
+    menu.append(center_section);
+
+    const bottom_section = document.createElement('div');
+    bottom_section.className = 'bottom-section'
+    bottom_section.style.marginTop = 'auto';
+    bottom_section.style.paddingBottom = '20px';
+
+    if (!options.no_next) {
+        const next_prop_button = document.createElement('button');
+        next_prop_button.className = 'next-proposition';
+        next_prop_button.innerText = `Proposition ${prop_number+1}`;
+        next_prop_button.onclick = () => {
+            setProposition(prop_number+1);
+            closePopup();
+        }
+        bottom_section.append(next_prop_button);
+    }
+
+    const other_btn_row = document.createElement('div');
+    other_btn_row.className = 'other-btns';
+
+    const reset_prop_button = document.createElement('button');
+    reset_prop_button.className = 'other-btn';
+    reset_prop_button.innerText = `Do Proposition ${prop_number} Again`;
+    reset_prop_button.onclick = () => {
+        resetProposition();
+        closePopup();
+    }
+    other_btn_row.append(reset_prop_button);
+
+    const freeform_mode_button = document.createElement('button');
+    freeform_mode_button.className = 'other-btn';
+    freeform_mode_button.innerText = `Use Freeform Mode`;
+    freeform_mode_button.onclick = () => {
+        freeformMode();
+        closePopup();
+    }
+    other_btn_row.append(freeform_mode_button);
+
+    bottom_section.append(other_btn_row);
+
+    menu.append(bottom_section);
+
+    viewport_container.append(menu);
+
+    function closePopup() {
+        viewport_container.remove();
+    }
+}
+
+// create container taking up whole viewport, for centering other divs
+function viewportFlexContainer() {
+    const id = 'viewport-flex-container';
+    const viewport_container = document.createElement('div');
+    viewport_container.id = id;
+    document.body.prepend(viewport_container);
+    return viewport_container;
+}
