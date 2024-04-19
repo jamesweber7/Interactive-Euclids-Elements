@@ -663,6 +663,10 @@ function pointOverLineExtension(pt, line) {
 
 
 function addLineExtensionIntersectionPoints(line) {
+    updateLineIntersectionPoints(line);
+}
+
+function updateLineIntersectionPoints(line) {
     deleteChildIntersectionPoints(line);
     addLineIntersectionPoints(line);
 }
@@ -1123,7 +1127,10 @@ function eraseProximityShape(pt) {
 function eraseShape(shape, pt) {
     // if over line extension, just delete that
     if (shape.type === SHAPE_TYPES.LINE) {
-        eraseLineSegment(shape, pt);
+        const erase = eraseLineSegment(shape, pt);
+        // just extension deleted; update intersection points
+        if (!erase.segment)
+            updateLineIntersectionPoints(shape);
     } else {
         deleteShape(shape);
     }
@@ -1134,11 +1141,12 @@ function eraseLineSegment(line, pt) {
     // over extension
     if (pointForwardsOnLine(closest_pt, line)) {
         line.extends_forward = false;
-        return;
+        return {forward: true};
     }
     if (pointBackwardsOnLine(closest_pt, line)) {
         line.extends_backward = false;
-        return;
+        return {backward: true};
     }
     deleteShape(line);
+    return  {segment: true};
 }
