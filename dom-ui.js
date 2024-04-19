@@ -112,7 +112,7 @@ function createPropositionCompleteMenu(prop_number, options={}) {
     freeform_mode_button.className = 'other-btn';
     freeform_mode_button.innerText = `Use Freeform Mode`;
     freeform_mode_button.onclick = () => {
-        freeformMode();
+        setFreeformMode();
         closePopup();
     }
     other_btn_row.append(freeform_mode_button);

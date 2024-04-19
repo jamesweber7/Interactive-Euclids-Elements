@@ -49,7 +49,7 @@ function clearPropositionShapes() {
     clearCanvas();
 }
 
-function noProposition() {
+function setNoProposition() {
     setPropositionInfo({});
 }
 

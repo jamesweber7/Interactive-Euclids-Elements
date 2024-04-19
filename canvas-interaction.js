@@ -60,6 +60,8 @@ function mousePressed(e) {
         down: true,
         event: MOUSE_EVENTS.PRESSED,
     });
+    if (!mouse_data.valid)
+        return;
     if (spaceIsPressed())
         return; // dragging canvas - don't do anything
     switch (getMouseMode()) {
@@ -237,6 +239,7 @@ function updateMouseData(options={}) {
         event: overwriteDefault(options.event, null),
         button: overwriteDefault(options.button, mouseButton),
         cursor: overwriteDefault(options.cursor, ARROW),
+        valid: closest_pt.proximity || !proximityInteractionsOnly(),
     };
 }
 
@@ -1153,4 +1156,18 @@ function eraseLineSegment(line, pt) {
     }
     deleteShape(line);
     return  {segment: true};
+}
+
+function proximityInteractionsOnly() {
+    if (isFreeformMode())
+        return false;
+    switch (getMouseMode()) {
+        case MOUSE_MODES.SELECT:
+        case MOUSE_MODES.ERASER:
+        case MOUSE_MODES.POINT:
+            return false;
+        case MOUSE_MODES.RULER:
+        case MOUSE_MODES.COMPASS:
+            return true;
+    }
 }

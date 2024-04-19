@@ -966,16 +966,20 @@ function translateTransform() {
 }
 
 // as opposed to using proposition
-function freeformMode() {
-    noProposition();
+function setFreeformMode() {
+    setNoProposition();
 }
 
-function propositionMode() {
-    return !noProposition();
+function isPropositionMode() {
+    return proposition_info && proposition_info.valid;
+}
+
+function isFreeformMode() {
+    return !isPropositionMode();
 }
 
 function mode() {
-    if (noProposition())
-        return MODES.FREEFORM;
-    return MODES.PROPOSITION;
+    if (isPropositionMode())
+        return MODES.PROPOSITION;
+    return MODES.FREEFORM;
 }
