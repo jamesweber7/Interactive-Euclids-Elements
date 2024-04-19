@@ -362,7 +362,7 @@ function addShape(shape) {
     if (shapes.length)
         shape.id = shapes[shapes.length-1].id+1;
     shapes.push(shape);
-    checkPropositionPass();
+    propositionOnChange();
     return shape;
 }
 

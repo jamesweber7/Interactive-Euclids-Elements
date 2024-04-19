@@ -13,10 +13,17 @@ function checkPropositionPass() {
 }
 
 function propositionPassInfo() {
-    switch (proposition_info.number) {
-        case 1:
-            return prop1PassInfo();
-    }
+    if (!proposition_info || !proposition_info.pass_func)
+        return;
+    return proposition_info.pass_func();
+}
+
+function propositionOnChange() {
+    if (!proposition_info)
+        return;
+    if (proposition_info.on_change)
+        proposition_info.on_change();
+    checkPropositionPass();
 }
 
 function setProposition(prop_number) {
@@ -29,6 +36,7 @@ function setPropositionInfo(prop_info) {
     if (!proposition_info || !proposition_info.valid)
         return;
     prop_info.given_shapes.forEach(shape => {
+        shape.not_erasable = true;
         addShape(shape);
     });
 }
@@ -52,17 +60,6 @@ function getPropositionInfo(prop_number=proposition_info.number) {
     }
     return {valid: false};
 }
-
-// function loadPropositions() {
-//     fetch("propositions.json")
-//         .then(response => response.json())
-//         .then(propsLoaded);
-// }
-
-// function propsLoaded(props) {
-//     props_loaded = true;
-//     propositions = props;
-// }
 
 function getProp1Info() {
     return {
@@ -89,6 +86,7 @@ function getProp1Info() {
             "Draw a line from A to the intersection between the circles",
             "Draw a line from B to the intersection between the circles",
         ],
+        pass_func: prop1PassInfo,
     }
 }
 

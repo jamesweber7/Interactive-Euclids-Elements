@@ -1127,6 +1127,8 @@ function eraseProximityShape(pt) {
 }
 
 function eraseShape(shape, pt) {
+    if (shape.not_erasable)
+        return;
     // if over line extension, just delete that
     if (shape.type === SHAPE_TYPES.LINE) {
         const erase = eraseLineSegment(shape, pt);
