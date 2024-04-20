@@ -764,6 +764,15 @@ function deleteChildIntersectionPoints(parent) {
     return matches;
 }
 
+function getChildIntersectionPoints(parent) {
+    const pts = [];
+    intersection_points.forEach(pt => {
+        if (pt.parent_shapes && pt.parent_shapes.includes(parent))
+            pts.push(pt);
+    })
+    return pts;
+}
+
 function allPoints() {
     const all_points = [];
     all_points.push(...getShapePoints());
@@ -896,7 +905,33 @@ function clearCanvas() {
     intersection_points.splice(0);
 }
 
-// returns array each possible set of shapes, as array, where each shape in set is unique and corresponds with type in shape_types
+// returns array of each possible set of shapes, as an array, where each shape in a set is unique and corresponds with one respective type in shape_types, reduces lines to segments
+function getPropositionShapeSets(shape_types) {
+    if (!Array.isArray(shape_types))
+        return getPropositionShapeSets([...arguments]);
+    const all_shape_sets = getShapeSets(shape_types);
+    // reduce lines to segments
+    const proposition_shape_sets = [];
+    all_shape_sets.forEach(general_shape_set => {
+        const line_sets = [];
+        const other_shapes = [];
+        general_shape_set.forEach(shape => {
+            if (shape.type === SHAPE_TYPES.LINE) {
+                line_sets.push(splitIntoSegments(shape));
+            } else {
+                other_shapes.push(shape);
+            }
+        })
+
+        const line_combinations = getCombinations(line_sets);
+        line_combinations.forEach(line_comb => {
+            proposition_shape_sets.push([...line_comb].concat(...other_shapes));
+        });
+    })
+    return proposition_shape_sets;
+}
+
+// returns array of each possible set of shapes, as an array, where each shape in a set is unique and corresponds with one respective type in shape_types
 function getShapeSets(shape_types) {
     if (!Array.isArray(shape_types))
         return getShapeSets([...arguments]);
@@ -951,6 +986,31 @@ function getShapeCombinations(shape_types, current_shapes) {
     return shape_combs;
 }
 
+// given array of arrays, returns each possible combination where combination[0] = element from first array, combination[1] = element from second array, ...
+function getCombinations(sets) {
+    if (!sets.length)
+        return [];
+    const current = sets[0];
+    if (!current.length)
+        return [];
+    const remaining = sets.slice(1);
+    const remaining_combinations = getCombinations(remaining);
+    if (!remaining_combinations.length)
+        return current.map(el => [el]);
+
+    const arr = Array(current.length*remaining_combinations.length);
+    for (let i = 0; i < current.length; i++) {
+        for (let j = 0; j < remaining_combinations.length; j++) {
+            arr[i+j*remaining_combinations.length] = [current[i]].concat(remaining_combinations[j]);
+        }
+    }
+    // clear empty slots. you can fix this method so it doesn't get empty slots in the first place if you want
+    for (let i = 0; i < arr.length; i++)
+        while (i < arr.length && !arr[i])
+            arr.splice(i, 1);
+    return arr;
+}
+
 function equalSets(set1, set2) {
     if (set1.size != set2.size)
         return false;
@@ -982,4 +1042,30 @@ function mode() {
     if (isPropositionMode())
         return MODES.PROPOSITION;
     return MODES.FREEFORM;
+}
+
+function splitIntoSegments(line) {
+    const intersection_points = getChildIntersectionPoints(line);
+    const points = [line.p1, line.p2].concat(intersection_points);
+    // prune equal endpoints
+    for (let i = 0; i < points.length-1; i++) {
+        for (let j = i+1; j < points.length; j++) {
+            while (j < points.length && pointsWithinEpsilon(points[i], points[j])) {
+                points.splice(j, 1);
+            }
+        }
+    }
+    const segments = [];
+    for (let i = 0; i < points.length-1; i++) {
+        for (let j = i+1; j < points.length; j++) {
+            segments.push({
+                type: SHAPE_TYPES.LINE,
+                segmented: true,
+                p1: points[i],
+                p2: points[j],
+                parent_line: line
+            });
+        }
+    }
+    return segments;
 }
