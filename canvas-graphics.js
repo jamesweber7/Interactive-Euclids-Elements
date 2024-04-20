@@ -245,14 +245,7 @@ function drawLine(line_, options={}) {
     strokeWeight(options.stroke_weight);
     line(line_.p1.x, line_.p1.y, line_.p2.x, line_.p2.y);
     if (line_.p1.label || line_.p2.label) {
-        noStroke();
-        fill(options.stroke);
-        textSize(options.label_text_size);
-        textAlign(CENTER);
-        if (line_.p1.label)
-            text(line_.p1.label, line_.p1.x, line_.p1.y+options.label_text_size);
-        if (line_.p2.label)
-            text(line_.p2.label, line_.p2.x, line_.p2.y+options.label_text_size);
+        labelLine(line_, options);
     }
     if (line_.extends_forward) {
         drawLineExtension(line_.p1, line_.p2, options);
@@ -1084,4 +1077,24 @@ function splitIntoSegments(line) {
         }
     }
     return segments;
+}
+
+function labelLine(line, options) {
+    noStroke();
+    fill(options.stroke);
+    textSize(options.label_text_size);
+    textAlign(CENTER, CENTER);
+    if (line.p1.label)
+        labelLinePoint(line.p1, line.p1.label, line, options);
+    if (line.p2.label)
+        labelLinePoint(line.p2, line.p2.label, line, options);
+}
+
+function labelLinePoint(pt, label, line, options) {
+    const r = options.label_text_size;
+    const diff_vec = getLineDiffVec(line);
+    let orthog = diff_vec.heading()+PI/2;
+    if (positiveTheta(orthog) > PI)
+        orthog -= PI;
+    text(label, pt.x+r*cos(orthog), pt.y+r*sin(orthog));
 }
