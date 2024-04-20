@@ -44,29 +44,49 @@ tool img {
 
 #proposition {
     padding-left: 10px;
+    max-width: 475px;
+}
+
+#proposition div, 
+#proposition ol,
+#proposition li {
+    pointer-events: none;
+    user-select: none;
+}
+
+#proposition button {
+    pointer-events: auto;
 }
 
 #proposition-header-row {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: left;
 }
 
 #proposition-title {
     font-size: 28px;
-    display: inline-block;
+    display: flex;
+    align-items: center;
+}
+
+#proposition-objective {
+    font-size: 20px;
+    margin-top: 5px;
 }
 
 #proposition-interaction-buttons {
     display: inline-block;
+    margin-left: 15px;
 }
 
 #proposition-interaction-buttons button {
-    display: inline-block;
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
     background: none;
+    margin: 0 5px;
 }
 
 #proposition-interaction-buttons button:hover {
@@ -74,8 +94,19 @@ tool img {
 }
 
 #proposition-interaction-buttons button img {
-    width: 30px;
+    width: 80%;
+    display: flex;
+    margin: auto;
 }
+
+#proposition-steps {
+    padding-left: 25px;
+}
+
+#proposition-steps li {
+    font-size: 17px;
+}
+
 
 #viewport-flex-container {
     position: fixed;
