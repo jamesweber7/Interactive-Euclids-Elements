@@ -419,8 +419,6 @@ function rulerMouseMoved() {
 
 function addLine(p1, p2) {
     const line = lineShape(p1, p2);
-    line.p1.label = 'A'
-    line.p2.label = 'B'
     addShape(line);
 }
 
