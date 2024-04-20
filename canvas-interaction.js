@@ -419,6 +419,8 @@ function rulerMouseMoved() {
 
 function addLine(p1, p2) {
     const line = lineShape(p1, p2);
+    line.p1.label = 'A'
+    line.p2.label = 'B'
     addShape(line);
 }
 
@@ -815,11 +817,11 @@ function arcShape(origin, r, start_theta, stop_theta) {
     }
 }
 
-function positiveTheta(theta) {
+function getPositiveTheta(theta) {
     if (theta > 0)
         return theta;
-    const n = ceil(-theta / PI);
-    return theta + n*PI;
+    const n = ceil(-theta / TWO_PI);
+    return theta + n*TWO_PI;
 }
 
 function positiveHeading(vec) {

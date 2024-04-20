@@ -1094,7 +1094,7 @@ function labelLinePoint(pt, label, line, options) {
     const r = options.label_text_size;
     const diff_vec = getLineDiffVec(line);
     let orthog = diff_vec.heading()+PI/2;
-    if (positiveTheta(orthog) > PI)
+    if (getPositiveTheta(orthog) > PI)
         orthog -= PI;
     text(label, pt.x+r*cos(orthog), pt.y+r*sin(orthog));
 }
