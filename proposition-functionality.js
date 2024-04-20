@@ -220,6 +220,10 @@ function deleteAllShapesExceptPassing(except) {
     intersection_points.splice(0);
 }
 
-function validProposition(prop_info) {
+function isValidProposition(prop_info) {
     return prop_info && prop_info.valid;
+}
+
+function isFinalProposition(prop_number) {
+    return !isValidProposition(getPropositionInfo(prop_number+1));
 }

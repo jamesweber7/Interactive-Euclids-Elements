@@ -85,7 +85,7 @@ function createPropositionCompleteMenu(prop_number, options={}) {
     bottom_section.style.marginTop = 'auto';
     bottom_section.style.paddingBottom = '20px';
 
-    if (!options.no_next) {
+    if (!isFinalProposition(prop_number)) {
         const next_prop_button = document.createElement('button');
         next_prop_button.className = 'next-proposition';
         next_prop_button.innerText = `Proposition ${prop_number+1}`;
@@ -154,7 +154,7 @@ function updateDomPropositionInfo(prop_info) {
     prop_objective.innerText = '';
     [...prop_steps.getElementsByTagName('li')].forEach(li => li.remove());
 
-    if (!validProposition(prop_info))
+    if (!isValidProposition(prop_info))
         return;
 
     prop_title.innerText = `Proposition ${prop_info.number}`;
