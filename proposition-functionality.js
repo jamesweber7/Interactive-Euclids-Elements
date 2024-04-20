@@ -33,6 +33,7 @@ function setProposition(prop_number) {
 function setPropositionInfo(prop_info) {
     proposition_info = prop_info;
     clearPropositionShapes();
+    updateDomPropositionInfo(prop_info);
     if (!proposition_info || !proposition_info.valid)
         return;
     prop_info.given_shapes.forEach(shape => {
@@ -217,4 +218,8 @@ function deleteAllShapesExceptPassing(except) {
         while (i < shapes.length && !except.includes(shapes[i]))
             deleteShape(shapes[i]);
     intersection_points.splice(0);
+}
+
+function validProposition(prop_info) {
+    return prop_info && prop_info.valid;
 }

@@ -144,3 +144,24 @@ function fadeInEl(el, t=1) {
         el.style.opacity = 1;
     }, 0);
 }
+
+function updateDomPropositionInfo(prop_info) {
+    const prop_title = document.getElementById('proposition-title');
+    const prop_objective = document.getElementById('proposition-objective');
+    const prop_steps = document.getElementById('proposition-steps');
+    // reset proposition info
+    prop_title.innerText = '';
+    prop_objective.innerText = '';
+    [...prop_steps.getElementsByTagName('li')].forEach(li => li.remove());
+
+    if (!validProposition(prop_info))
+        return;
+
+    prop_title.innerText = `Proposition ${prop_info.number}`;
+    prop_objective.innerText = prop_info.objective;
+    prop_info.steps.forEach(step => {
+        const li = document.createElement('li');
+        li.innerText = step;
+        prop_steps.append(li);
+    })
+}
