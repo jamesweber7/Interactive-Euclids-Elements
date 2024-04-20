@@ -415,7 +415,6 @@ function rulerMouseMoved() {
 
 function addLine(p1, p2) {
     const line = lineShape(p1, p2);
-    addLineIntersectionPoints(line);
     addShape(line);
 }
 
@@ -568,7 +567,7 @@ function addLineIntersectionPoints(line_) {
 // I know this will only be one or zero, I'm just setting it up this way for consistency with intersection schemas involving arcs
 function addLineLineIntersectionPoints(line1, line2) {
     const pts = findLineLineIntersectionPoints(line1, line2);
-    addIntersectionPoints(pts, [line1, line2]);
+    setIntersectionPoints(pts, [line1, line2]);
 }
 
 function findLineLineIntersectionPoints(line1, line2) {
@@ -799,7 +798,6 @@ function compassMouseMoved() {
 }
 
 function addArc(arc_) {
-    addArcIntersectionPoints(arc_);
     addShape(arc_);
 }
 
@@ -913,7 +911,7 @@ function addArcIntersectionPoints(arc_) {
 
 function addArcLineIntersectionPoints(arc, line) {
     const pts = findArcLineIntersectionPoints(arc, line);
-    addIntersectionPoints(pts, [arc, line]);
+    setIntersectionPoints(pts, [arc, line]);
 }
 
 function findArcLineIntersectionPoints(arc, line) {
@@ -982,7 +980,7 @@ function findCircleInfLineIntersectionPoints(origin, r, p1, p2) {
 
 function addArcArcIntersectionPoints(arc1, arc2) {
     const pts = findArcArcIntersectionPoints(arc1, arc2);
-    addIntersectionPoints(pts, [arc1, arc2]);
+    setIntersectionPoints(pts, [arc1, arc2]);
 }
 
 function findArcArcIntersectionPoints(arc1, arc2) {

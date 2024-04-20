@@ -366,6 +366,7 @@ function addShape(shape) {
     shape.id = 1; // I want to start this above 0 so I can !!id for checking validity
     if (shapes.length)
         shape.id = shapes[shapes.length-1].id+1;
+    addIntersectionPoints(shape);
     shapes.push(shape);
     propositionOnChange();
     return shape;
@@ -696,7 +697,7 @@ function addSnapPoint(pt) {
     snap_points.push(pt);
 }
 
-function addIntersectionPoints(pts, parents) {
+function setIntersectionPoints(pts, parents) {
     if (arguments.length > 2)
         throw 'bad';
     if (!Array.isArray(pts))
@@ -731,6 +732,15 @@ function addIntersectionPoints(pts, parents) {
         }
     }
     intersection_points.push(...pts);
+}
+
+function addIntersectionPoints(shape) {
+    switch (shape.type) {
+        case SHAPE_TYPES.LINE:
+            return addLineIntersectionPoints(shape);
+        case SHAPE_TYPES.ARC:
+            return addArcIntersectionPoints(shape);
+    }
 }
 
 function deleteChildIntersectionPoints(parent) {
