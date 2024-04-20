@@ -72,7 +72,7 @@ function setup() {
     setSizing();
     HOVER_COLOR = color(50, 100, 255);
     HIGHLIGHT_COLOR = color(255, 0, 0);
-    setProposition(1);
+    setProposition(2);
 }
 
 function draw() {
@@ -222,11 +222,17 @@ function drawLineExtension(p1, p2, options={}) {
 function drawPoint(pt, options={}) {
     configureDefaults(options, {
         fill: 0,
-        r: unit*8
+        r: unit*8,
+        label_text_size: 20,
     });
     fill(options.fill);
     noStroke();
     circle(pt.x, pt.y, options.r);
+    if (pt.label) {
+        textSize(options.label_text_size);
+        textAlign(CENTER);
+        text(pt.label, pt.x+options.label_text_size*0.6, pt.y+options.label_text_size*0.8);
+    }
 }
 
 function drawLine(line_, options={}) {

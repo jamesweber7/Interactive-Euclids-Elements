@@ -332,11 +332,15 @@ function addPoint(x, y) {
     addShape(pointShape(x, y))
 }
 
-function pointShape(x, y) {
+function pointShape(x, y, options={}) {
+    options = configureDefaults(options, {
+        label: undefined,
+    })
     return {
         type: SHAPE_TYPES.POINT,
         x: x,
-        y: y
+        y: y,
+        label: options.label
     }
 }
 
