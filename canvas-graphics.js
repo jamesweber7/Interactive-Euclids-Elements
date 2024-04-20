@@ -689,8 +689,8 @@ function untransformY(y) {
     return y;
 }
 
-function isBetweenBitonic(num, a, b) {
-    return min(a,b) <= num && num <= max(a,b);
+function isBetweenBitonic(num, a, b, cushion=0) {
+    return min(a,b)-cushion <= num && num <= max(a,b)+cushion;
 }
 
 function addSnapPoint(pt) {

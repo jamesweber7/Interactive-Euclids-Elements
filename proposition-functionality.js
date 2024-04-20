@@ -96,7 +96,6 @@ function prop1PassInfo() {
     // find sets of three lines
     const line_sets = getPropositionShapeSets([SHAPE_TYPES.LINE, SHAPE_TYPES.LINE, SHAPE_TYPES.LINE])
 
-    console.log(line_sets);
     // check endpoints to all be equal - forming triangles
     const triangle_sets = [];
     line_sets.forEach(line_set => {

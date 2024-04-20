@@ -627,10 +627,10 @@ function onInfLine(pt, line) {
 }
 
 // ASSUMES POINT IS SOMEWHERE ON LINE
-function linePointInBounds(pt, line) {
+function linePointInBounds(pt, line, epsilon=2**-10) {
     if (line.extends_forward && line.extends_backward)
         return true;
-    if (isBetweenBitonic(pt.x, line.p1.x, line.p2.x) && isBetweenBitonic(pt.y, line.p1.y, line.p2.y))
+    if (isBetweenBitonic(pt.x, line.p1.x, line.p2.x, epsilon) && isBetweenBitonic(pt.y, line.p1.y, line.p2.y, epsilon))
         return true;
     if (line.extends_forward)
         if (pointForwardsOnLine(pt, line))
