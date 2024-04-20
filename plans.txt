@@ -38,3 +38,5 @@ Highlighted shape isn't always the one closest to the mouse for some reason
 Make it so mouse proximity doesn't change with scale, so you can zoom in to get more precise/next to a proximity point
 
 Add option so you can't add points and can only connect lines+compasses to existing points
+
+I hit an infinite loop while adding a line somehow. I'm not sure why it came up, I think it has to do with intersection points but I haven't been able to replicate the conditions

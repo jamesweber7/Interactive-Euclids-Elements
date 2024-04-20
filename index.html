@@ -1,46 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.2/lib/p5.js"></script>
-    <script src="canvas-graphics.js"></script>
-    <script src="canvas-interaction.js"></script>
-    <script src="proposition-functionality.js"></script>
-    <script src="dom-ui.js"></script>
-    <link rel="stylesheet" href="style.css"/>
-</head>
-<body>
-    <extracontrols>
-        <tools>
-            <tool id="select-tool" title="Select Mode [s]">
-                <button>
-                    <img src="icons/select.svg"/>
-                </button>
-            </tool>
-            <tool id="ruler-tool"  title="Ruler Mode [r]">
-                <button>
-                    <img src="icons/ruler.svg"/>
-                </button>
-            </tool>
-            <tool id="compass-tool"  title="Compass Mode [c]">
-                <button>
-                    <img src="icons/compass.svg"/>
-                </button>
-            </tool>
-            <tool id="point-tool"  title="Add Point Mode [p]">
-                <button>
-                    <img src="icons/point.svg"/>
-                </button>
-            </tool>
-            <tool id="eraser-tool"  title="Eraser Mode [e]">
-                <button>
-                    <img src="icons/eraser.svg"/>
-                </button>
-            </tool>
-        </tools>
-    </extracontrols>
-    
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <script src="https://cdn.jsdelivr.net/npm/p5@1.9.2/lib/p5.js"></script>
+        <script src="canvas-graphics.js"></script>
+        <script src="canvas-interaction.js"></script>
+        <script src="proposition-functionality.js"></script>
+        <script src="dom-ui.js"></script>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <div id="left-gui">
+            <extracontrols>
+                <tools>
+                    <tool id="select-tool" title="Select Mode [s]">
+                        <button>
+                            <img src="icons/select.svg" />
+                        </button>
+                    </tool>
+                    <tool id="ruler-tool" title="Ruler Mode [r]">
+                        <button>
+                            <img src="icons/ruler.svg" />
+                        </button>
+                    </tool>
+                    <tool id="compass-tool" title="Compass Mode [c]">
+                        <button>
+                            <img src="icons/compass.svg" />
+                        </button>
+                    </tool>
+                    <tool id="point-tool" title="Add Point Mode [p]">
+                        <button>
+                            <img src="icons/point.svg" />
+                        </button>
+                    </tool>
+                    <tool id="eraser-tool" title="Eraser Mode [e]">
+                        <button>
+                            <img src="icons/eraser.svg" />
+                        </button>
+                    </tool>
+                </tools>
+            </extracontrols>
+            <div id="proposition">
+                <div id="proposition-header-row">
+                    <div id="proposition-title">
+                        Proposition 1
+                    </div>
+                    <div id="proposition-interaction-buttons">
+                        <button id="show-steps-btn">
+                            <img src="icons/show-hints.svg" />
+                        </button>
+                        <button id="guided-mode-btn">
+                            <img src="icons/guide.svg" />
+                        </button>
+                    </div>
+                </div>
+                <ol id="proposition-steps">
+                    <li>Step 1</li>
+                    <li>Step 2</li>
+                    <li>Step 3</li>
+                </ol>
+            </div>
+        </div>
+    </body>
 </html>

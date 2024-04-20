@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="100" height="50" xmlns="http://www.w3.org/2000/svg">
+<svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
     <!-- Back Cover lines -->
-    <polyline points="35,4 70,2 70,47" fill="none" stroke="black" stroke-width="2"/>
+    <polyline points="10,4 45,2 45,47" fill="none" stroke="black" stroke-width="2" />
     <!-- Front Cover -->
-    <polygon points="35,4 63,3 65,49 37,48" fill="none" stroke="black" stroke-width="2"
-    />
+    <polygon points="10,4 38,3 40,49 12,48" fill="none" stroke="black" stroke-width="2" />
     <!-- Pages -->
-    <line x1="70" y1="46" x2="65" y2="48" stroke="black" stroke-width="1"/>
-    <polyline points="63,6 66,5.5 66.8,47" fill="none" stroke="black" stroke-width="1"/>
-    <polyline points="63,6 68,5.5 68.2,47" fill="none" stroke="black" stroke-width="1"/>
-    <line x1="68" y1="6.4" x2="70" y2="5" stroke="black" stroke-width="1"/>
+    <line x1="45" y1="46" x2="40" y2="48" stroke="black" stroke-width="1" />
+    <polyline points="38,6 41,5.5 41.8,47" fill="none" stroke="black" stroke-width="1" />
+    <polyline points="38,6 43,5.5 43.2,47" fill="none" stroke="black" stroke-width="1" />
+    <line x1="43" y1="6.4" x2="45" y2="5" stroke="black" stroke-width="1" />
     <!-- Book Cover Illustration -->
-    <circle cx="50" cy="25" r="6" fill="none" stroke="black" stroke-width="1"/>
-    <line x1="42" y1="32" x2="58" y2="27" stroke="black" stroke-width="1"/>
+    <circle cx="25" cy="25" r="6" fill="none" stroke="black" stroke-width="1" />
+    <line x1="17" y1="32" x2="33" y2="27" stroke="black" stroke-width="1" />
+
 </svg>
