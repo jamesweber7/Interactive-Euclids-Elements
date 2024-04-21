@@ -38,7 +38,7 @@ function getProp1Info() {
             "Draw a line from A to the intersection between the circles",
             "Draw a line from B to the intersection between the circles",
         ],
-        explanation: "Let the intersection between the circles be point C. \nBecause the circle at origin A has radius AB and passes through C, AC = AB. \nBecause the circle at origin B has radius AB and passes through C, BC = AB. \nAC = AB = BC, so the triangle is equilateral.",
+        explanation: "Let the intersection between the circles be point C. \nThe circle at origin A has radius AB and passes through C, so \nAC = AB. \nThe circle at origin B has radius AB and passes through C, so \nBC = AB. \nAC = AB = BC \n The sides of triangle ABC are equal, so it is equilateral.",
         pass_func: prop1PassInfo,
     })
 }
@@ -211,7 +211,7 @@ function getProp2Info() {
             "Draw a circle with origin B and radius BC. Let E be the intersection between this circle and the line extended from DB",
             "Draw a circle with origin D and radius DE",
         ],
-        explanation: "Let the intersection between the extension of line DA and the circle with origin D and radius DE be F. Then ",
+        explanation: "Let F be the intersection between the extension of line DA and the circle with origin D and radius DE. \nDF and DE are both radii of the same circle, so \nDF = DE. \nBE and BC are both radii of the circle with origin B and radius BC, so \nBE = BC. \nDA and DB are both sides of an equilateral triangle, so \nDA = DB. \nDF = DE \nDF = DB + BE \nDF = DA + BC \nAF = DF - DA \n AF = DA + BC - DA \n AF = BC",
         pass_func: prop2PassInfo,
         on_change: prop2OnChange,
     })
