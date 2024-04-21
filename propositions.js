@@ -113,7 +113,8 @@ function getProp2Info() {
                     y: height*0.2,
                     label: 'C',
                 }
-            )
+            ),
+            pointShape(517.7895254431209, 350.9565254431208, {label: 'D'})
         ],
         objective: "Place as an extremity at a given point A a line equal to the given line BC.",
         steps: [
@@ -144,7 +145,20 @@ function prop2OnChange(event) {
             }
         }
     }
+
     // E label: intersection point between DB extension and circle with origin B and radius BC
+    const bc = getLineByLabels('B', 'C', proposition_info.given_shapes);
+    const r = getLineDiffVec(bc).mag();
+
+    const circle = getCircleByOriginLabelAndRadius('B', r, proposition_info.given_shapes);
+
+    const db = getLineByLabels('D', 'B', proposition_info.given_shapes);
+    // console.log(bc, r, circle, db); // circle and db both undefined
+    if (db) {
+        const e = getChildIntersectionPoints(db, circle);
+        if (e.intersection)
+            e.label = 'E';
+    }
 }
 
 function prop2PassInfo() {

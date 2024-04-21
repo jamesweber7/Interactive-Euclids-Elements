@@ -814,11 +814,16 @@ function deleteChildIntersectionPoints(parent) {
     return matches;
 }
 
-function getChildIntersectionPoints(parent) {
+function getChildIntersectionPoints(parents) {
+    if (!Array.isArray(parents))
+        return getChildIntersectionPoints([...arguments]);
     const pts = [];
     intersection_points.forEach(pt => {
-        if (pt.parent_shapes && pt.parent_shapes.includes(parent))
-            pts.push(pt);
+        for (const parent of parents) {
+            if (!pt.parent_shapes || !pt.parent_shapes.includes(parent))
+                return;
+        }
+        pts.push(pt);
     })
     return pts;
 }
@@ -1155,4 +1160,22 @@ function getLineByLabels(pt1_label, pt2_label, shapes_=shapes) {
                 }
         }
     }
+}
+
+function getCirclesByOriginLabel(label, shapes_=shapes) {
+    const circles = [];
+    for (const circle of getShapesOfType(SHAPE_TYPES.ARC, shapes_)) {
+        if (circle.origin.label === label)
+            circles.push(circle);
+    }
+    return circles;
+}
+
+function getCircleByOriginLabelAndRadius(label, r, shapes_=shapes) {
+    const circles_origin = getCirclesByOriginLabel(label, shapes_);
+    circles_origin.forEach(circle => {
+        if (withinEpsilon(circle.r, r)) {
+            return circle;
+        }
+    })
 }
