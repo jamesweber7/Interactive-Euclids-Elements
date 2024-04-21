@@ -239,11 +239,12 @@ function drawPoint(pt, options={}) {
         fill: 0,
         r: unit*8,
         label_text_size: 20,
+        no_label: false,
     });
     fill(options.fill);
     noStroke();
     circle(pt.x, pt.y, options.r);
-    if (pt.label) {
+    if (pt.label && !options.no_label) {
         textSize(options.label_text_size);
         textAlign(CENTER);
         text(pt.label, pt.x+options.label_text_size*0.6, pt.y+options.label_text_size*0.8);
@@ -255,11 +256,12 @@ function drawLine(line_, options={}) {
         stroke: 0,
         stroke_weight: 2,
         label_text_size: 20,
+        no_label: false,
     });
     stroke(options.stroke);
     strokeWeight(options.stroke_weight);
     line(line_.p1.x, line_.p1.y, line_.p2.x, line_.p2.y);
-    if (line_.p1.label || line_.p2.label) {
+    if ((line_.p1.label || line_.p2.label) && !options.no_label) {
         labelLine(line_, options);
     }
     if (line_.extends_forward) {
@@ -275,7 +277,8 @@ function drawArc(arc_, options={}) {
         'stroke': 0,
         'stroke_weight': 2,
         'pt_r': unit*4,
-        'pt_fill': 0
+        'pt_fill': 0,
+        'no_label': false,
     });
     noFill();
     stroke(options.stroke);
@@ -283,7 +286,7 @@ function drawArc(arc_, options={}) {
     // draw circumference
     arc(arc_.origin.x, arc_.origin.y, arc_.r*2, arc_.r*2, arc_.start_theta, arc_.stop_theta);
     // draw point at origin
-    drawPoint(arc_.origin, {r: options.pt_r, fill: options.pt_fill});
+    drawPoint(arc_.origin, {r: options.pt_r, fill: options.pt_fill, no_label: options.no_label});
 }
 
 function drawVisualMouseInteractions() {
@@ -311,16 +314,18 @@ function highlightPoint(pt) {
     const options = {
         fill: HIGHLIGHT_COLOR,
         r: unit*24,
+        no_label: true, // don't redraw label for highlight
     };
     drawPoint(pt, options)
     // redraw point normally over highlight
-    drawPoint(pt);
+    drawPoint(pt, {no_label: true});
 }
 
 function highlightLine(line) {
     const options = {
         stroke: HIGHLIGHT_COLOR,
-        stroke_weight: unit*8
+        stroke_weight: unit*8,
+        no_label: true,
     };
 
     // possibly just highlight extension
@@ -353,7 +358,8 @@ function highlightArc(arc) {
         stroke: HIGHLIGHT_COLOR,
         stroke_weight: unit*8,
         pt_fill: HIGHLIGHT_COLOR,
-        pt_r: unit*16
+        pt_r: unit*16,
+        no_label: false,
     };
     drawArc(arc, options);
     // redraw arc normally over highlight
