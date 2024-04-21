@@ -270,24 +270,13 @@ function prop2PassInfo() {
     const bc = getLineByLabels('B', 'C', proposition_info.given_shapes);
 
     const dist_sq = getLineDiffVec(bc).magSq();
-    console.log(dist_sq);
 
     const lines = getShapesOfType(SHAPE_TYPES.LINE);
-    console.log(lines);
     for (const line of lines) {
-        console.log(line);
         if (onLine(a, line)) {
-            console.log('a on line');
-            const segments = splitIntoSegments(line); // TODO - fix this. Seems like the problem with prop 2 not being solved is coming from splitintosegments, but idk. passProp2Info WAS working well not long ago, so not sure what happened. You can even check previous commits if needed
-            console.log(segments);
+            const segments = splitIntoSegments(line);
             for (const seg of segments) {
-                console.log(seg);
-                console.log(getLineDiffVec(seg).magSq());
-                console.log(dist_sq);
-                console.log(Math.abs(getLineDiffVec(seg).magSq() - dist_sq))
-                console.log(withinEpsilon(dist_sq, getLineDiffVec(seg).magSq()))
                 if (withinEpsilon(dist_sq, getLineDiffVec(seg).magSq())) {
-                    console.log('hooray!');
                     return {
                         pass: true,
                         passing_shapes: [

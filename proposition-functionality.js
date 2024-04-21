@@ -5,7 +5,6 @@ function checkPropositionPass() {
     if (proposition_info.passed)    // already passed
         return;
     const pass_info = propositionPassInfo();
-    console.log(pass_info);
     if (!pass_info || !pass_info.pass)
         return;
     // proposition passed
@@ -66,7 +65,6 @@ function getPropositionInfo(prop_number=proposition_info.number) {
 }
 
 function displayPropositionCompleteAnimation(pass_info) {
-    console.log("PASSED");
     const options = {
         when: DRAW_STAGES.END,
     }
