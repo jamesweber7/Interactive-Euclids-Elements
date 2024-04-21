@@ -222,9 +222,10 @@ function transformedMousePt() {
 
 function updateMouseData(options={}) {
     p_mouse_data = mouse_data;
+    const unsnapped_pt = transformedMousePt();
     const pt = {
-        x: overwriteDefault(options.x, transformedMousePt().x),
-        y: overwriteDefault(options.y, transformedMousePt().y)
+        x: overwriteDefault(options.x, unsnapped_pt.x),
+        y: overwriteDefault(options.y, unsnapped_pt.y)
     };
 
     // snap to point
@@ -235,6 +236,7 @@ function updateMouseData(options={}) {
     }
     mouse_data = {
         pt: pt,
+        unsnapped_pt: unsnapped_pt,
         down: overwriteDefault(options.down, mouseIsPressed),
         event: overwriteDefault(options.event, null),
         button: overwriteDefault(options.button, mouseButton),

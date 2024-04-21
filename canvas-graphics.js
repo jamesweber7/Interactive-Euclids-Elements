@@ -128,7 +128,7 @@ function drawShape(shape) {
 }
 
 function highlightProximityShape() {
-    const proximity_shape = proximityShape(mouse_data.pt);
+    const proximity_shape = proximityShape(mouse_data.unsnapped_pt);
     if (!proximity_shape.proximity)
         return;
     highlightShape(proximity_shape.shape);
