@@ -1164,18 +1164,25 @@ function getLineByLabels(pt1_label, pt2_label, shapes_=shapes) {
 
 function getCirclesByOriginLabel(label, shapes_=shapes) {
     const circles = [];
-    for (const circle of getShapesOfType(SHAPE_TYPES.ARC, shapes_)) {
-        if (circle.origin.label === label)
-            circles.push(circle);
-    }
+    for (const circle of getShapesOfType(SHAPE_TYPES.ARC, shapes_))
+        for (const pt of getPointsAt(circle.origin))
+            if (pt.label === label)
+                circles.push(circle);        
     return circles;
 }
 
 function getCircleByOriginLabelAndRadius(label, r, shapes_=shapes) {
-    const circles_origin = getCirclesByOriginLabel(label, shapes_);
-    circles_origin.forEach(circle => {
-        if (withinEpsilon(circle.r, r)) {
+    const circles_at_origin = getCirclesByOriginLabel(label, shapes_);
+    for (const circle of circles_at_origin)
+        if (withinEpsilon(circle.r, r))
             return circle;
-        }
+}
+
+function getPointsAt(pt, epsilon=2**-10) {
+    const pts = [];
+    allPoints().forEach(pt2 => {
+        if (pointsWithinEpsilon(pt, pt2, epsilon))
+            pts.push(pt2);
     })
+    return pts;
 }

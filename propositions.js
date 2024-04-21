@@ -150,10 +150,10 @@ function prop2OnChange(event) {
     const bc = getLineByLabels('B', 'C', proposition_info.given_shapes);
     const r = getLineDiffVec(bc).mag();
 
-    const circle = getCircleByOriginLabelAndRadius('B', r, proposition_info.given_shapes);
+    const circle = getCircleByOriginLabelAndRadius('B', r);
 
-    const db = getLineByLabels('D', 'B', proposition_info.given_shapes);
-    // console.log(bc, r, circle, db); // circle and db both undefined
+    const db = getLineByLabels('D', 'B');
+    console.log(bc, r, circle, db); // circle and db both undefined
     if (db) {
         const e = getChildIntersectionPoints(db, circle);
         if (e.intersection)
