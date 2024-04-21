@@ -967,7 +967,7 @@ function getModeCursorIcon() {
 
 function clearCanvas() {
     while (shapes.length)
-        deleteShape(shapes[0]);
+        deleteShape(shapes[0], {no_event_trigger: true});
     // intersection points should already be empty, but check anyways
     intersection_points.splice(0);
 }

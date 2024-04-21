@@ -43,7 +43,11 @@ function setPropositionInfo(prop_info) {
 }
 
 function resetProposition() {
-    setProposition(proposition_info.number);
+    if (!proposition_info || !proposition_info.number) {
+        setNoProposition();
+    } else {
+        setProposition(proposition_info.number);
+    }
 }
 
 function clearPropositionShapes() {

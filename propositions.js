@@ -268,6 +268,8 @@ function prop2OnChange(event) {
 function prop2PassInfo() {
     const a = getShapeByLabel('A', proposition_info.given_shapes);
     const bc = getLineByLabels('B', 'C', proposition_info.given_shapes);
+    if (!a || !bc)
+        return;
 
     const dist_sq = getLineDiffVec(bc).magSq();
 
