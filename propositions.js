@@ -101,7 +101,7 @@ function getProp2Info() {
         valid: true,
         "number": 2,
         given_shapes: [
-            pointShape(width*0.5, height*0.6, {label: 'A'}),
+            pointShape(width*0.55-width*0.05, height*0.5+width*0.05, {label: 'A'}), // same offsets from B point for right angle
             lineShape(
                 {
                     x: width*0.55,
