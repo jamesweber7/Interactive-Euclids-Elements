@@ -242,7 +242,6 @@ function prop2OnChange(event) {
             for (let i = 0; !d_added && i < ab_triangles.length; i++) {
                 const triangle = ab_triangles[i];
                 const triangle_points = getTrianglePoints(triangle);
-                console.log(triangle_points);
                 let d_i = 0;
                 for (let i = 0; d_i === i && i < triangle_points.length; i++) {
                     if (pointsWithinEpsilon(triangle_points[i], a) ||
@@ -319,18 +318,25 @@ function prop2PassInfo() {
             for (const seg of segments) {
                 if (withinEpsilon(dist_sq, getLineDiffVec(seg).magSq())) {
                     // pass: line on a
+
                     // add F label
-                    if (withinEpsilon(seg.p1, a)) {
-                        seg.p2.label = 'F';
-                    } else {
-                        seg.p1.label = 'F';
-                    }
+                    const f_pt = pointsWithinEpsilon(seg.p1, a) ? seg.p2 : seg.p1;
+                    const f = pointShape(f_pt.x, f_pt.y, {
+                        not_erasable: true,
+                        label: 'F'
+                    });
+                    addShape(f, {
+                        no_event_trigger: true,
+                    });
+
+                    // return pass
                     return {
                         pass: true,
                         passing_shapes: [
                             bc,
                             a,
-                            seg
+                            seg,
+                            f
                         ]
                     };
                 }

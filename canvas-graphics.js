@@ -224,6 +224,9 @@ function extendLine(line, forward, options={}) {
 
 // draws line extending forward from p1 past p2
 function drawLineExtension(p1, p2, options={}) {
+    options = configureDefaults(options, {
+        no_label: true,
+    })
     const forward_point = extendedForwardPoint(p1, p2);
     const draw_line = {
         p1: p2,
@@ -244,7 +247,7 @@ function drawPoint(pt, options={}) {
     fill(options.fill);
     noStroke();
     circle(pt.x, pt.y, options.r);
-    if (pt.label && !options.no_label) {
+    if (pt.label && !options.no_label && !pt.no_label_from_point) {
         textSize(options.label_text_size);
         textAlign(CENTER);
         text(pt.label, pt.x+options.label_text_size*0.6, pt.y+options.label_text_size*0.8);
@@ -1151,6 +1154,8 @@ function labelLine(line, options) {
 }
 
 function labelLinePoint(pt, label, line, options) {
+    if (pt.no_label || pt.no_label_from_line)
+        return;
     const r = options.label_text_size;
     const diff_vec = getLineDiffVec(line);
     let orthog = diff_vec.heading()+PI/2;
