@@ -1132,16 +1132,12 @@ function eraseProximityShape(pt) {
 }
 
 function eraseShape(shape, pt) {
-    
     // if over line extension, just delete that
     if (shape.type === SHAPE_TYPES.LINE) {
         const erase = eraseLineSegment(shape, pt);
         // just extension deleted; update intersection points
-        if (!erase.segment) {
-            if (shape.not_erasable)
-                return;
+        if (!erase.segment || erase.failed)
             updateLineIntersectionPoints(shape);
-        }
     } else {
         if (shape.not_erasable)
             return;
@@ -1160,8 +1156,9 @@ function eraseLineSegment(line, pt) {
         line.extends_backward = false;
         return {backward: true};
     }
-    deleteShape(line);
-    return  {segment: true};
+    if (!line.not_erasable)
+        deleteShape(line);
+    return  {segment: true, failed: line.not_erasable};
 }
 
 function proximityInteractionsOnly() {

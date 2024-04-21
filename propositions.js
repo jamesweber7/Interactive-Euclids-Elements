@@ -30,13 +30,34 @@ function getProp1Info() {
 
 function prop1PassInfo() {
     // should be equilateral triangle on line AB
+    const equilateral_triangle_sets = getEquilateralTriangles();
 
+    if (equilateral_triangle_sets.length) {
+        return {
+            pass: true,
+            passing_shapes: equilateral_triangle_sets[0]
+        };
+    }
+}
+
+function getTriangles() {
     // find sets of three lines
     const line_sets = getPropositionShapeSets([SHAPE_TYPES.LINE, SHAPE_TYPES.LINE, SHAPE_TYPES.LINE])
+
+    let unupdated = false;
 
     // check endpoints to all be equal - forming triangles
     const triangle_sets = [];
     line_sets.forEach(line_set => {
+        // check if lines already know they are triangles
+        if (line_set[0].triangles) {
+            if (line_set[0].triangles.includes(line_set[1]) &&
+                line_set[0].triangles.includes(line_set[2])) {
+                    triangle_sets.push(line_set);
+                    return;
+            }
+        }
+
         // lines must all share three endpoints
         for (let i = 0; i < line_set.length; i++) {
             const line1 = line_set[i];
@@ -76,7 +97,17 @@ function prop1PassInfo() {
             return;
 
         triangle_sets.push(line_set);
+        // not all triangle sets have up to date info
+        unupdated = true;
     })
+    
+    if (unupdated) // update triangle sets for future reference
+        updateTriangles(triangle_sets);
+    return triangle_sets;
+}
+
+function getEquilateralTriangles() {
+    const triangle_sets = getTriangles();
 
     // check lengths
     const equilateral_triangle_sets = [];
@@ -88,12 +119,67 @@ function prop1PassInfo() {
         equilateral_triangle_sets.push(triangle_set);
     })
 
-    if (equilateral_triangle_sets.length) {
+    // update equilateral triangle sets for future reference
+    updateEquilateralTriangles(equilateral_triangle_sets);
+
+    return equilateral_triangle_sets;
+}
+
+function updateTriangles(triangles=getTriangles(), triangles_tag='triangles') {
+    triangles.forEach(triangle => {
+        console.log(triangle);
+        console.log(triangle[0]);
+        console.log(triangle[0][triangles_tag]);
+        console.log(Array.isArray(triangle[0][triangles_tag]))
+        if (Array.isArray(triangle[0][triangles_tag])) {
+            for (let i = 0; i < triangle[0][triangles_tag].length; i++) {
+                const triangle2 = triangle[0][triangles_tag][i];
+                if (triangle2.includes(triangle[0]) &&
+                    triangle2.includes(triangle[1]) && 
+                    triangle2.includes(triangle[2])) {
+                    // info already saved
+                    return;
+                }
+            }
+            // not already in triangles
+            triangle.forEach(line => {
+                line[triangles_tag].push(triangle);
+            })
+        } else {
+            // triangle does not have triangles element yet
+            triangle.forEach(line => {
+                line[triangles_tag] = [triangle];
+            })
+        }
+        console.log(triangle);
+        console.log(triangle[0]);
+        console.log(triangle[0][triangles_tag]);
+    })
+    console.log(triangles);
+}
+
+// add equilateral triangle info to all lines that are part of an equilateral triangle
+function updateEquilateralTriangles(equilateral_triangles=getEquilateralTriangles()) {
+    updateTriangles(equilateral_triangles, 'equilateral_triangles');
+}
+
+// get information about equilateral triangle on line
+function getEquilateralTriangleInfo(line, updated=false) {
+    console.log(line);
+    // line has equilateral triangle information
+    if (line.equilateral_triangles && line.equilateral_triangles.length) {
         return {
-            pass: true,
-            passing_shapes: equilateral_triangle_sets[0]
-        };
+            is_equilateral_triangle: true,
+            equilateral_triangles: line.equilateral_triangles
+        }
     }
+    if (updated) {
+        return {is_equilateral_triangle: false};
+    }
+    // line doesn't have equilateral triangle information
+    // update equilateral triangle info for all lines
+    getEquilateralTriangles(); // getting currently updates triangles, idk this definitely isn't the best set up but I'm tired and slow brain rn
+    return getEquilateralTriangleInfo(line, true);
 }
 
 function getProp2Info() {
@@ -113,8 +199,7 @@ function getProp2Info() {
                     y: height*0.2,
                     label: 'C',
                 }
-            ),
-            pointShape(517.7895254431209, 350.9565254431208, {label: 'D'})
+            )
         ],
         objective: "Place as an extremity at a given point A a line equal to the given line BC.",
         steps: [
@@ -125,6 +210,7 @@ function getProp2Info() {
             "Draw a circle with origin B and radius BC. Let E be the intersection between this circle and the line extended from DB",
             "Draw a circle with origin D and radius DE",
         ],
+        explanation: "",
         pass_func: prop2PassInfo,
         on_change: prop2OnChange,
     }
@@ -134,39 +220,67 @@ function prop2OnChange(event) {
     const shape = event.shape;
 
     // check for certain shapes to add labels to
+
     // D label: equilateral triangle point
-    if (shape.equilateral_triangle) {
-        if (shape === triangle_points.c) {
-            const a = getShapeByLabel('A', proposition_info.given_shapes);
-            const b = getShapeByLabel('B', proposition_info.given_shapes);
-            if ((pointsWithinEpsilon(triangle_points.a, a) && pointsWithinEpsilon(triangle_points.b, b)) ||
-                (pointsWithinEpsilon(triangle_points.a, b) && pointsWithinEpsilon(triangle_points.a, a))) {
-                shape.label = 'D';
+
+    console.log(event);
+    console.log(shape);
+    // shape has to be line for equilateral triangle to be created
+    if (shape.type === SHAPE_TYPES.LINE && !getShapeByLabel('D')) {
+        console.log('hi');
+        const equilateral_triangle_info = getEquilateralTriangleInfo(shape);
+        console.log(equilateral_triangle_info);
+        if (equilateral_triangle_info.is_equilateral_triangle) {
+            const a = getPointByLabel('A');
+            const b = getPointByLabel('B');
+            console.log(a, b);
+            // TODO not currently checking if A and C are in equilateral triangle
+            if (a && b) {
+                let d;
+                // there is an equilateral triangle consisting of A and B
+                if (!pointsWithinEpsilon(shape.p1, a) && !pointsWithinEpsilon(shape.p1, b)) {
+                    d = shape.p1;
+                } else {
+                    d = shape.p2;
+                }
+
+                // check that d goes in correct direction
+                // angle between DBC should be acute
+                const db_theta = getDiffVec(d, b).heading();
+                const bc_theta = getDiffVec(b, c).heading();
+                const dbc = db_theta - bc_theta;
+                console.log(dbc < PI);
+                if (dbc < PI) {
+                    // correct point
+                    d.label = 'D';
+                }
             }
         }
     }
 
     // E label: intersection point between DB extension and circle with origin B and radius BC
-    const bc = getLineByLabels('B', 'C', proposition_info.given_shapes);
-    const r = getLineDiffVec(bc).mag();
-    const circle = getCircleByOriginLabelAndRadius('B', r);
+    if (!getPointByLabel('E')) {
+        const bc = getLineByLabels('B', 'C', proposition_info.given_shapes);
+        const r = getLineDiffVec(bc).mag();
+        const circle = getCircleByOriginLabelAndRadius('B', r);
 
-    const db = getLineByLabels('D', 'B');
-    if (db) {
-        const db_circ_intersections = getChildIntersectionPoints(db, circle);
-        const db_directional = {
-            p1: getPointByLabel('D'),
-            p2: getPointByLabel('B'),
-        };
-        db_circ_intersections.forEach(pt => {
-            if (pointForwardsOnLine(pt, db_directional)) {
-                // forwards on line - at correct intersection
-                // pt = E
-                pt.label = 'E';
-            }
-        })
-        if (db_circ_intersections.intersection)
-            db_circ_intersections.label = 'E';
+        const db = getLineByLabels('D', 'B');
+        if (db) {
+            const db_circ_intersections = getChildIntersectionPoints(db, circle);
+            const db_directional = {
+                p1: getPointByLabel('D'),
+                p2: getPointByLabel('B'),
+            };
+            db_circ_intersections.forEach(pt => {
+                if (pointForwardsOnLine(pt, db_directional)) {
+                    // forwards on line - at correct intersection
+                    // pt = E
+                    pt.label = 'E';
+                }
+            })
+            if (db_circ_intersections.intersection)
+                db_circ_intersections.label = 'E';
+        }
     }
 }
 

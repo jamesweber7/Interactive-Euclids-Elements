@@ -1151,6 +1151,15 @@ function getShapeByLabel(label, shapes_=shapes) {
             return shape;
 }
 
+function getAnyByLabel(label) {
+    const shape = getShapeByLabel(label);
+    if (shape)
+        return shape;
+    const point = getPointByLabel(label);
+    if (point)
+        return point;
+}
+
 function getLineByLabels(pt1_label, pt2_label, shapes_=shapes) {
     for (const line of getShapesOfType(SHAPE_TYPES.LINE, shapes_)) {
         const pts1 = getPointsAt(line.p1);
