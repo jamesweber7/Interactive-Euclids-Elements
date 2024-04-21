@@ -194,7 +194,7 @@ function getMouseMode() {
 }
 
 function mouseModeOff(mouseMode) {
-    setCurrentShape();
+    setCurrentShapes();
     switch (mouseMode) {
         case MOUSE_MODES.SELECT:
             return selectModeOff();
@@ -377,12 +377,12 @@ function rulerMousePressed() {
         } else {
             addLine(_line_p1, p);
         }
-        setCurrentShape();
+        setCurrentShapes();
         _line_p1 = null;
         resetExtendLineBtnInfo();
     } else {
         _line_p1 = p;
-        setCurrentShape({
+        setCurrentShapes({
             type: SHAPE_TYPES.LINE,
             p1: _line_p1,
             p2: _line_p1
@@ -413,7 +413,7 @@ function rulerMouseDragged() {
 
 function rulerMouseMoved() {
     if (rulerP1Selected()) {
-        setCurrentShape({
+        setCurrentShapes({
             type: SHAPE_TYPES.LINE,
             p1: _line_p1,
             p2: mouse_data.pt
@@ -754,11 +754,11 @@ function compassMousePressed() {
         const theta = diff_vec.heading();
         const arc = arcShape(_compass_params.origin, r, theta, theta);
         finishCompassRotation(arc);
-        setCurrentShape()
+        setCurrentShapes()
         _compass_params = {};
     } else {
         _compass_params.origin = mouse_data.pt;
-        setCurrentShape({
+        setCurrentShapes({
             type: SHAPE_TYPES.ARC,
             origin: _compass_params.origin,
             pencil_pt: _compass_params.origin
@@ -777,7 +777,7 @@ function compassMouseDragged() {
 function compassMouseMoved() {
     if (_compass_params.origin) {
         const p = mouse_data.pt;
-        setCurrentShape({
+        setCurrentShapes({
             type: SHAPE_TYPES.ARC,
             origin: _compass_params.origin,
             pencil_pt: p
@@ -834,12 +834,12 @@ function compassKeyPressed(e) {
     
 }
 
-function finishCompassRotation(arc_=getCurrentShape()) {
+function finishCompassRotation(arc_=getCurrentShapes()) {
     if (!arc_ || arc_.type !== SHAPE_TYPES.ARC)
         return;
     _compass_params = {};
     addArc(arc_);
-    setCurrentShape();
+    setCurrentShapes();
     const epsilon = 2**-10;
     const delta = PI*0.1;
     const rotating_forward = true;

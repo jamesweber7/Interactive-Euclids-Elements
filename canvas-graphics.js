@@ -46,7 +46,7 @@ var draw_shapes_events = [];
 var draw_start_events = [];
 var draw_end_events = [];
 
-let current_shape = null;
+let current_shapes = [];
 
 const SHAPE_TYPES = {
     POINT: 'POINT',
@@ -78,7 +78,7 @@ function setup() {
     setSizing();
     HOVER_COLOR = color(50, 100, 255);
     HIGHLIGHT_COLOR = color(255, 0, 0);
-    setProposition(2);
+    setProposition(1);
 }
 
 function draw() {
@@ -107,7 +107,7 @@ function drawShapes() {
         drawPoint(pt);
     });
 
-    drawCurrentShape();
+    drawCurrentShapes();
 
     drawVisualMouseInteractions();
 
@@ -423,25 +423,33 @@ function eventTriggered(event) {
     propositionOnChange(event);
 }
 
-function setCurrentShape(shape=null) {
-    current_shape = shape;
+function addCurrentShape(shape) {
+    current_shapes.push(shape);
 }
 
-function getCurrentShape() {
-    return current_shape;
+function setCurrentShapes(shapes=[]) {
+    if (!Array.isArray(shapes))
+        return setCurrentShapes([...arguments]);
+    current_shapes = shapes;
 }
 
-function drawCurrentShape() {
-    if (!getCurrentShape())
+function getCurrentShapes() {
+    return current_shapes;
+}
+
+function drawCurrentShapes() {
+    const shapes = getCurrentShapes();
+    if (!shapes || !shapes.length)
         return;
-    const shape = getCurrentShape()
-    switch (shape.type) {
-        // not really anything to do for point here atm
-        case SHAPE_TYPES.LINE:
-            return drawCurrentLine(shape);
-        case SHAPE_TYPES.ARC:
-            return drawCurrentArc(shape);
-    }
+    shapes.forEach(shape => {
+        switch (shape.type) {
+            // not really anything to do for point here atm
+            case SHAPE_TYPES.LINE:
+                return drawCurrentLine(shape);
+            case SHAPE_TYPES.ARC:
+                return drawCurrentArc(shape);
+        }
+    });
 }
 
 function drawCurrentLine(line_) {
