@@ -12,6 +12,19 @@ body {
     padding: 10px;
 }
 
+/* Mouse Events pass buttons */
+#left-gui,
+#left-gui div, 
+#left-gui ol,
+#left-gui li {
+    pointer-events: none;
+    user-select: none;
+}
+
+#left-gui button {
+    pointer-events: auto;
+}
+
 button {
     cursor: pointer;
 }
@@ -45,17 +58,6 @@ tool img {
 #proposition {
     padding-left: 10px;
     max-width: 475px;
-}
-
-#proposition div, 
-#proposition ol,
-#proposition li {
-    pointer-events: none;
-    user-select: none;
-}
-
-#proposition button {
-    pointer-events: auto;
 }
 
 #proposition-header-row {
