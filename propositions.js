@@ -280,6 +280,7 @@ function prop2PassInfo() {
                     return {
                         pass: true,
                         passing_shapes: [
+                            bc,
                             a,
                             seg
                         ]
