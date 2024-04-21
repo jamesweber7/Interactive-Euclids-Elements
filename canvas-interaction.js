@@ -533,7 +533,8 @@ function _extendLineBtnPos(line, forward) {
 }
 
 function resetExtendLineBtnInfo() {
-    _extend_btns_info.forEach(resetExtendLineBtn);
+    while (_extend_btns_info.length)
+        resetExtendLineBtn(_extend_btns_info[0])
 }
 
 function resetExtendLineBtn(btn) {
