@@ -155,7 +155,7 @@ function fadeInEl(el, t=1) {
     }, 0);
 }
 
-function updateDomPropositionInfo(prop_info) {
+function updateDomPropositionInfo(prop_info, options={}) {
     const prop_title = document.getElementById('proposition-title');
     const prop_objective = document.getElementById('proposition-objective');
     const prop_steps = document.getElementById('proposition-steps');
@@ -175,10 +175,13 @@ function updateDomPropositionInfo(prop_info) {
         li.innerText = step;
         prop_steps.append(li);
     })
+    if (options.show_explanation)
+        showDomPropositionExplanation(prop_info.explanation);
 }
 
 function showDomPropositionExplanation(explanation) {
-    console.log("EXPLANATION", explanation)
+    const prop_explanation = document.getElementById('proposition-explanation');
+    prop_explanation.innerText = explanation;
 }
 
 function hideDomPropositionExplanation() {

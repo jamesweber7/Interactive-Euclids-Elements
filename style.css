@@ -109,6 +109,10 @@ tool img {
     font-size: 17px;
 }
 
+#proposition-explanation {
+    font-size: 19px;
+}
+
 
 #viewport-flex-container {
     position: fixed;
