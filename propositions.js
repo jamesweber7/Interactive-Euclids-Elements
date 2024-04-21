@@ -105,22 +105,24 @@ function getProp2Info() {
             lineShape(
                 {
                     x: width*0.55,
-                    y: height*0.2,
+                    y: height*0.5,
                     label: 'B',
                 },
                 {
-                    x: width*0.55,
-                    y: height*0.5,
+                    x: width*0.55+2**-10, // epsilon so labels will be on right
+                    y: height*0.2,
                     label: 'C',
                 }
             )
         ],
-        objective: "Construct an equilateral triangle on the given line AB.",
+        objective: "Place as an extremity at a given point A a line equal to the given line BC.",
         steps: [
-            "Draw a circle with origin A and radius AB",
-            "Draw a circle with origin B and radius BA",
-            "Draw a line from A to the intersection between the circles",
-            "Draw a line from B to the intersection between the circles",
+            "Draw line AB",
+            "On AB construct an equilateral triangle ABD [Proposition 1]",
+            "Extend line DB",
+            "Extend line DA",
+            "Draw a circle with origin B and radius BC. Let E be the intersection between this circle and the line extended from DB",
+            "Draw a circle with origin D and radius DE",
         ],
         pass_func: prop2PassInfo,
     }
