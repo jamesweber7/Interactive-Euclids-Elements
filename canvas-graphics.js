@@ -1153,11 +1153,25 @@ function getShapeByLabel(label, shapes_=shapes) {
 
 function getLineByLabels(pt1_label, pt2_label, shapes_=shapes) {
     for (const line of getShapesOfType(SHAPE_TYPES.LINE, shapes_)) {
-        if (line.p1.label && line.p2.label) {
-            if ((line.p1.label === pt1_label && line.p2.label === pt2_label) || 
-                (line.p2.label === pt1_label && line.p1.label === pt2_label)) {
+        const pts1 = getPointsAt(line.p1);
+        const pts2 = getPointsAt(line.p2);
+        const labels1 = [];
+        const labels2 = [];
+        pts1.forEach(pt => {
+            if (pt.label)
+                labels1.push(pt.label);
+        })
+        pts2.forEach(pt => {
+            if (pt.label)
+                labels2.push(pt.label);
+        })
+        for (const label1 of labels1) {
+            for (const label2 of labels2) {
+                if ((label1 === pt1_label && label2 === pt2_label) || 
+                    (label2 === pt1_label && label1 === pt2_label)) {
                     return line;
                 }
+            }
         }
     }
 }
@@ -1185,4 +1199,10 @@ function getPointsAt(pt, epsilon=2**-10) {
             pts.push(pt2);
     })
     return pts;
+}
+
+function getPointByLabel(label) {
+    for (const pt of allPoints())
+        if (pt.label === label)
+            return pt;
 }

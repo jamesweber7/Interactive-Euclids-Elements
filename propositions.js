@@ -149,15 +149,24 @@ function prop2OnChange(event) {
     // E label: intersection point between DB extension and circle with origin B and radius BC
     const bc = getLineByLabels('B', 'C', proposition_info.given_shapes);
     const r = getLineDiffVec(bc).mag();
-
     const circle = getCircleByOriginLabelAndRadius('B', r);
 
     const db = getLineByLabels('D', 'B');
-    console.log(bc, r, circle, db); // circle and db both undefined
     if (db) {
-        const e = getChildIntersectionPoints(db, circle);
-        if (e.intersection)
-            e.label = 'E';
+        const db_circ_intersections = getChildIntersectionPoints(db, circle);
+        const db_directional = {
+            p1: getPointByLabel('D'),
+            p2: getPointByLabel('B'),
+        };
+        db_circ_intersections.forEach(pt => {
+            if (pointForwardsOnLine(pt, db_directional)) {
+                // forwards on line - at correct intersection
+                // pt = E
+                pt.label = 'E';
+            }
+        })
+        if (db_circ_intersections.intersection)
+            db_circ_intersections.label = 'E';
     }
 }
 
