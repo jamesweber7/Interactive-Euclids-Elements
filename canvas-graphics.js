@@ -78,7 +78,7 @@ function setup() {
     setSizing();
     HOVER_COLOR = color(50, 100, 255);
     HIGHLIGHT_COLOR = color(255, 0, 0);
-    setProposition(1);
+    setProposition(2);
 }
 
 function draw() {

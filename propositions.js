@@ -10,6 +10,7 @@ function propInfo(info) {
         objective: "",
         steps: [],
         explanation: "",
+        passed: false,
     })
 }
 
@@ -37,7 +38,7 @@ function getProp1Info() {
             "Draw a line from A to the intersection between the circles",
             "Draw a line from B to the intersection between the circles",
         ],
-        explanation: "Because math",
+        explanation: "Let the intersection between the circles be point C. \nBecause the circle at origin A has radius AB and passes through C, AC = AB. \nBecause the circle at origin B has radius AB and passes through C, BC = AB. \nAC = AB = BC, so the triangle is equilateral.",
         pass_func: prop1PassInfo,
     })
 }
@@ -47,12 +48,36 @@ function prop1PassInfo() {
     // should be equilateral triangle on line AB
     const equilateral_triangle_sets = getEquilateralTrianglesOnLine(ab);
 
-    if (equilateral_triangle_sets.length) {
-        return {
-            pass: true,
-            passing_shapes: equilateral_triangle_sets[0]
-        };
+    if (!equilateral_triangle_sets.length) {
+        return {pass: false};
     }
+
+    // passed
+    const equilateral_triangle = equilateral_triangle_sets[0];
+
+    const p1 = ab.p1;
+    const p2 = ab.p2;
+    // label C
+    let c_found = false;
+    for (let i = 0; !c_found && i < equilateral_triangle.length; i++) {
+        const line = equilateral_triangle[i];
+        [line.p1, line.p2].forEach(pt => {
+            if (c_found)
+                return;
+            if (withinEpsilon(pt, p1))
+                return;
+            if (withinEpsilon(pt, p2))
+                return;
+            // not A or B - must be C
+            c_found = true;
+            pt.label = 'C';
+        })
+    }
+
+    return {
+        pass: true,
+        passing_shapes: equilateral_triangle
+    };
 }
 
 function getTriangles() {
@@ -148,7 +173,7 @@ function getTrianglePoints(triangle) {
         for (const pt of [line.p1, line.p2]) {
             let found = false;
             for (const pt2 of points) {
-                if (withinEpsilon(pt, pt2))
+                if (pointsWithinEpsilon(pt, pt2))
                     found = true;
             }
             if (!found)
@@ -177,7 +202,7 @@ function getProp2Info() {
                 }
             )
         ],
-        objective: "Place as an extremity at a given point A a line equal to the given line BC.",
+        objective: "Place (as an extremity) at a given point A a line equal to the given line BC.",
         steps: [
             "Draw line AB",
             "On AB construct an equilateral triangle ABD [Proposition 1]",
@@ -186,7 +211,7 @@ function getProp2Info() {
             "Draw a circle with origin B and radius BC. Let E be the intersection between this circle and the line extended from DB",
             "Draw a circle with origin D and radius DE",
         ],
-        explanation: "Because math but harder",
+        explanation: "Let the intersection between the extension of line DA and the circle with origin D and radius DE be F. Then ",
         pass_func: prop2PassInfo,
         on_change: prop2OnChange,
     })
@@ -217,10 +242,11 @@ function prop2OnChange(event) {
             for (let i = 0; !d_added && i < ab_triangles.length; i++) {
                 const triangle = ab_triangles[i];
                 const triangle_points = getTrianglePoints(triangle);
+                console.log(triangle_points);
                 let d_i = 0;
                 for (let i = 0; d_i === i && i < triangle_points.length; i++) {
-                    if (withinEpsilon(triangle_points[i], a) ||
-                        withinEpsilon(triangle_points[i], b)) {
+                    if (pointsWithinEpsilon(triangle_points[i], a) ||
+                        pointsWithinEpsilon(triangle_points[i], b)) {
                         d_i ++;
                     }
                 }
@@ -292,6 +318,13 @@ function prop2PassInfo() {
             const segments = splitIntoSegments(line);
             for (const seg of segments) {
                 if (withinEpsilon(dist_sq, getLineDiffVec(seg).magSq())) {
+                    // pass: line on a
+                    // add F label
+                    if (withinEpsilon(seg.p1, a)) {
+                        seg.p2.label = 'F';
+                    } else {
+                        seg.p1.label = 'F';
+                    }
                     return {
                         pass: true,
                         passing_shapes: [
