@@ -657,9 +657,9 @@ function setSizing() {
     unit = width / 1500;
 }
 
-function getShapesOfType(type) {
+function getShapesOfType(type, shapes_=shapes) {
     const typed_shapes = [];
-    shapes.forEach(shape => {
+    shapes_.forEach(shape => {
         if (shape.type === type)
             typed_shapes.push(shape);
     })
@@ -1140,8 +1140,19 @@ function labelLinePoint(pt, label, line, options) {
     text(label, pt.x+r*cos(orthog), pt.y+r*sin(orthog));
 }
 
-function getShapeByLabel(label, possible=shapes) {
-    for (const shape of shapes)
+function getShapeByLabel(label, shapes_=shapes) {
+    for (const shape of shapes_)
         if (shape.label === label)
             return shape;
+}
+
+function getLineByLabels(pt1_label, pt2_label, shapes_=shapes) {
+    for (const line of getShapesOfType(SHAPE_TYPES.LINE, shapes_)) {
+        if (line.p1.label && line.p2.label) {
+            if ((line.p1.label === pt1_label && line.p2.label === pt2_label) || 
+                (line.p2.label === pt1_label && line.p1.label === pt2_label)) {
+                    return line;
+                }
+        }
+    }
 }

@@ -131,7 +131,7 @@ function getProp2Info() {
 
 function prop2OnChange(event) {
     const shape = event.shape;
-    
+
     // check for certain shapes to add labels to
     // D label: equilateral triangle point
     if (shape.equilateral_triangle) {
@@ -148,5 +148,30 @@ function prop2OnChange(event) {
 }
 
 function prop2PassInfo() {
+    const a = getShapeByLabel('A', proposition_info.given_shapes);
+    const bc = getLineByLabels('B', 'C', proposition_info.given_shapes);
 
+    const dist_sq = getLineDiffVec(bc).magSq();
+
+    const lines = getShapesOfType(SHAPE_TYPES.LINE);
+    for (const line of lines) {
+        if (onLine(a, line)) {
+            const segments = splitIntoSegments(line);
+            for (const seg of segments) {
+                if (withinEpsilon(dist_sq, getLineDiffVec(seg).magSq())) {
+                    return {
+                        pass: true,
+                        passing_shapes: [
+                            a,
+                            seg
+                        ]
+                    };
+                }
+            }
+        }
+    }
+
+    return {
+        pass: false,
+    };
 }
