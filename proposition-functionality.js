@@ -31,8 +31,14 @@ function setProposition(prop_number) {
 }
 
 function setPropositionInfo(prop_info) {
-    proposition_info = prop_info;
+    // Before updating proposition info
+    deletePropositionDrawEvents();
     clearPropositionShapes();
+
+    // Update proposition info
+    proposition_info = prop_info;
+    
+    // After updating proposition info
     updateDomPropositionInfo(prop_info);
     if (!proposition_info || !proposition_info.valid)
         return;
@@ -48,6 +54,31 @@ function resetProposition() {
     } else {
         setProposition(proposition_info.number);
     }
+}
+
+function addPropositionDrawEvent(event, options={}) {
+    if (!isValidProposition())
+        return -1;
+    const ev_id = addDrawEvent(event, options).id;
+    proposition_info.draw_events.push(ev_id);
+    return ev_id;
+}
+
+function deletePropositionDrawEvent(id) {
+    if (id === -1)
+        return;
+    const i = proposition_info.draw_events.indexOf(id);
+    if (i !== -1)
+        proposition_info.draw_events.splice(i);
+    deleteDrawEvent(id);
+}
+
+function deletePropositionDrawEvents() {
+    if (!proposition_info || !Array.isArray(proposition_info.draw_events))
+        return;
+    proposition_info.draw_events.forEach(ev_id => {
+        deletePropositionDrawEvent(ev_id);
+    })
 }
 
 function clearPropositionShapes() {
@@ -72,7 +103,7 @@ function displayPropositionCompleteAnimation(pass_info) {
     const options = {
         when: DRAW_STAGES.END,
     }
-    const ev_id = addDrawEvent(propositionCompleteAnimation, options).id;
+    const ev_id = addPropositionDrawEvent(propositionCompleteAnimation, options);
 
     const anim_time = 2000;
     const start_time = millis();
@@ -87,26 +118,51 @@ function displayPropositionCompleteAnimation(pass_info) {
         const linear_amt = min(time_elapsed / anim_time, 1);
         const ease_amt = easeInOut(linear_amt);
 
-        // hide background
-        background(255, ease_amt*255);
-        push();
-            translateTransform();
-            pass_info.passing_shapes.forEach(shape => {
-                drawShape(shape);
-            })
-        pop();
-
-        // lerp to reset transform
-        tr.x = lerp(original_tr.x, 0, ease_amt);
-        tr.y = lerp(original_tr.y, 0, ease_amt);
-        tr.sc = lerp(original_tr.sc, 1, ease_amt);
+        hideNonPassingShapesFromInfo(pass_info.passing_shapes, ease_amt, original_tr);
 
         if (time_elapsed > anim_time+linger_time) {
-            deleteAllShapesExceptPassing(pass_info.passing_shapes);
-            deleteDrawEvent(ev_id);
+            deletePropositionDrawEvent(ev_id);
+            hideNonPassingShapes(pass_info.passing_shapes);
             displayPropositionCompleteMenu();
         }
     }
+}
+
+function hideNonPassingShapesFromInfo(passing_shapes, amt=1, original_tr=null) {
+    // hide background
+    background(255, amt*255);
+    push();
+        translateTransform();
+        passing_shapes.forEach(shape => {
+            drawShape(shape);
+        })
+    pop();
+
+    if (original_tr) {
+        // lerp to reset transform
+        tr.x = lerp(original_tr.x, 0, amt);
+        tr.y = lerp(original_tr.y, 0, amt);
+        tr.sc = lerp(original_tr.sc, 1, amt);
+    }
+}
+
+// set it so non passing shapes are hidden
+function hideNonPassingShapes(passing_shapes) {
+    if (proposition_info.hide_shapes_event) // something went wrong, probably good idea to just delete all draw events to help reset things
+        deletePropositionDrawEvents();
+    const options = {
+        when: DRAW_STAGES.END,
+    }
+    const ev_id = addPropositionDrawEvent(_hideShapes, options);
+    proposition_info.hide_shapes_event = ev_id;
+
+    function _hideShapes() {
+        hideNonPassingShapesFromInfo(passing_shapes);
+    }
+}
+
+function showAllShapes() {
+    deletePropositionDrawEvent(proposition_info.hide_shapes_event)
 }
 
 function displayPropositionCompleteMenu() {
@@ -129,7 +185,7 @@ function deleteAllShapesExceptPassing(except) {
     intersection_points.splice(0);
 }
 
-function isValidProposition(prop_info) {
+function isValidProposition(prop_info=proposition_info) {
     return prop_info && prop_info.valid;
 }
 

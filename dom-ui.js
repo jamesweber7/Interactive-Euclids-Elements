@@ -108,6 +108,16 @@ function createPropositionCompleteMenu(prop_number, options={}) {
     }
     other_btn_row.append(reset_prop_button);
 
+    const see_explanation_button = document.createElement('button');
+    see_explanation_button.className = 'other-btn';
+    see_explanation_button.innerText = 'See Explanation';
+    see_explanation_button.onclick = () => {
+        showAllShapes();
+        showDomPropositionExplanation(options.explanation);
+        closePopup();
+    }
+    other_btn_row.append(see_explanation_button);
+
     const freeform_mode_button = document.createElement('button');
     freeform_mode_button.className = 'other-btn';
     freeform_mode_button.innerText = `Use Freeform Mode`;
@@ -153,6 +163,7 @@ function updateDomPropositionInfo(prop_info) {
     prop_title.innerText = '';
     prop_objective.innerText = '';
     [...prop_steps.getElementsByTagName('li')].forEach(li => li.remove());
+    hideDomPropositionExplanation();
 
     if (!isValidProposition(prop_info))
         return;
@@ -164,4 +175,12 @@ function updateDomPropositionInfo(prop_info) {
         li.innerText = step;
         prop_steps.append(li);
     })
+}
+
+function showDomPropositionExplanation(explanation) {
+    console.log("EXPLANATION", explanation)
+}
+
+function hideDomPropositionExplanation() {
+
 }

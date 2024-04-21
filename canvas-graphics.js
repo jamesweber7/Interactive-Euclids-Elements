@@ -622,6 +622,8 @@ function runDrawEvent(ev) {
 }
 
 function deleteDrawEvent(id) {
+    if (id === -1)
+        return;
     deleteDrawEventFromEvents(id, draw_start_events);
     deleteDrawEventFromEvents(id, draw_shapes_events);
     deleteDrawEventFromEvents(id, draw_end_events);

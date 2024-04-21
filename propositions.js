@@ -1,8 +1,21 @@
+// fill out prop info with default information
+function propInfo(info) {
+    return configureDefaults(info, {
+        number: -1,
+        valid: info.number !== -1,
+        given_shapes: [],
+        draw_events: [],
+        pass_func: () => {return {pass: false}},
+        on_change: () => {},
+        objective: "",
+        steps: [],
+        explanation: "",
+    })
+}
 
 function getProp1Info() {
-    return {
-        valid: true,
-        "number": 1,
+    return propInfo({
+        number: 1,
         given_shapes: [
             lineShape(
                 {
@@ -24,8 +37,9 @@ function getProp1Info() {
             "Draw a line from A to the intersection between the circles",
             "Draw a line from B to the intersection between the circles",
         ],
+        explanation: "Because math",
         pass_func: prop1PassInfo,
-    }
+    })
 }
 
 function prop1PassInfo() {
@@ -146,9 +160,8 @@ function getTrianglePoints(triangle) {
 }
 
 function getProp2Info() {
-    return {
-        valid: true,
-        "number": 2,
+    return propInfo({
+        number: 2,
         given_shapes: [
             pointShape(width*0.55-width*0.05, height*0.5+width*0.05, {label: 'A'}), // same offsets from B point for right angle
             lineShape(
@@ -173,10 +186,10 @@ function getProp2Info() {
             "Draw a circle with origin B and radius BC. Let E be the intersection between this circle and the line extended from DB",
             "Draw a circle with origin D and radius DE",
         ],
-        explanation: "",
+        explanation: "Because math but harder",
         pass_func: prop2PassInfo,
         on_change: prop2OnChange,
-    }
+    })
 }
 
 function prop2OnChange(event) {
