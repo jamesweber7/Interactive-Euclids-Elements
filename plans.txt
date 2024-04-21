@@ -20,7 +20,9 @@ TODO
 Add multiple extend buttons if endpoint connected to multiple lines
 Don't have extend option appear if line is already extended (I swear I used to check for this; must have accidentally removed the feature at some point)
 
-right clicking extend button deletes it
+✓right clicking extend button deletes it
+
+Sometimes extend button doesn't go away after escaping line
 
 Not 100% of intersection points are deleted when they should be, I can't figure out why right now. Maybe look at this again sometime with a fresh mindset
     - Pertains to line extensions
@@ -37,6 +39,10 @@ Highlighted shape isn't always the one closest to the mouse for some reason
 
 Make it so mouse proximity doesn't change with scale, so you can zoom in to get more precise/next to a proximity point
 
-Add option so you can't add points and can only connect lines+compasses to existing points
+✓Add option so you can't add points and can only connect lines+compasses to existing points
 
 I hit an infinite loop while adding a line somehow. I'm not sure why it came up, I think it has to do with intersection points but I haven't been able to replicate the conditions
+
+Sometimes can erase phantom extended segment even if line not extended
+
+✓Can't erase extended segments on unerasable line 
