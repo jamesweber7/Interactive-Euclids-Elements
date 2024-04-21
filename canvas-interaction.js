@@ -13,7 +13,7 @@ const MOUSE_EVENTS = {
     DRAGGED: 'DRAGGED'
 }
 
-let mouseMode = MOUSE_MODES.SELECT;
+let mouse_mode = MOUSE_MODES.SELECT;
 let mouse_data = {};
 let p_mouse_data = mouse_data;
 
@@ -186,16 +186,16 @@ function proximityPoint(pt, min_dist=INTERACTION_RADIUS, type_restriction=null) 
 
 function setMouseMode(mode) {
     mouseModeOff(getMouseMode());
-    mouseMode = mode;
+    mouse_mode = mode;
 }
 
 function getMouseMode() {
-    return mouseMode;
+    return mouse_mode;
 }
 
-function mouseModeOff(mouseMode) {
+function mouseModeOff(mode=mouse_mode) {
     setCurrentShapes();
-    switch (mouseMode) {
+    switch (mode) {
         case MOUSE_MODES.SELECT:
             return selectModeOff();
         case MOUSE_MODES.POINT:
@@ -207,6 +207,10 @@ function mouseModeOff(mouseMode) {
         case MOUSE_MODES.ERASER:
             return eraserModeOff();
     }
+}
+
+function resetMouseInteraction() {
+    setMouseMode(getMouseMode());
 }
 
 function mousePt() {

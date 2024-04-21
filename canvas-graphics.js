@@ -937,7 +937,7 @@ function getModeCursorIcon() {
     if (mouse_data.cursor != ARROW)
         return {valid: false}; // something happening with cursor
     const info = {};
-    switch (mouseMode) {
+    switch (mouse_mode) {
         case MOUSE_MODES.SELECT:
             info.valid = false; // no cursor icon for select
             break;

@@ -9,6 +9,7 @@ function checkPropositionPass() {
         return;
     // proposition passed
     proposition_info.passed = true;
+    resetMouseInteraction();
     displayPropositionCompleteAnimation(pass_info);
 }
 
@@ -123,6 +124,7 @@ function displayPropositionCompleteAnimation(pass_info) {
         if (time_elapsed > anim_time+linger_time) {
             deletePropositionDrawEvent(ev_id);
             hideNonPassingShapes(pass_info.passing_shapes);
+            resetMouseInteraction();
             displayPropositionCompleteMenu();
         }
     }
