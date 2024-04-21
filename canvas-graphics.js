@@ -331,7 +331,11 @@ function highlightLine(line) {
     // possibly just highlight extension
     const pt = mouse_data.pt;
     const closest_pt = getClosestPointOnLine(pt, line);
-    if (pointOverLineExtension(closest_pt, line)) {
+    if (linePointInBounds(closest_pt, line)) {
+        drawLine(line, options);
+        // redraw line normally over highlight
+        drawLine(line);
+    } else {
         let p1, p2;
         if (pointForwardsOnLine(closest_pt, line)) {
             p1 = line.p1;
@@ -343,13 +347,7 @@ function highlightLine(line) {
         drawLineExtension(p1, p2, options);
         // redraw line normally over highlight
         drawLineExtension(p1, p2);
-    } else {
-        drawLine(line, options);
-        // redraw line normally over highlight
-        drawLine(line);
-    }
-    
-    
+    }    
 }
 
 
