@@ -1162,27 +1162,34 @@ function getAnyByLabel(label) {
 
 function getLineByLabels(pt1_label, pt2_label, shapes_=shapes) {
     for (const line of getShapesOfType(SHAPE_TYPES.LINE, shapes_)) {
-        const pts1 = getPointsAt(line.p1);
-        const pts2 = getPointsAt(line.p2);
-        const labels1 = [];
-        const labels2 = [];
-        pts1.forEach(pt => {
-            if (pt.label)
-                labels1.push(pt.label);
-        })
-        pts2.forEach(pt => {
-            if (pt.label)
-                labels2.push(pt.label);
-        })
-        for (const label1 of labels1) {
-            for (const label2 of labels2) {
-                if ((label1 === pt1_label && label2 === pt2_label) || 
-                    (label2 === pt1_label && label1 === pt2_label)) {
-                    return line;
-                }
+        if (lineHasLabels(line, pt1_label, pt2_label)) {
+            return line;
+        }
+    }   
+}
+
+function lineHasLabels(line, pt1_label, pt2_label) {
+    const pts1 = getPointsAt(line.p1);
+    const pts2 = getPointsAt(line.p2);
+    const labels1 = [];
+    const labels2 = [];
+    pts1.forEach(pt => {
+        if (pt.label)
+            labels1.push(pt.label);
+    })
+    pts2.forEach(pt => {
+        if (pt.label)
+            labels2.push(pt.label);
+    })
+    for (const label1 of labels1) {
+        for (const label2 of labels2) {
+            if ((label1 === pt1_label && label2 === pt2_label) || 
+                (label2 === pt1_label && label1 === pt2_label)) {
+                return true;
             }
         }
     }
+    return false;
 }
 
 function getCirclesByOriginLabel(label, shapes_=shapes) {

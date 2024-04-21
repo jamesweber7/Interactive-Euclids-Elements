@@ -29,8 +29,9 @@ function getProp1Info() {
 }
 
 function prop1PassInfo() {
+    const ab = getLineByLabels('A', 'B');
     // should be equilateral triangle on line AB
-    const equilateral_triangle_sets = getEquilateralTriangles();
+    const equilateral_triangle_sets = getEquilateralTrianglesOnLine(ab);
 
     if (equilateral_triangle_sets.length) {
         return {
@@ -44,20 +45,9 @@ function getTriangles() {
     // find sets of three lines
     const line_sets = getPropositionShapeSets([SHAPE_TYPES.LINE, SHAPE_TYPES.LINE, SHAPE_TYPES.LINE])
 
-    let unupdated = false;
-
     // check endpoints to all be equal - forming triangles
     const triangle_sets = [];
     line_sets.forEach(line_set => {
-        // check if lines already know they are triangles
-        if (line_set[0].triangles) {
-            if (line_set[0].triangles.includes(line_set[1]) &&
-                line_set[0].triangles.includes(line_set[2])) {
-                    triangle_sets.push(line_set);
-                    return;
-            }
-        }
-
         // lines must all share three endpoints
         for (let i = 0; i < line_set.length; i++) {
             const line1 = line_set[i];
@@ -97,12 +87,8 @@ function getTriangles() {
             return;
 
         triangle_sets.push(line_set);
-        // not all triangle sets have up to date info
-        unupdated = true;
     })
     
-    if (unupdated) // update triangle sets for future reference
-        updateTriangles(triangle_sets);
     return triangle_sets;
 }
 
@@ -119,43 +105,7 @@ function getEquilateralTriangles() {
         equilateral_triangle_sets.push(triangle_set);
     })
 
-    // update equilateral triangle sets for future reference
-    updateEquilateralTriangles(equilateral_triangle_sets);
-
     return equilateral_triangle_sets;
-}
-
-function updateTriangles(triangles=getTriangles(), triangles_tag='triangles') {
-    triangles.forEach(triangle => {
-        console.log(triangle);
-        console.log(triangle[0]);
-        console.log(triangle[0][triangles_tag]);
-        console.log(Array.isArray(triangle[0][triangles_tag]))
-        if (Array.isArray(triangle[0][triangles_tag])) {
-            for (let i = 0; i < triangle[0][triangles_tag].length; i++) {
-                const triangle2 = triangle[0][triangles_tag][i];
-                if (triangle2.includes(triangle[0]) &&
-                    triangle2.includes(triangle[1]) && 
-                    triangle2.includes(triangle[2])) {
-                    // info already saved
-                    return;
-                }
-            }
-            // not already in triangles
-            triangle.forEach(line => {
-                line[triangles_tag].push(triangle);
-            })
-        } else {
-            // triangle does not have triangles element yet
-            triangle.forEach(line => {
-                line[triangles_tag] = [triangle];
-            })
-        }
-        console.log(triangle);
-        console.log(triangle[0]);
-        console.log(triangle[0][triangles_tag]);
-    })
-    console.log(triangles);
 }
 
 // add equilateral triangle info to all lines that are part of an equilateral triangle
@@ -164,22 +114,35 @@ function updateEquilateralTriangles(equilateral_triangles=getEquilateralTriangle
 }
 
 // get information about equilateral triangle on line
-function getEquilateralTriangleInfo(line, updated=false) {
-    console.log(line);
-    // line has equilateral triangle information
-    if (line.equilateral_triangles && line.equilateral_triangles.length) {
-        return {
-            is_equilateral_triangle: true,
-            equilateral_triangles: line.equilateral_triangles
+function getEquilateralTrianglesOnLine(line) {
+    const equilateral_triangles = getEquilateralTriangles();
+    const matches = [];
+    equilateral_triangles.forEach(equilateral_triangle => {
+        for (const line2 of equilateral_triangle) {
+            if (bitonicLinesWithinEpsilon(line, line2)) {
+                matches.push(equilateral_triangle);
+                return;
+            }
+        }
+    })
+    return matches;
+}
+
+function getTrianglePoints(triangle) {
+    const points = [triangle[0].p1];
+    for (const line of triangle) {
+        for (const pt of [line.p1, line.p2]) {
+            let found = false;
+            for (const pt2 of points) {
+                if (withinEpsilon(pt, pt2))
+                    found = true;
+            }
+            if (!found)
+                points.push(pt);
+            if (points.length > 2)
+                return points;
         }
     }
-    if (updated) {
-        return {is_equilateral_triangle: false};
-    }
-    // line doesn't have equilateral triangle information
-    // update equilateral triangle info for all lines
-    getEquilateralTriangles(); // getting currently updates triangles, idk this definitely isn't the best set up but I'm tired and slow brain rn
-    return getEquilateralTriangleInfo(line, true);
 }
 
 function getProp2Info() {
@@ -223,43 +186,55 @@ function prop2OnChange(event) {
 
     // D label: equilateral triangle point
 
-    console.log(event);
-    console.log(shape);
     // shape has to be line for equilateral triangle to be created
-    if (shape.type === SHAPE_TYPES.LINE && !getShapeByLabel('D')) {
-        console.log('hi');
-        const equilateral_triangle_info = getEquilateralTriangleInfo(shape);
-        console.log(equilateral_triangle_info);
-        if (equilateral_triangle_info.is_equilateral_triangle) {
+    if (shape.type === SHAPE_TYPES.LINE && !getPointByLabel('D')) {
+        const equilateral_triangles = getEquilateralTrianglesOnLine(shape);
+        if (equilateral_triangles.length) {
             const a = getPointByLabel('A');
             const b = getPointByLabel('B');
-            console.log(a, b);
-            // TODO not currently checking if A and C are in equilateral triangle
-            if (a && b) {
-                let d;
-                // there is an equilateral triangle consisting of A and B
-                if (!pointsWithinEpsilon(shape.p1, a) && !pointsWithinEpsilon(shape.p1, b)) {
-                    d = shape.p1;
-                } else {
-                    d = shape.p2;
+            const ab_triangles = [];
+            for (const equilateral_triangle of equilateral_triangles) {
+                for (const line of equilateral_triangle) {
+                    if (lineHasLabels(line, 'A', 'B')) {
+                        ab_triangles.push(equilateral_triangle);
+                    }
                 }
+            }
+            let d_added = false;
+            for (let i = 0; !d_added && i < ab_triangles.length; i++) {
+                const triangle = ab_triangles[i];
+                const triangle_points = getTrianglePoints(triangle);
+                let d_i = 0;
+                for (let i = 0; d_i === i && i < triangle_points.length; i++) {
+                    if (withinEpsilon(triangle_points[i], a) ||
+                        withinEpsilon(triangle_points[i], b)) {
+                        d_i ++;
+                    }
+                }
+                const d = triangle_points[d_i];
 
                 // check that d goes in correct direction
-                // angle between DBC should be acute
+                // angle DBC should be acute
                 const db_theta = getDiffVec(d, b).heading();
-                const bc_theta = getDiffVec(b, c).heading();
-                const dbc = db_theta - bc_theta;
-                console.log(dbc < PI);
+                const bc = getLineByLabels('B', 'C');
+                const bc_theta = getLineDiffVec(bc).heading();
+                const dbc = getPositiveTheta(db_theta - bc_theta);
                 if (dbc < PI) {
                     // correct point
-                    d.label = 'D';
+                    addShape(pointShape(d.x, d.y, {
+                        not_erasable: true,
+                        label: 'D'
+                    }), {
+                        no_event_trigger: true,
+                    })
+                    d_added = true;
                 }
             }
         }
     }
 
     // E label: intersection point between DB extension and circle with origin B and radius BC
-    if (!getPointByLabel('E')) {
+    if (!getPointByLabel('E') && getPointByLabel('D')) {
         const bc = getLineByLabels('B', 'C', proposition_info.given_shapes);
         const r = getLineDiffVec(bc).mag();
         const circle = getCircleByOriginLabelAndRadius('B', r);
@@ -271,15 +246,21 @@ function prop2OnChange(event) {
                 p1: getPointByLabel('D'),
                 p2: getPointByLabel('B'),
             };
-            db_circ_intersections.forEach(pt => {
+            let added = false;
+            for (let i = 0; i < db_circ_intersections.length && !added; i++) {
+                const pt = db_circ_intersections[i];
                 if (pointForwardsOnLine(pt, db_directional)) {
                     // forwards on line - at correct intersection
-                    // pt = E
-                    pt.label = 'E';
+                    const e = pt;
+                    addShape(pointShape(e.x, e.y, {
+                        not_erasable: true,
+                        label: 'E'
+                    }), {
+                        no_event_trigger: true,
+                    })
+                    added = true;
                 }
-            })
-            if (db_circ_intersections.intersection)
-                db_circ_intersections.label = 'E';
+            };
         }
     }
 }
@@ -289,13 +270,24 @@ function prop2PassInfo() {
     const bc = getLineByLabels('B', 'C', proposition_info.given_shapes);
 
     const dist_sq = getLineDiffVec(bc).magSq();
+    console.log(dist_sq);
 
     const lines = getShapesOfType(SHAPE_TYPES.LINE);
+    console.log(lines);
     for (const line of lines) {
+        console.log(line);
         if (onLine(a, line)) {
-            const segments = splitIntoSegments(line);
+            console.log('a on line');
+            const segments = splitIntoSegments(line); // TODO - fix this. Seems like the problem with prop 2 not being solved is coming from splitintosegments, but idk. passProp2Info WAS working well not long ago, so not sure what happened. You can even check previous commits if needed
+            console.log(segments);
             for (const seg of segments) {
+                console.log(seg);
+                console.log(getLineDiffVec(seg).magSq());
+                console.log(dist_sq);
+                console.log(Math.abs(getLineDiffVec(seg).magSq() - dist_sq))
+                console.log(withinEpsilon(dist_sq, getLineDiffVec(seg).magSq()))
                 if (withinEpsilon(dist_sq, getLineDiffVec(seg).magSq())) {
+                    console.log('hooray!');
                     return {
                         pass: true,
                         passing_shapes: [

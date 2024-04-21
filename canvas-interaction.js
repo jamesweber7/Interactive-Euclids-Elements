@@ -335,12 +335,14 @@ function addPoint(x, y) {
 function pointShape(x, y, options={}) {
     options = configureDefaults(options, {
         label: undefined,
+        not_erasable: false,
     })
     return {
         type: SHAPE_TYPES.POINT,
         x: x,
         y: y,
-        label: options.label
+        label: options.label,
+        not_erasable: options.not_erasable,
     }
 }
 
@@ -618,7 +620,7 @@ function onInfLine(pt, line) {
     // Δ
     const Delta = {
         x: line.p2.x - line.p1.x,
-        y: line.p2.y - line.p2.y
+        y: line.p2.y - line.p1.y
     }
 
     // Ax+By+C=0
@@ -820,10 +822,6 @@ function getPositiveTheta(theta) {
         return theta;
     const n = ceil(-theta / TWO_PI);
     return theta + n*TWO_PI;
-}
-
-function positiveHeading(vec) {
-    return vec.heading()+PI;
 }
 
 function compassModeOff() {
@@ -1039,6 +1037,11 @@ function withinEpsilon(a, b, epsilon=2**-10) {
 
 function pointsWithinEpsilon(p1, p2, epsilon=2**-10) {
     return withinEpsilon(getPointDistSq(p1, p2), 0, epsilon);
+}
+
+function bitonicLinesWithinEpsilon(line1, line2, epsilon=2**-10) {
+    return ((pointsWithinEpsilon(line1.p1,line2.p1, epsilon) && pointsWithinEpsilon(line1.p2,line2.p2, epsilon)) || 
+            (pointsWithinEpsilon(line1.p1,line2.p2, epsilon) && pointsWithinEpsilon(line1.p2,line2.p1, epsilon)));
 }
 
 function getArcDist(pt, arc) {
