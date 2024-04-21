@@ -30,6 +30,12 @@ var shapes = [
 var intersection_points = []; // intersections between shapes
 var snap_points = []; // points that mouse can snap to
 
+const EVENTS = {
+    ADD_SHAPE: 'ADD_SHAPE',
+    DELETE_SHAPE: 'DELETE_SHAPE',
+    LINE_EXTENDED: 'LINE_EXTENDED',
+}
+
 // call events on draw
 const DRAW_STAGES = {
     START: 'START',
@@ -198,13 +204,22 @@ function drawLineExtendBtn() {
     });
 }
 
-function extendLine(line, forward) {
+function extendLine(line, forward, options={}) {
     if (forward) {
         line.extends_forward = true;
     } else {
         line.extends_backward = true;
     }
     addLineExtensionIntersectionPoints(line);
+    if (!options.no_event_trigger) {
+        eventTriggered({
+            event: EVENTS.LINE_EXTENDED,
+            shape: line,
+            line: line,
+            forward: forward,
+            options: options,
+        });
+    }
 }
 
 // draws line extending forward from p1 past p2
@@ -361,21 +376,47 @@ function drawArrow(x, y, heading, mag) {
     pop();
 }
 
-function addShape(shape) {
+function addShape(shape, options={}) {
+    // set shape id
     shape.id = 1; // I want to start this above 0 so I can !!id for checking validity
     if (shapes.length)
         shape.id = shapes[shapes.length-1].id+1;
+
     addIntersectionPoints(shape);
+
+    // add shape to shapes
     shapes.push(shape);
-    propositionOnChange();
+
+    // trigger event *after* shape added to shapes
+    if (!options.no_event_trigger) {
+        eventTriggered({
+            event: EVENTS.ADD_SHAPE,
+            shape: shape,
+            options: options
+        });
+    }
+
     return shape;
 }
 
-function deleteShape(shape) {
+function deleteShape(shape, options={}) {
     for (let i = 0; i < shapes.length; i++)
         while (i < shapes.length && shapes[i] === shape)
             shapes.splice(i, 1);
     deleteChildIntersectionPoints(shape);
+    // trigger event *after* shape removed from shapes
+    if (!options.no_event_trigger) {
+        eventTriggered({
+            event: EVENTS.DELETE_SHAPE,
+            shape: shape,
+            options: options,
+        });
+    }
+}
+
+function eventTriggered(event) {
+    // can probably add to undo/redo queue
+    propositionOnChange(event);
 }
 
 function setCurrentShape(shape=null) {
@@ -1097,4 +1138,10 @@ function labelLinePoint(pt, label, line, options) {
     if (getPositiveTheta(orthog) > PI)
         orthog -= PI;
     text(label, pt.x+r*cos(orthog), pt.y+r*sin(orthog));
+}
+
+function getShapeByLabel(label, possible=shapes) {
+    for (const shape of shapes)
+        if (shape.label === label)
+            return shape;
 }

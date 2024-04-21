@@ -125,7 +125,26 @@ function getProp2Info() {
             "Draw a circle with origin D and radius DE",
         ],
         pass_func: prop2PassInfo,
+        on_change: prop2OnChange,
     }
+}
+
+function prop2OnChange(event) {
+    const shape = event.shape;
+    
+    // check for certain shapes to add labels to
+    // D label: equilateral triangle point
+    if (shape.equilateral_triangle) {
+        if (shape === triangle_points.c) {
+            const a = getShapeByLabel('A', proposition_info.given_shapes);
+            const b = getShapeByLabel('B', proposition_info.given_shapes);
+            if ((pointsWithinEpsilon(triangle_points.a, a) && pointsWithinEpsilon(triangle_points.b, b)) ||
+                (pointsWithinEpsilon(triangle_points.a, b) && pointsWithinEpsilon(triangle_points.a, a))) {
+                shape.label = 'D';
+            }
+        }
+    }
+    // E label: intersection point between DB extension and circle with origin B and radius BC
 }
 
 function prop2PassInfo() {

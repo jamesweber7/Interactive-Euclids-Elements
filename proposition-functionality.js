@@ -18,11 +18,11 @@ function propositionPassInfo() {
     return proposition_info.pass_func();
 }
 
-function propositionOnChange() {
+function propositionOnChange(event) {
     if (!proposition_info)
         return;
     if (proposition_info.on_change)
-        proposition_info.on_change();
+        proposition_info.on_change(event);
     checkPropositionPass();
 }
 
