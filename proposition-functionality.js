@@ -38,7 +38,7 @@ function setPropositionInfo(prop_info) {
         return;
     prop_info.given_shapes.forEach(shape => {
         shape.not_erasable = true;
-        addShape(shape);
+        addShape(shape, {no_event_trigger: true});
     });
 }
 
