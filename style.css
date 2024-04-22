@@ -1,3 +1,8 @@
+@font-face {
+    font-family: 'PlayfairDisplay-SemiBoldItalic';
+    src: url('fonts/PlayfairDisplay-SemiBoldItalic.ttf') format('truetype');
+}
+
 body {
     overflow: hidden;
     margin: 0;
@@ -207,6 +212,9 @@ tool img {
 }
 
 #book page {
+    max-height: 100%;
+    overflow-y: scroll;
+
     margin: 0;
     padding-top: 13%;
     padding-bottom: 14.5%;
@@ -227,6 +235,10 @@ tool img {
     padding-right: 12.9%;
 }
 
+#book page::-webkit-scrollbar {
+    display: none;
+}
+
 #book page text1 {
     font-size: 24px;
     display: block;
@@ -238,11 +250,17 @@ tool img {
 #book page text2 {
     font-size: 20px;
     display: block;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-bottom: 10px;
 }
 
 #book page text3 {
     font-size: 18px;
     display: block;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-bottom: 10px;
 }
 
 #book page .padded {
@@ -258,5 +276,22 @@ tool img {
 }
 
 #book page .bottom {
+    display: block;
     margin-top: auto;
+}
+
+#book page .centered-vertical {
+    display: block;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+quote {
+    font-family: 'PlayfairDisplay-SemiBoldItalic';
+    display: block;
+}
+
+quoteauthor {
+    font-family: 'Times New Roman';
+    display: block;
 }

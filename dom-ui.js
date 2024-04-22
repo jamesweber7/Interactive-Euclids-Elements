@@ -248,7 +248,7 @@ function openBookToIntro() {
             },
             {
                 tagName: 'text2',
-                innerText: "This program lets you work through the first Propositions from Euclid's Elements, Book 1",
+                innerText: "This program lets you work through the first Propositions from Book 1 of Euclid's Elements",
                 classList: ['padded', 'centered']
             },
             {
@@ -263,7 +263,7 @@ function openBookToIntro() {
                         value: 'icons/shapes.svg'
                     }
                 ],
-                classList: ['centered', 'bottom'],
+                classList: ['centered', 'centered-vertical'],
                 style: 'width: 50%;'
             }
         ]
@@ -271,8 +271,40 @@ function openBookToIntro() {
     setBookPage({
         items: [
             {
-                tagName: 'text2',
-                innerText: "Magna cupidatat ipsum eiusmod laborum esse ullamco in. Mollit veniam aliquip amet elit duis ut exercitation ex. Reprehenderit consectetur non ut sint officia laboris elit irure proident voluptate. Pariatur duis occaecat deserunt cupidatat laborum sit sint laboris aute aliqua sint reprehenderit commodo dolor. Nisi ea eu do eiusmod deserunt duis do occaecat aliquip pariatur laborum sunt commodo fugiat. Nisi sit ipsum ea velit nisi non. Dolor aliqua sunt non aliquip consequat laboris dolor culpa laborum duis culpa. Sint Lorem nulla elit commodo anim ea fugiat do exercitation in ad nisi ex."
+                tagName: 'text1',
+                innerText: 'Euclid (Εὐκλείδης)'
+            },
+            {
+                tagName: 'text1',
+                innerText: '300 BC',
+                classList: ['centered']
+            },
+            {
+                tagName: 'text3',
+                innerText: `Euclid was an ancient Greek mathematician known as the "Father of Geometry" for his treatise, Elements.`
+            },
+            {
+                tagName: 'text3',
+                innerText: `Euclid's Elements consists of 13 books, each filled with proofs for geometric 'Propositions'.`
+            },
+            {
+                tagName: 'text3',
+                innerText: `This is largely believed to be the first major compilation of proofs, and helps signify a standardization of mathematical knowledge.`
+            },
+            {
+                tagName: 'div',
+                items: [
+                    {
+                        tagName: 'quote',
+                        /* Among these was Euclid, the author of the most successful mathematics textbook ever written—the Elements (Stoichia) */
+                        innerText: `“...the most successful textbook in the history of mathematics.”`,
+                    },
+                    {
+                        tagName: 'quoteauthor',
+                        innerText: `~ Carl Boyer`,
+                    },
+                ],
+                classList: ['centered-vertical', 'padded']
             }
         ]
     }, 2);
@@ -282,7 +314,15 @@ function setBookPage(page_info, page_number) {
     clearBookPage(page_number);
     const page_id = page_number === 1 ? 'left-page' : 'right-page';
     const page = document.getElementById(page_id);
-    page_info.items.forEach(item => {
+    addItems(page_info.items, page);
+}
+
+function clearBookPage(page_number) {
+
+}
+
+function addItems(items, parent) {
+    items.forEach(item => {
         item = configureDefaults(item, {
             tagName: 'div',
             innerText: '',
@@ -299,10 +339,8 @@ function setBookPage(page_info, page_number) {
             el.innerText = item.innerText;
         el.classList.add(...item.classList);
         el.style = item.style;
-        page.append(el);
+        if (item.items.length)
+            addItems(item.items, el);
+        parent.append(el);
     })
-}
-
-function clearBookPage(page_number) {
-
 }
