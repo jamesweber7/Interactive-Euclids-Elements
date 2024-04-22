@@ -2,6 +2,8 @@
 
 document.addEventListener('DOMContentLoaded', setupUI);
 
+const positional_listeners = [];
+
 function setupUI() {
     setupEventListeners();
     setupTools();
@@ -10,6 +12,7 @@ function setupUI() {
 
 function setupEventListeners() {
     document.addEventListener('keydown', domKeyDown);
+    window.addEventListener('resize', runPositionalListeners);
 }
 
 function setupTools() {
@@ -210,8 +213,30 @@ function showBook() {
     right_page.id = 'right-page';
     book.append(right_page);
 
+    // close book X button
+    const close_button = getCloseButton();
+    close_button.id = 'close-book';
+    close_button.title = 'Close Book [Esc]';
+    close_button.style.position = 'absolute';
+    close_button.addEventListener('click', hideBook);
+    book.append(close_button);
+
 
     viewport_container.append(book);
+
+    // place close button position now that we can get book's bounding client rect
+    addPositionalListener(() => {
+        const bookRect = book.getBoundingClientRect();
+        close_button.style.left = bookRect.right+'px';
+        close_button.style.top = bookRect.top+'px';
+    },
+    {
+        delete_if: () => {
+            return !document.body.contains(book);
+        },
+        call_now: true,
+    });
+
     return book;
 }
 
@@ -343,4 +368,36 @@ function addItems(items, parent) {
             addItems(item.items, el);
         parent.append(el);
     })
+}
+
+function getCloseButton() {
+    const close_button = document.createElement('button');
+    close_button.className = 'close';
+    
+    const close_img = document.createElement('img');
+    close_img.src = 'icons/close-x.svg';
+    close_button.append(close_img);
+
+    return close_button;
+}
+
+function addPositionalListener(onchange, options={}) {
+    positional_listeners.push({
+        onchange: onchange,
+        options: options
+    });
+    if (options.call_now)
+        onchange();
+}
+
+function runPositionalListeners() {
+    for (let i = 0; i < positional_listeners.length; i++) {
+        const positional_listener = positional_listeners[i];
+        if (positional_listener.options.delete_if && positional_listener.options.delete_if()) {
+            positional_listeners.splice(i, 1);
+            i--;
+        } else {
+            positional_listener.onchange();
+        }
+    }
 }

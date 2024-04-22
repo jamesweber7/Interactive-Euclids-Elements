@@ -295,3 +295,10 @@ quoteauthor {
     font-family: 'Times New Roman';
     display: block;
 }
+
+.close {
+    background: none;
+    border: none;
+    width: 50px;
+    height: 50px;
+}
