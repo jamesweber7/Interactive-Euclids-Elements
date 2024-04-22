@@ -1,6 +1,40 @@
 
+const standard_book_contents = [
+        {
+            page: titlePage,
+            name: 'Title',
+        },
+        {
+            page: euclidHistoryPage,
+            name: "Intro to Euclid's Elements",
+        },
+        // Tutorial Pages...
+        // Proposition Pages...
+        {
+            page: contentsPage,
+            name: "Contents",
+        },
+        {
+            page: definitionsPage,
+            name: "Definitions",
+        },
+        {
+            page: postulatesPage,
+            name: "Postulates",
+        },
+        {
+            page: axiomsPage,
+            name: "Axioms",
+        },
+    ];
+
 function standardBookPages() {
-    return [titlePage(), euclidHistoryPage(), contentsPage(), definitionsPage(), postulatesPage(), axiomsPage()]
+    const pages = [];
+    standard_book_contents.forEach(page_info => {
+        pages.push(page_info.page());
+    })
+    console.log(pages);
+    return pages;
 }
 
 function titlePage(options={}) {
@@ -78,19 +112,11 @@ function euclidHistoryPage(options={}) {
 }
 
 function contentsPage(options={}) {
-    const contents = [
-        'Title',
-        "Intro to Euclid's Elements",
-        'Contents',
-        'Definitions',
-        'Postulates',
-        'Axioms'
-    ]
     const contents_buttons = [];
-    contents.forEach((page, index) => {
+    standard_book_contents.forEach((page_info, index) => {
         contents_buttons.push({
             tagName: 'button',
-            innerText: page,
+            innerText: page_info.name,
             onclick: () => {
                 goToBookPage(index);
             }
