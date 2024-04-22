@@ -146,7 +146,7 @@ function definitionsPage(options={}) {
             },
             {
                 tagName: 'ol',
-                style: 'height: 70%; overflow-y: scroll;',
+                style: 'height: 70%; overflow-y: auto;',
                 items: [
                     /* Translations by Oliver Byrne, 1847 */
                     {
@@ -334,7 +334,7 @@ function axiomsPage(options={}) {
             },
             {
                 tagName: 'ol',
-                style: 'height: 70%; overflow-y: scroll;',
+                style: 'height: 70%; overflow-y: auto;',
                 items: [
                     /* Translations by Oliver Byrne, 1847 */
                     {
