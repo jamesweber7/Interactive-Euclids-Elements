@@ -33,7 +33,6 @@ function standardBookPages() {
     standard_book_contents.forEach(page_info => {
         pages.push(page_info.page());
     })
-    console.log(pages);
     return pages;
 }
 
