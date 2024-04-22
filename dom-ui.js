@@ -258,8 +258,16 @@ function closeViewportContainer() {
 
 function domKeyDown(e) {
     if (isBookOpen()) {
-        if (e.key === 'Escape') {
-            hideBook();
+        switch (e.key) {
+            case 'Escape':
+                hideBook();
+                break;
+            case 'ArrowLeft':
+                turnBookPageLeft();
+                break;
+            case 'ArrowRight':
+                turnBookPageRight();
+                break;
         }
     }
 }
@@ -441,6 +449,7 @@ function runPositionalListeners() {
 function addNextPageButton(page, next_pages, is_left) {
     const next_page_btn = document.createElement('button');
     next_page_btn.className = 'next-page-btn no-bg-border';
+    next_page_btn.title = `Turn Page ${is_left ? 'Left' : 'Right'} [${is_left ? '←' : '→'}]`
     
     const img = document.createElement('img');
     img.src = `icons/next-page-${is_left ? 'left' : 'right'}.svg`;
@@ -476,4 +485,22 @@ function goToBookPage(page_number) {
         page_number --;
     const desired_pages = book_pages.slice(page_number, page_number+1+1);
     setOpenBookPages(desired_pages);
+}
+
+function turnBookPageLeft() {
+    const left_page = document.getElementById('left-page');
+    turnPage(left_page);
+}
+
+function turnBookPageRight() {
+    const right_page = document.getElementById('right-page');
+    turnPage(right_page)
+}
+
+function turnPage(page) {
+    if (!page)
+        return;
+    const next_page_btns = [...page.getElementsByClassName('next-page-btn')];
+    if (next_page_btns.length)
+        next_page_btns[0].click();
 }
