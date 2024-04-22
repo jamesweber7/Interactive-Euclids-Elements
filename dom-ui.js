@@ -265,85 +265,117 @@ function domKeyDown(e) {
 
 function openBookToIntro() {
     showBook();
-    setBookPage({
-        items: [
-            {
-                tagName: 'text1',
-                innerText: "Welcome to an Interactive Euclid's Elements Visualization"
-            },
-            {
-                tagName: 'text2',
-                innerText: "This program lets you work through the first Propositions from Book 1 of Euclid's Elements",
-                classList: ['padded', 'centered']
-            },
-            {
-                tagName: 'text3',
-                classList: ['padded', 'centered']
-            },
-            {
-                tagName: 'img',
-                attributes: [
-                    {
-                        name: 'src',
-                        value: 'icons/shapes.svg'
-                    }
-                ],
-                classList: ['centered', 'centered-vertical'],
-                style: 'width: 50%;'
-            }
-        ]
-    }, 1);
-    setBookPage({
-        items: [
-            {
-                tagName: 'text1',
-                innerText: 'Euclid (Εὐκλείδης)'
-            },
-            {
-                tagName: 'text1',
-                innerText: '300 BC',
-                classList: ['centered']
-            },
-            {
-                tagName: 'text3',
-                innerText: `Euclid was an ancient Greek mathematician known as the "Father of Geometry" for his treatise, Elements.`
-            },
-            {
-                tagName: 'text3',
-                innerText: `Euclid's Elements consists of 13 books, each filled with proofs for geometric 'Propositions'.`
-            },
-            {
-                tagName: 'text3',
-                innerText: `This is largely believed to be the first major compilation of proofs, and helps signify a standardization of mathematical knowledge.`
-            },
-            {
-                tagName: 'div',
-                items: [
-                    {
-                        tagName: 'quote',
-                        /* Among these was Euclid, the author of the most successful mathematics textbook ever written—the Elements (Stoichia) */
-                        innerText: `“...the most successful textbook in the history of mathematics.”`,
-                    },
-                    {
-                        tagName: 'quoteauthor',
-                        innerText: `~ Carl Boyer`,
-                    },
-                ],
-                classList: ['centered-vertical', 'padded']
-            }
-        ]
-    }, 2);
+    setBookPages(introPages());
 }
 
-function setBookPage(page_info, page_number) {
-    clearBookPage(page_number);
-    const page_id = page_number === 1 ? 'left-page' : 'right-page';
-    const page = document.getElementById(page_id);
+function introPages() {
+    return [titlePage(), euclidHistoryPage()]
+}
+
+// configure book page according to options
+function bookPage(page, options={}) {
+    options = configureDefaults(options, {
+        left_pages: [],
+        right_pages: [],
+    });
+    page = configureDefaults(page, {
+        left_pages: options.left_pages,
+        right_pages: options.right_pages,
+    });
+    return page;
+}
+
+// for setting potentially more than 2 pages
+function setBookPages(pages, page_index=0) {
+    for (let i = 0; i < pages.length; i += 2) { // skip every other one - batches of 2
+        const left_page = pages[i];
+        left_page.left_pages = [];
+        if (i-2 >= 0) {
+            left_page.left_pages.push(pages[i-2]);
+            left_page.left_pages.push(pages[i-1]);
+        }
+        if (i+1 < pages.length) {
+            const right_page = pages[i+1];
+            left_page.right_pages = [];
+            if (i+1 +1 < pages.length) {
+                right_page.right_pages.push(pages[i+1 +1]);
+            }
+            if (i+1 +2 < pages.length) {
+                right_page.right_pages.push(pages[i+1 +2]);
+            }
+        }
+    }
+    if (page_index < pages.length) {
+        setLeftPage(pages[page_index]);
+    } else {
+        clearLeftPage();
+    }
+    if (page_index+1 < pages.length) {
+        setRightPage(pages[page_index+1]);
+    } else {
+        clearRightPage();
+    }
+}
+
+// for setting no more than 2 pages
+function setOpenBookPages(pages) {
+    if (!Array.isArray(pages))
+        return setOpenBookPages([...arguments]);
+    // left
+    if (pages.length) {
+        setBookPage(pages[0], true);
+    } else {
+        clearBookPage(true);
+    }
+    // right
+    if (pages.length > 1) {
+        setBookPage(pages[1], false);
+    } else {
+        clearBookPage(false);
+    }
+}
+
+function setBookPage(page_info, is_left) {
+    clearBookPage(is_left);
+    if (!page_info)
+        return;
+    page_info = configureDefaults(page_info, {
+        left_pages: [],
+        right_pages: [],
+    })
+    const page = getPageSide(is_left);
     addItems(page_info.items, page);
+    if (is_left && page_info.left_pages.length) {
+        addNextPageButton(page, page_info.left_pages, is_left)
+    } else if (!is_left && page_info.right_pages.length) {
+        addNextPageButton(page, page_info.right_pages, is_left)
+    }
 }
 
-function clearBookPage(page_number) {
+function setLeftPage(page_info) {
+    setBookPage(page_info, true);
+}
 
+function setRightPage(page_info) {
+    setBookPage(page_info, false);
+}
+
+function clearLeftPage() {
+    clearBookPage(true);
+}
+
+function clearRightPage() {
+    clearBookPage(false);
+}
+
+function clearBookPage(is_left) {
+    const page = getPageSide(is_left);
+    page.innerHTML = '';
+}
+
+function getPageSide(is_left) {
+    const page_id = is_left ? 'left-page' : 'right-page';
+    return document.getElementById(page_id);
 }
 
 function addItems(items, parent) {
@@ -372,7 +404,7 @@ function addItems(items, parent) {
 
 function getCloseButton() {
     const close_button = document.createElement('button');
-    close_button.className = 'close';
+    close_button.className = 'close no-bg-border';
     
     const close_img = document.createElement('img');
     close_img.src = 'icons/close-x.svg';
@@ -400,4 +432,37 @@ function runPositionalListeners() {
             positional_listener.onchange();
         }
     }
+}
+
+function addNextPageButton(page, next_pages, is_left) {
+    const next_page_btn = document.createElement('button');
+    next_page_btn.className = 'next-page-btn no-bg-border';
+    
+    const img = document.createElement('img');
+    img.src = `icons/next-page-${is_left ? 'left' : 'right'}.svg`;
+    next_page_btn.append(img);
+
+    next_page_btn.addEventListener('click', () => {
+        setOpenBookPages(next_pages);
+    })
+
+    page.append(next_page_btn);
+
+    // place next button position now that we can get book's bounding client rect
+    const next_page_btn_width = next_page_btn.getBoundingClientRect().width;
+    addPositionalListener(() => {
+        const pageRect = page.getBoundingClientRect();
+        if (is_left) {
+            next_page_btn.style.left = `${pageRect.left+pageRect.width*0.11}px`;
+        } else {
+            next_page_btn.style.left = `${pageRect.right-pageRect.width*0.15-next_page_btn_width}px`;
+        }
+        next_page_btn.style.top = `${pageRect.bottom-pageRect.width*0.18}px`;
+    },
+    {
+        delete_if: () => {
+            return !document.body.contains(page);
+        },
+        call_now: true,
+    });
 }
