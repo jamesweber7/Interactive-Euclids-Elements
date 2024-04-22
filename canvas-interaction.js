@@ -102,6 +102,8 @@ function mouseDragged(e) {
         down: true,
         event: MOUSE_EVENTS.DRAGGED,
     });
+    if (e.target !== canvas)
+        return;
     if (spaceIsPressed())
         return translateDrag(e);
     switch (getMouseMode()) {
