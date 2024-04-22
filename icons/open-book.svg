@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100" height="75" xmlns="http://www.w3.org/2000/svg">
+    <!-- Cover -->
+
+    <!-- Left Cover -->
+    <polygon points="2,2 48,5 48,72 3,73" fill="#642d05" stroke-width="2" stroke="black" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Spine -->
+    <polygon points="48,5 48,72 52,72 52,5" fill="#642d05" stroke-width="2" stroke="black" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Right Cover -->
+    <polygon points="98,2 52,5 52,72 97,73" fill="#642d05" stroke-width="2" stroke="black" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Pages -->
+
+    <!-- Left Page -->
+    <path d="M50,5 C40,0 5,5 5,5 L5,73 C3,73 35,65 50,72 L50,5" fill="white" stroke-width="2" stroke="black" stroke-linecap="round" stroke-linejoin="round"></path>
+
+    <!-- Right Page -->
+    <path d="M50,5 C40,0 5,5 5,5 L5,73 C3,73 35,65 50,72 L50,5" fill="white" stroke-width="2" stroke="black" stroke-linecap="round" stroke-linejoin="round" transform="translate(100,0) scale(-1,1)" ></path>
+
+
+</svg>

@@ -192,3 +192,71 @@ tool img {
     font-size: 20px;
 }
 
+#book {
+    width: 60vw;
+    height: calc(60vw * calc(75 / 100));
+    background-image: url('icons/open-book.svg');
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 0;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+#book page {
+    margin: 0;
+    padding-top: 13%;
+    padding-bottom: 14.5%;
+
+    display: flex;
+    flex-direction: column;
+}
+
+#book #left-page {
+    grid-column: 1;
+    padding-left: 12.9%;
+    padding-right: 2.5%;
+}
+
+#book #right-page {
+    grid-column: 2;
+    padding-left: 2.5%;
+    padding-right: 12.9%;
+}
+
+#book page text1 {
+    font-size: 24px;
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#book page text2 {
+    font-size: 20px;
+    display: block;
+}
+
+#book page text3 {
+    font-size: 18px;
+    display: block;
+}
+
+#book page .padded {
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+#book page .centered {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+#book page .bottom {
+    margin-top: auto;
+}

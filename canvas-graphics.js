@@ -79,6 +79,7 @@ function setup() {
     HOVER_COLOR = color(50, 100, 255);
     HIGHLIGHT_COLOR = color(255, 0, 0);
     setProposition(1);
+    openBookToIntro();
 }
 
 function draw() {
