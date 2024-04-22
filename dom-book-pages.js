@@ -89,7 +89,7 @@ function euclidHistoryPage(options={}) {
             },
             {
                 tagName: 'text3',
-                innerText: `This is largely believed to be the first major compilation of proofs, and helps signify a standardization of mathematical knowledge.`
+                innerText: `This is largely believed to be one of the first major compilations of collective mathematical knowledge.`
             },
             {
                 tagName: 'div',
@@ -101,7 +101,7 @@ function euclidHistoryPage(options={}) {
                     },
                     {
                         tagName: 'quoteauthor',
-                        innerText: `~ Carl Boyer`,
+                        innerText: `~ Carl Boyer on Euclid's Elements`,
                     },
                 ],
                 classList: ['centered-vertical', 'padded']
