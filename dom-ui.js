@@ -269,7 +269,7 @@ function openBookToIntro() {
 }
 
 function introPages() {
-    return [titlePage(), euclidHistoryPage()]
+    return [titlePage(), euclidHistoryPage(), definitionsPage(), postulatesPage(), axiomsPage()]
 }
 
 // configure book page according to options
