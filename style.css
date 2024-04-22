@@ -312,3 +312,10 @@ quoteauthor {
     height: 50px;
     opacity: 0.75;
 }
+
+#contents-container button {
+    display: block;
+    background: none;
+    border: none;
+    border-bottom: 1px solid gray;
+}

@@ -1,4 +1,8 @@
 
+function standardBookPages() {
+    return [titlePage(), euclidHistoryPage(), contentsPage(), definitionsPage(), postulatesPage(), axiomsPage()]
+}
+
 function titlePage(options={}) {
     return bookPage({
         items: [
@@ -70,6 +74,41 @@ function euclidHistoryPage(options={}) {
                 classList: ['centered-vertical', 'padded']
             },
         ],
+    }, options);
+}
+
+function contentsPage(options={}) {
+    const contents = [
+        'Title',
+        "Intro to Euclid's Elements",
+        'Contents',
+        'Definitions',
+        'Postulates',
+        'Axioms'
+    ]
+    const contents_buttons = [];
+    contents.forEach((page, index) => {
+        contents_buttons.push({
+            tagName: 'button',
+            innerText: page,
+            onclick: () => {
+                goToBookPage(index);
+            }
+        });
+    });
+    return bookPage({
+        items: [
+            {
+                tagName: 'text1',
+                innerText: 'Contents'
+            },
+            {
+                tagName: 'div',
+                id: 'contents-container',
+                classList: ['padded'],
+                items: contents_buttons
+            }
+        ]
     }, options);
 }
 

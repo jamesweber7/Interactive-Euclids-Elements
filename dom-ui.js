@@ -3,6 +3,7 @@
 document.addEventListener('DOMContentLoaded', setupUI);
 
 const positional_listeners = [];
+let book_pages = [];
 
 function setupUI() {
     setupEventListeners();
@@ -265,11 +266,7 @@ function domKeyDown(e) {
 
 function openBookToIntro() {
     showBook();
-    setBookPages(introPages());
-}
-
-function introPages() {
-    return [titlePage(), euclidHistoryPage(), definitionsPage(), postulatesPage(), axiomsPage()]
+    setBookPages(standardBookPages());
 }
 
 // configure book page according to options
@@ -287,6 +284,7 @@ function bookPage(page, options={}) {
 
 // for setting potentially more than 2 pages
 function setBookPages(pages, page_index=0) {
+    book_pages = pages;
     for (let i = 0; i < pages.length; i += 2) { // skip every other one - batches of 2
         const left_page = pages[i];
         left_page.left_pages = [];
@@ -387,8 +385,11 @@ function addItems(items, parent) {
             items: [],
             attributes: [],
             style: '',
+            id: '',
         })
         const el = document.createElement(item.tagName);
+        if (item.id)
+            el.id = item.id;
         item.attributes.forEach(attr => {
             el.setAttribute(attr.name, attr.value);
         })
@@ -398,6 +399,9 @@ function addItems(items, parent) {
         el.style = item.style;
         if (item.items.length)
             addItems(item.items, el);
+        if (item.onclick) {
+            el.addEventListener('click', item.onclick);
+        }
         parent.append(el);
     })
 }
@@ -465,4 +469,11 @@ function addNextPageButton(page, next_pages, is_left) {
         },
         call_now: true,
     });
+}
+
+function goToBookPage(page_number) {
+    if (page_number % 2 === 1) // odd page
+        page_number --;
+    const desired_pages = book_pages.slice(page_number, page_number+1+1);
+    setOpenBookPages(desired_pages);
 }
