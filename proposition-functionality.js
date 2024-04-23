@@ -11,10 +11,10 @@ function checkPropositionPass() {
         return;
 
     // proposition passed
-    propositionPassed();
+    propositionPassed(pass_info);
 }
 
-function propositionPassed() {
+function propositionPassed(pass_info) {
     completed_propositions.push(proposition_info.number);
     proposition_info.passed = true;
     resetMouseInteraction();

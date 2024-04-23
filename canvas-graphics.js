@@ -456,6 +456,11 @@ function pushEventStack(event) {
     event_stack_pointer = event_stack.length - 1;
 }
 
+function clearEventStack() {
+    event_stack.splice(0);
+    event_stack_pointer = event_stack.length - 1;
+}
+
 function undo() {
     if (!event_stack.length) // nothing to undo
         return;
@@ -1043,6 +1048,7 @@ function getModeCursorIcon() {
 }
 
 function clearCanvas() {
+    resetEventStack();
     while (shapes.length)
         deleteShape(shapes[0], {no_event_trigger: true});
     // intersection points should already be empty, but check anyways
