@@ -1049,6 +1049,14 @@ function clearCanvas() {
     intersection_points.splice(0);
 }
 
+function resetCanvas() {
+    if (isPropositionMode()) {
+        resetProposition();
+    } else {
+        clearCanvas();
+    }
+}
+
 // returns array of each possible set of shapes, as an array, where each shape in a set is unique and corresponds with one respective type in shape_types, reduces lines to segments
 function getPropositionShapeSets(shape_types) {
     if (!Array.isArray(shape_types))

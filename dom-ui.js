@@ -527,7 +527,11 @@ function toggleGuidedModePressed() {
 }
 
 function clearCanvasPressed() {
-
+    if (shapes.length) {
+        if (!confirm('Are you sure you want to delete all shapes on the canvas?'))
+            return;
+    }
+    resetCanvas();
 }
 
 function undoPressed() {
