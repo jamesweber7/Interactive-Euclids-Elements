@@ -83,24 +83,31 @@ tool img {
 }
 
 #proposition-interaction-buttons {
-    display: inline-block;
     margin-left: 15px;
 }
 
+.control-button-row {
+    display: inline-block;
+}
+
 #proposition-interaction-buttons button {
-    border-radius: 50%;
+    border: 2px solid black;
     width: 40px;
     height: 40px;
-    padding: 0;
-    background: none;
     margin: 0 5px;
 }
 
-#proposition-interaction-buttons button:hover {
+.control-button-row button {
+    border-radius: 50%;
+    padding: 0;
+    background: none;
+}
+
+.control-button-row button:hover {
     background: rgba(0,0,0,0.1);
 }
 
-#proposition-interaction-buttons button img {
+.control-button-row button img {
     width: 80%;
     display: flex;
     margin: auto;
@@ -117,6 +124,37 @@ tool img {
 #proposition-explanation {
     font-size: 19px;
 }
+
+
+/*----------  Right Gui Buttons  ----------*/
+
+
+#right-gui {
+    position: fixed;
+    display: flex;
+    align-items: flex-start;
+    padding: 10px;
+    right: 0;
+}
+
+/* Mouse Events pass buttons */
+#right-gui,
+#right-gui div {
+    pointer-events: none;
+    user-select: none;
+}
+
+#right-gui button {
+    pointer-events: auto;
+}
+
+#right-control-buttons button {
+    width: 60px;
+    height: 60px;
+    border: none;
+}
+
+/*----------  Viewport Container  ----------*/
 
 
 #viewport-flex-container {
