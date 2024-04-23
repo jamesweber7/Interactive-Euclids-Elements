@@ -234,7 +234,7 @@ function rulerTutorialPage(options={}) {
                     name: 'src',
                     value: 'icons/ruler-demonstration.svg'
                 }],
-                style: "width: 60%",
+                style: "max-width: 60%; width: -webkit-fill-available;",
                 classList: ['centered'],
             },
             {
@@ -276,7 +276,7 @@ function compassTutorialPage(options={}) {
                     name: 'src',
                     value: 'icons/compass-demonstration.svg'
                 }],
-                style: "width: 60%",
+                style: "width: -webkit-fill-available; max-width: 60%",
                 classList: ['centered'],
             },
             {
@@ -328,7 +328,7 @@ function startFirstPropositionPage(options={}) {
                     }
                 ],
                 classList: ['centered', 'centered-vertical'],
-                style: 'width: 40%;'
+                style: 'width: -webkit-fill-available; max-width: 40%;'
             },
             {
                 tagName: 'button',
@@ -363,7 +363,7 @@ function startFreeformModePage(options={}) {
                     }
                 ],
                 classList: ['centered', 'centered-vertical'],
-                style: 'width: 40%;'
+                style: 'width: -webkit-fill-available; max-width: 40%;'
             },
             {
                 tagName: 'button',
