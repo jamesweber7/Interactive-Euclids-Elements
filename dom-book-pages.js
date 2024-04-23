@@ -13,6 +13,14 @@ const standard_book_contents = [
             name: "Contents",
         },
         {
+            page: rulerTutorialPage,
+            name: "Tutorial (Ruler Tool)"
+        },
+        {
+            page: compassTutorialPage,
+            name: "Tutorial (Compass Tool)"
+        },
+        {
             page: definitionsPage,
             name: "Definitions",
         },
@@ -35,7 +43,6 @@ const intro_book_contents = [
             page: euclidHistoryPage,
             name: "Intro to Euclid's Elements",
         },
-        // Tutorial Pages...
         {
             page: rulerTutorialPage,
             name: "Tutorial (Ruler Tool)"
