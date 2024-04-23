@@ -456,7 +456,7 @@ function pushEventStack(event) {
     event_stack_pointer = event_stack.length - 1;
 }
 
-function clearEventStack() {
+function resetEventStack() {
     event_stack.splice(0);
     event_stack_pointer = event_stack.length - 1;
 }
