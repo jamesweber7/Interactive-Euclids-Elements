@@ -274,7 +274,7 @@ function domKeyDown(e) {
 
 function openBookToIntro() {
     showBook();
-    setBookPages(standardBookPages());
+    setBookPages(introBookPages());
 }
 
 // configure book page according to options
@@ -286,6 +286,7 @@ function bookPage(page, options={}) {
     page = configureDefaults(page, {
         left_pages: options.left_pages,
         right_pages: options.right_pages,
+        items: [],
     });
     return page;
 }
@@ -394,6 +395,7 @@ function addItems(items, parent) {
             attributes: [],
             style: '',
             id: '',
+            closeBookOnClick: false,
         })
         const el = document.createElement(item.tagName);
         if (item.id)
@@ -409,6 +411,9 @@ function addItems(items, parent) {
             addItems(item.items, el);
         if (item.onclick) {
             el.addEventListener('click', item.onclick);
+        }
+        if (item.closeBookOnClick) {
+            el.addEventListener('click', closeViewportContainer);
         }
         parent.append(el);
     })

@@ -319,3 +319,22 @@ quoteauthor {
     border: none;
     border-bottom: 1px solid gray;
 }
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.simple-border-button {
+    border: 2px solid black;
+    border-radius: 4px;
+    background: white;
+    font-size: 32px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.simple-border-button:hover {
+    background: rgba(0,0,0,0.1);
+}

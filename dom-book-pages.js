@@ -8,8 +8,6 @@ const standard_book_contents = [
             page: euclidHistoryPage,
             name: "Intro to Euclid's Elements",
         },
-        // Tutorial Pages...
-        // Proposition Pages...
         {
             page: contentsPage,
             name: "Contents",
@@ -28,12 +26,48 @@ const standard_book_contents = [
         },
     ];
 
-function standardBookPages() {
+const intro_book_contents = [
+        {
+            page: titlePage,
+            name: 'Title',
+        },
+        {
+            page: euclidHistoryPage,
+            name: "Intro to Euclid's Elements",
+        },
+        // Tutorial Pages...
+        {
+            page: rulerTutorialPage,
+            name: "Tutorial (Ruler Tool)"
+        },
+        {
+            page: compassTutorialPage,
+            name: "Tutorial (Compass Tool)"
+        },
+        {
+            page: startProposition1Page,
+            name: "Proposition 1"
+        },
+        {
+            page: startFreeformModePage,
+            name: "Proposition 1"
+        },
+    ]
+
+function bookPagesFromContents(contents) {
     const pages = [];
-    standard_book_contents.forEach(page_info => {
+    contents.forEach(page_info => {
         pages.push(page_info.page());
     })
     return pages;
+}
+
+function standardBookPages() {
+    return bookPagesFromContents(standard_book_contents);
+}
+
+function introBookPages() {
+    return bookPagesFromContents(intro_book_contents);
 }
 
 function titlePage(options={}) {
@@ -110,9 +144,9 @@ function euclidHistoryPage(options={}) {
     }, options);
 }
 
-function contentsPage(options={}) {
+function contentsPage(contents=standard_book_contents, options={}) {
     const contents_buttons = [];
-    standard_book_contents.forEach((page_info, index) => {
+    contents.forEach((page_info, index) => {
         contents_buttons.push({
             tagName: 'button',
             innerText: page_info.name,
@@ -136,6 +170,150 @@ function contentsPage(options={}) {
         ]
     }, options);
 }
+
+
+/*----------  Tutorial  ----------*/
+
+
+function rulerTutorialPage(options={}) {
+    return bookPage({
+        items: [
+            {
+                tagName: 'text1',
+                innerText: 'How to Use'
+            },
+            {
+                tagName: 'text2',
+                innerText: 'Use the Ruler Tool to draw lines between points'
+            },
+            {
+                tagName: 'img',
+                attributes: [{
+                    name: 'src',
+                    value: 'icons/ruler-demonstration.svg'
+                }],
+                style: "width: 60%",
+                classList: ['centered'],
+            },
+            {
+                tagName: 'text2',
+                innerText: "Select the ruler icon or press ' r ' to use the Ruler Tool"
+            },
+            {
+                tagName: 'img',
+                attributes: [{
+                        name: 'src',
+                        value: 'icons/ruler.svg'
+                    },
+                    {
+                        name: 'title',
+                        value: 'Ruler Icon'
+                    }
+                ],
+                classList: ['centered'],
+                style: 'width: 50px; margin-top: 20px;'
+            },
+        ]
+    }, options)
+}
+
+function compassTutorialPage(options={}) {
+    return bookPage({
+        items: [
+            {
+                tagName: 'text1',
+                innerText: 'How to Use'
+            },
+            {
+                tagName: 'text2',
+                innerText: 'Use the Compass Tool to draw a circle with an origin point and a point it passes through'
+            },
+            {
+                tagName: 'img',
+                attributes: [{
+                    name: 'src',
+                    value: 'icons/compass-demonstration.svg'
+                }],
+                style: "width: 60%",
+                classList: ['centered'],
+            },
+            {
+                tagName: 'text2',
+                innerText: "Select the compass icon or press ' c ' to use the Compass Tool"
+            },
+            {
+                tagName: 'img',
+                attributes: [{
+                        name: 'src',
+                        value: 'icons/compass.svg'
+                    },
+                    {
+                        name: 'title',
+                        value: 'Compass Icon'
+                    }
+                ],
+                classList: ['centered'],
+                style: 'width: 50px; margin-top: 20px;'
+            },
+        ]
+    }, options)
+}
+
+function startProposition1Page(options={}) {
+    return bookPage({
+        items: [
+            {
+                tagName: 'text1',
+                innerText: 'Start Solving Propositions',
+            },
+            {
+                tagName: 'text2',
+                innerText: "Work through the steps to do Book 1, Proposition 1 of Euclid's Elements:",
+                classList: ['centered'],
+            },
+            {
+                tagName: 'text2',
+                innerText: "Place an equilateral triangle on a given line",
+                classList: ['centered'],
+                style: 'margin-top: 10px;'
+            },
+            {
+                tagName: 'img',
+                attributes: [
+                    {
+                        name: 'src',
+                        value: 'icons/proposition1.svg'
+                    }
+                ],
+                classList: ['centered', 'centered-vertical'],
+                style: 'width: 40%;'
+            },
+            {
+                tagName: 'button',
+                innerText: 'Start Proposition 1',
+                classList: ['bottom', 'simple-border-button'],
+                style: 'padding: 8px; margin-bottom: 8%;',
+                onclick: setFirstProposition,
+                closeBookOnClick: true,
+            }
+        ]
+    }, options);
+}
+
+function startFreeformModePage(options={}) {
+    return bookPage({
+        
+    }, options);
+}
+
+
+/*----------  Propositions  ----------*/
+
+
+
+
+/*----------  Definitions, Postulates, and Axioms  ----------*/
+
 
 function definitionsPage(options={}) {
     return bookPage({

@@ -57,6 +57,10 @@ function resetProposition() {
     }
 }
 
+function setFirstProposition() {
+    setProposition(1);
+}
+
 function addPropositionDrawEvent(event, options={}) {
     if (!isValidProposition())
         return -1;
