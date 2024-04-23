@@ -57,8 +57,28 @@ function resetProposition() {
     }
 }
 
+function firstPropositionNumber() {
+    return 1;
+}
+
 function setFirstProposition() {
-    setProposition(1);
+    setProposition(firstPropositionNumber());
+}
+
+function nextPropositionNumber() {
+    if (completed_propositions.length) {
+        const last = completed_propositions[completed_propositions.length-1];
+        if (isPropositionNumber(last+1)) {
+            return last+1;
+        }
+    }
+    // none completed or last proposition
+    firstPropositionNumber();
+}
+
+function isPropositionNumber(prop_number) {
+    const prop = getPropositionInfo(prop_number);
+    return prop && prop.valid;
 }
 
 function addPropositionDrawEvent(event, options={}) {

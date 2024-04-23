@@ -13,6 +13,10 @@ const standard_book_contents = [
             name: "Contents",
         },
         {
+            page: freeformOrPropositionModePage,
+            name: "Freeform/Proposition Mode",
+        },
+        {
             page: rulerTutorialPage,
             name: "Tutorial (Ruler Tool)"
         },
@@ -174,6 +178,37 @@ function contentsPage(contents=standard_book_contents, options={}) {
                 classList: ['padded'],
                 items: contents_buttons
             }
+        ]
+    }, options);
+}
+
+function freeformOrPropositionModePage(options={}) {
+    return bookPage({
+        items: [
+            {
+                tagName: 'text1',
+                innerText: 'NOT FINISHED This will have the option to choose Freeform Mode or Proposition Mode'
+            },
+            {
+                tagName: 'text1',
+                innerText: 'Try the next proposition'
+            },
+            {
+                tagName: 'button',
+                innerText: `Proposition ${nextPropositionNumber()}`,
+                onclick: () => {setProposition(nextPropositionNumber())},
+                closePopupOnClick: true,
+            },
+            {
+                tagName: 'text1',
+                innerText: 'Use Freeform Mode'
+            },
+            {
+                tagName: 'button',
+                innerText: `Freeform Mode`,
+                onclick: setFreeformMode,
+                closePopupOnClick: true,
+            },
         ]
     }, options);
 }
