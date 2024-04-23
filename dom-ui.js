@@ -531,11 +531,11 @@ function clearCanvasPressed() {
 }
 
 function undoPressed() {
-
+    undo();
 }
 
 function redoPressed() {
-    
+    redo();
 }
 
 function openBookPressed() {

@@ -30,10 +30,15 @@ var shapes = [
 var intersection_points = []; // intersections between shapes
 var snap_points = []; // points that mouse can snap to
 
+var max_event_stack_length = 50;
+var event_stack = [];
+var event_stack_pointer = -1;
+
 const EVENTS = {
     ADD_SHAPE: 'ADD_SHAPE',
     DELETE_SHAPE: 'DELETE_SHAPE',
     LINE_EXTENDED: 'LINE_EXTENDED',
+    LINE_EXTENSION_REMOVED: 'LINE_EXTENSION_REMOVED',
 }
 
 // call events on draw
@@ -220,6 +225,22 @@ function extendLine(line, forward, options={}) {
             options: options,
         });
     }
+}
+
+function removeLineExtension(line, forward, options={}) {
+    if (forward) {
+        line.extends_forward = false;
+    } else {
+        line.extends_backward = false;
+    }
+    updateLineIntersectionPoints(line);
+    eventTriggered({
+        event: EVENTS.LINE_EXTENSION_REMOVED,
+        shape: line,
+        line: line,
+        forward: forward,
+        options: options,
+    })
 }
 
 // draws line extending forward from p1 past p2
@@ -422,8 +443,59 @@ function deleteShape(shape, options={}) {
 }
 
 function eventTriggered(event) {
-    // can probably add to undo/redo queue
+    if (!event.options.no_event_stack_update) {
+        pushEventStack(event);
+    }
     propositionOnChange(event);
+}
+
+function pushEventStack(event) {
+    if (event_stack_pointer != event_stack.length - 1) // reset redo queue
+        event_stack.splice(event_stack_pointer);
+    event_stack.push(event);
+    event_stack_pointer = event_stack.length - 1;
+}
+
+function undo() {
+    if (!event_stack.length) // nothing to undo
+        return;
+    undoEvent(event_stack[event_stack_pointer]);
+    event_stack_pointer --;
+}
+
+function redo() {
+    if (event_stack_pointer === event_stack.length - 1) // nothing to redo
+        return;
+    event_stack_pointer ++;
+    redoEvent(event_stack[event_stack_pointer]);
+}
+
+function redoEvent(event) {
+    event.options.no_event_stack_update = true;
+    switch (event.event) {
+        case EVENTS.ADD_SHAPE:
+            return addShape(event.shape, event.options);
+        case EVENTS.DELETE_SHAPE:
+            return addShape(event.shape, event.options);
+        case EVENTS.LINE_EXTENDED:
+            return extendLine(event.line, event.forward, event.options);
+        case EVENTS.LINE_EXTENSION_REMOVED:
+            return removeLineExtension(event.line, event.forward, event.options);
+    }
+}
+
+function undoEvent(event) {
+    event.options.no_event_stack_update = true;
+    switch (event.event) {
+        case EVENTS.ADD_SHAPE:
+            return deleteShape(event.shape, event.options);
+        case EVENTS.DELETE_SHAPE:
+            return addShape(event.shape, event.options);
+        case EVENTS.LINE_EXTENDED:
+            return removeLineExtension(event.line, event.forward, event.options);
+        case EVENTS.LINE_EXTENSION_REMOVED:
+            return extendLine(event.line, event.forward, event.options);
+    }
 }
 
 function addCurrentShape(shape) {

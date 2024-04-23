@@ -18,9 +18,17 @@ let mouse_data = {};
 let p_mouse_data = mouse_data;
 
 function keyPressed(e) {
-    if (e.ctrlKey)
-        return;
-    switch (key) {
+    if (e.ctrlKey) {
+        switch (key.toLowerCase()) {
+            case 'z':
+                return undo();
+            case 'y':
+                return redo();
+            default:
+                return; // if not one of above, ctrl key should cancel key interaction
+        }
+    }
+    switch (key.toLowerCase()) {
         case 's':
             return setMouseMode(MOUSE_MODES.SELECT);
         case 'p':
@@ -31,7 +39,7 @@ function keyPressed(e) {
             return setMouseMode(MOUSE_MODES.COMPASS);
         case 'e':
             return setMouseMode(MOUSE_MODES.ERASER);
-        case 'Escape':
+        case 'escape':
             return escapeAction();
     }
     switch (getMouseMode()) {
@@ -1146,10 +1154,7 @@ function eraseProximityShape(pt) {
 function eraseShape(shape, pt) {
     // if over line extension, just delete that
     if (shape.type === SHAPE_TYPES.LINE) {
-        const erase = eraseLineSegment(shape, pt);
-        // just extension deleted; update intersection points
-        if (!erase.segment || erase.failed)
-            updateLineIntersectionPoints(shape);
+        eraseLineSegment(shape, pt);
     } else {
         if (shape.not_erasable)
             return;
@@ -1161,16 +1166,13 @@ function eraseLineSegment(line, pt) {
     const closest_pt = getClosestPointOnLine(pt, line);
     // over extension
     if (pointForwardsOnLine(closest_pt, line)) {
-        line.extends_forward = false;
-        return {forward: true};
+        return removeLineExtension(line, true);
     }
     if (pointBackwardsOnLine(closest_pt, line)) {
-        line.extends_backward = false;
-        return {backward: true};
+        return removeLineExtension(line, false);
     }
     if (!line.not_erasable)
         deleteShape(line);
-    return  {segment: true, failed: line.not_erasable};
 }
 
 function proximityInteractionsOnly() {
