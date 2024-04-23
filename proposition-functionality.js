@@ -1,13 +1,21 @@
 
 var proposition_info = {};
 
+let completed_propositions = [];
+
 function checkPropositionPass() {
     if (proposition_info.passed)    // already passed
         return;
     const pass_info = propositionPassInfo();
     if (!pass_info || !pass_info.pass)
         return;
+
     // proposition passed
+    propositionPassed();
+}
+
+function propositionPassed() {
+    completed_propositions.push(proposition_info.number);
     proposition_info.passed = true;
     resetMouseInteraction();
     displayPropositionCompleteAnimation(pass_info);
@@ -73,7 +81,7 @@ function nextPropositionNumber() {
         }
     }
     // none completed or last proposition
-    firstPropositionNumber();
+    return firstPropositionNumber();
 }
 
 function isPropositionNumber(prop_number) {

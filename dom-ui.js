@@ -277,6 +277,11 @@ function openBookToIntro() {
     setBookPages(introBookPages());
 }
 
+function openBookStandard() {
+    showBook();
+    setBookPages(standardBookPages());
+}
+
 // configure book page according to options
 function bookPage(page, options={}) {
     options = configureDefaults(options, {
@@ -508,4 +513,31 @@ function turnPage(page) {
     const next_page_btns = [...page.getElementsByClassName('next-page-btn')];
     if (next_page_btns.length)
         next_page_btns[0].click();
+}
+
+
+/*----------  Extra Control Buttons Pressed  ----------*/
+
+function toggleStepsVisibilityPressed() {
+
+}
+
+function toggleGuidedModePressed() {
+
+}
+
+function clearCanvasPressed() {
+
+}
+
+function undoPressed() {
+
+}
+
+function redoPressed() {
+    
+}
+
+function openBookPressed() {
+    openBookStandard();
 }

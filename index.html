@@ -37,11 +37,11 @@
                             <img src="icons/previous-proposition.svg" />
                         </button>
                     </tool> -->
-                    <tool id="point-tool" title="Add Point Mode [p]">
+                    <!-- <tool id="point-tool" title="Add Point Mode [p]">
                         <button>
                             <img src="icons/point.svg" />
                         </button>
-                    </tool>
+                    </tool> -->
                     <tool id="eraser-tool" title="Eraser Mode [e]">
                         <button>
                             <img src="icons/eraser.svg" />
@@ -54,10 +54,10 @@
                     <div id="proposition-title">
                     </div>
                     <div id="proposition-interaction-buttons" class="control-button-row">
-                        <button id="show-steps-btn" title="Show/Hide Steps">
+                        <button id="show-steps-btn" title="Show/Hide Steps" onclick="toggleStepsVisibilityPressed()">
                             <img src="icons/show-hints.svg" />
                         </button>
-                        <button id="guided-mode-btn" title="Turn on/off Guided Mode">
+                        <button id="guided-mode-btn" title="Turn on/off Guided Mode" onclick="toggleGuidedModePressed()">
                             <img src="icons/guide.svg" />
                         </button>
                     </div>
@@ -72,16 +72,16 @@
         </div>
         <div id="right-gui">
             <extracontrols id="right-control-buttons" class="control-button-row">
-                <button id="clear-canvas-button" title="Clear Canvas">
+                <button id="clear-canvas-button" title="Clear Canvas" onclick="clearCanvasPressed()">
                     <img src="icons/clear.svg" />
                 </button>
-                <button id="undo-button" title="Undo">
+                <button id="undo-button" title="Undo [Ctrl+Z]"  onclick="undoPressed()">
                     <img src="icons/undo.svg" />
                 </button>
-                <button id="redo-button" title="Redo">
+                <button id="redo-button" title="Redo [Ctrl+Y]"  onclick="redoPressed()">
                     <img src="icons/redo.svg" />
                 </button>
-                <button id="open-book-button" title="Open Book">
+                <button id="open-book-button" title="Open Book"  onclick="openBookPressed()">
                     <img src="icons/book.svg" />
                 </button>
             </extracontrols>
