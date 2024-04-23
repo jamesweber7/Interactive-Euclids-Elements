@@ -13,8 +13,8 @@ const standard_book_contents = [
             name: "Contents",
         },
         {
-            page: freeformOrPropositionModePage,
-            name: "Quick Start",
+            page: quickAccessPage,
+            name: "Quick Access",
         },
         {
             page: rulerTutorialPage,
@@ -186,59 +186,47 @@ function contentsPage(contents=standard_book_contents, options={}) {
     }, options);
 }
 
-function freeformOrPropositionModePage(options={}) {
+function quickAccessPage(options={}) {
     return bookPage({
         items: [{
             tagName: 'div',
             classList: ['flex-column'],
             style: 'justify-content: space-between; height: 100%;',
             items: [
-                {}, // spacing from start of div
                 {
-                    items: [
+                    tagName: 'text1',
+                    innerText: 'Quick Access',
+                    style: 'margin-bottom: 0;', // already gets even spacing
+                },
+                {
+                    tagName: 'button',
+                    innerText: `Proposition ${nextPropositionNumber()}`,
+                    onclick: () => {setProposition(nextPropositionNumber())},
+                    closeBookOnClick: true,
+                    classList: ['simple-border-button', 'centered'],
+                    style: 'padding: 20px;',
+                    attributes: [
                         {
-                            tagName: 'text1',
-                            innerText: 'Try the Next Proposition'
-                        },
-                        {
-                            tagName: 'button',
-                            innerText: `Proposition ${nextPropositionNumber()}`,
-                            onclick: () => {setProposition(nextPropositionNumber())},
-                            closeBookOnClick: true,
-                            classList: ['simple-border-button', 'centered'],
-                            style: 'padding: 20px;',
-                            attributes: [
-                                {
-                                    name: 'title',
-                                    value: `Start Proposition ${nextPropositionNumber()}`
-                                }
-                            ]
-                        },
+                            name: 'title',
+                            value: `Start Proposition ${nextPropositionNumber()}`
+                        }
                     ]
                 },
                 {
-                    items: [
+                    tagName: 'button',
+                    innerText: `Freeform Mode`,
+                    onclick: setFreeformMode,
+                    closeBookOnClick: true,
+                    classList: ['simple-border-button', 'centered'],
+                    style: 'padding: 20px;',
+                    attributes: [
                         {
-                            tagName: 'text1',
-                            innerText: '...or Use Freeform Mode'
-                        },
-                        {
-                            tagName: 'button',
-                            innerText: `Freeform Mode`,
-                            onclick: setFreeformMode,
-                            closeBookOnClick: true,
-                            classList: ['simple-border-button', 'centered'],
-                            style: 'padding: 20px;',
-                            attributes: [
-                                {
-                                    name: 'title',
-                                    value: 'Start Freeform Mode'
-                                }
-                            ]
-                        },
+                            name: 'title',
+                            value: 'Start Freeform Mode'
+                        }
                     ]
                 },
-                {}, // spacing from end of div
+                {}, // even spacing from end of div
             ]
         }
             
