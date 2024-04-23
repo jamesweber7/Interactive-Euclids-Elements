@@ -45,7 +45,7 @@ const intro_book_contents = [
             name: "Tutorial (Compass Tool)"
         },
         {
-            page: startProposition1Page,
+            page: startFirstPropositionPage,
             name: "Proposition 1"
         },
         {
@@ -259,7 +259,7 @@ function compassTutorialPage(options={}) {
     }, options)
 }
 
-function startProposition1Page(options={}) {
+function startFirstPropositionPage(options={}) {
     return bookPage({
         items: [
             {
@@ -302,7 +302,36 @@ function startProposition1Page(options={}) {
 
 function startFreeformModePage(options={}) {
     return bookPage({
-        
+        items: [
+            {
+                tagName: 'text1',
+                innerText: '...or Start Freeform Mode',
+            },
+            {
+                tagName: 'text2',
+                innerText: "Place lines and circles at your leisure, exploring geometric constructions just like the great Ancient Greek geometers.",
+                classList: ['centered'],
+            },
+            {
+                tagName: 'img',
+                attributes: [
+                    {
+                        name: 'src',
+                        value: 'icons/shapes.svg'
+                    }
+                ],
+                classList: ['centered', 'centered-vertical'],
+                style: 'width: 40%;'
+            },
+            {
+                tagName: 'button',
+                innerText: 'Start Freeform Mode',
+                classList: ['bottom', 'simple-border-button'],
+                style: 'padding: 8px; margin-bottom: 8%;',
+                onclick: setFreeformMode,
+                closeBookOnClick: true,
+            }
+        ]
     }, options);
 }
 
