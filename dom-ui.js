@@ -229,7 +229,7 @@ function showBook() {
     addPositionalListener(() => {
         const bookRect = book.getBoundingClientRect();
         close_button.style.left = bookRect.right+'px';
-        close_button.style.top = bookRect.top+'px';
+        close_button.style.top = bookRect.top+bookRect.height*0.06+'px';
     },
     {
         delete_if: () => {
