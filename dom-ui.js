@@ -279,7 +279,7 @@ function openBookToIntro() {
 
 function openBookStandard() {
     showBook();
-    setBookPages(standardBookPages());
+    setBookPages(standardBookPages(), standardBookPagesStartPageIndex());
 }
 
 // configure book page according to options

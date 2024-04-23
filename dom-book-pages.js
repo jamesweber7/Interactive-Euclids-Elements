@@ -14,7 +14,7 @@ const standard_book_contents = [
         },
         {
             page: freeformOrPropositionModePage,
-            name: "Freeform/Proposition Mode",
+            name: "Quick Start",
         },
         {
             page: rulerTutorialPage,
@@ -75,6 +75,10 @@ function bookPagesFromContents(contents) {
 
 function standardBookPages() {
     return bookPagesFromContents(standard_book_contents);
+}
+
+function standardBookPagesStartPageIndex() {
+    return 2; // contents page
 }
 
 function introBookPages() {
@@ -184,31 +188,60 @@ function contentsPage(contents=standard_book_contents, options={}) {
 
 function freeformOrPropositionModePage(options={}) {
     return bookPage({
-        items: [
-            {
-                tagName: 'text1',
-                innerText: 'NOT FINISHED This will have the option to choose Freeform Mode or Proposition Mode'
-            },
-            {
-                tagName: 'text1',
-                innerText: 'Try the next proposition'
-            },
-            {
-                tagName: 'button',
-                innerText: `Proposition ${nextPropositionNumber()}`,
-                onclick: () => {setProposition(nextPropositionNumber())},
-                closePopupOnClick: true,
-            },
-            {
-                tagName: 'text1',
-                innerText: 'Use Freeform Mode'
-            },
-            {
-                tagName: 'button',
-                innerText: `Freeform Mode`,
-                onclick: setFreeformMode,
-                closePopupOnClick: true,
-            },
+        items: [{
+            tagName: 'div',
+            classList: ['flex-column'],
+            style: 'justify-content: space-between; height: 100%;',
+            items: [
+                {}, // spacing from start of div
+                {
+                    items: [
+                        {
+                            tagName: 'text1',
+                            innerText: 'Try the Next Proposition'
+                        },
+                        {
+                            tagName: 'button',
+                            innerText: `Proposition ${nextPropositionNumber()}`,
+                            onclick: () => {setProposition(nextPropositionNumber())},
+                            closeBookOnClick: true,
+                            classList: ['simple-border-button', 'centered'],
+                            style: 'padding: 20px;',
+                            attributes: [
+                                {
+                                    name: 'title',
+                                    value: `Start Proposition ${nextPropositionNumber()}`
+                                }
+                            ]
+                        },
+                    ]
+                },
+                {
+                    items: [
+                        {
+                            tagName: 'text1',
+                            innerText: '...or Use Freeform Mode'
+                        },
+                        {
+                            tagName: 'button',
+                            innerText: `Freeform Mode`,
+                            onclick: setFreeformMode,
+                            closeBookOnClick: true,
+                            classList: ['simple-border-button', 'centered'],
+                            style: 'padding: 20px;',
+                            attributes: [
+                                {
+                                    name: 'title',
+                                    value: 'Start Freeform Mode'
+                                }
+                            ]
+                        },
+                    ]
+                },
+                {}, // spacing from end of div
+            ]
+        }
+            
         ]
     }, options);
 }
