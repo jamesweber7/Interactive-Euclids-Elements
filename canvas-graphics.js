@@ -451,18 +451,15 @@ function eventTriggered(event) {
 
 function pushEventStack(event) {
     if (event_stack_pointer != event_stack.length - 1) // reset redo queue
-        event_stack.splice(event_stack_pointer);
+        event_stack.splice(event_stack_pointer+1);
     event_stack.push(event);
-    event_stack_pointer = event_stack.length - 1;
-}
-
-function resetEventStack() {
-    event_stack.splice(0);
+    if (event_stack.length > max_event_stack_length) // more events than max size
+        event_stack.shift();
     event_stack_pointer = event_stack.length - 1;
 }
 
 function undo() {
-    if (!event_stack.length) // nothing to undo
+    if (event_stack_pointer < 0) // nothing to undo
         return;
     undoEvent(event_stack[event_stack_pointer]);
     event_stack_pointer --;
@@ -501,6 +498,11 @@ function undoEvent(event) {
         case EVENTS.LINE_EXTENSION_REMOVED:
             return extendLine(event.line, event.forward, event.options);
     }
+}
+
+function resetEventStack() {
+    event_stack.splice(0);
+    event_stack_pointer = event_stack.length - 1;
 }
 
 function addCurrentShape(shape) {
