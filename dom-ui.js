@@ -178,12 +178,16 @@ function updateDomPropositionInfo(prop_info, options={}) {
     [...prop_steps.getElementsByTagName('li')].forEach(li => li.remove());
     prop_explanation.innerText = '';
     hideDomPropositionExplanation();
+    hideToggleStepsVisibilityButton();
 
     if (!isValidProposition(prop_info))
         return;
 
     prop_title.innerText = `Proposition ${prop_info.number}`;
+
     prop_objective.innerText = prop_info.objective;
+
+    showToggleStepsVisibilityButton();
     prop_info.steps.forEach(step => {
         const li = document.createElement('li');
         li.innerText = step;
@@ -523,6 +527,17 @@ function turnPage(page) {
 
 
 /*----------  Extra Control Buttons Pressed  ----------*/
+
+function hideToggleStepsVisibilityButton() {
+    const btn = document.getElementById('show-steps-btn');
+    hideDiv(btn);
+}
+
+function showToggleStepsVisibilityButton() {
+    const btn = document.getElementById('show-steps-btn');
+    unhideDiv(btn);
+}
+
 
 function toggleStepsVisibilityPressed() {
     const btn = document.getElementById('show-steps-btn');

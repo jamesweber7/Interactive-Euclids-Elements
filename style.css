@@ -381,3 +381,7 @@ quoteauthor {
 .simple-border-button:hover {
     background: rgba(0,0,0,0.1);
 }
+
+button.disabled {
+    opacity: 0.6;
+}
