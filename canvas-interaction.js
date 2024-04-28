@@ -1207,12 +1207,84 @@ function proximityInteractionsOnly() {
 =       Previous Proposition Mode Events      =
 =============================================*/
 
+let _prev_proposition_shape_types = [];
 let _prev_proposition_shapes = [];
 let _prev_proposition_shape_index = 0;
+let _prev_proposition_func = () => {};
 
 function usePreviousProposition(prop_number) {
     setMouseMode(MOUSE_MODES.PREVIOUS_PROPOSITION);
     updatePreviousPropositionShapes(prop_number);
 }
 
+function updatePreviousPropositionShapes(prop_number) {
+    const prop_info = getPropositionInfo(prop_number);
+    if (!prop_info.valid)
+        return resetPreviousPropositionParams();
+    const shape_types = [...prop_info.given_shape_types];
+    const perform_func = prop_info.perform_func;
+    setPreviousPropositionShapes(shape_types, perform_func);
+}
 
+function setPreviousPropositionShapes(shapes, perform_func) {
+    if (!arguments.length)
+        return resetPreviousPropositionParams();
+    _prev_proposition_shape_types = shapes;
+    _prev_proposition_shapes = Array(shapes.length);
+    _prev_proposition_shape_index = 0;
+    _prev_proposition_func = perform_func;
+}
+
+function clearPreviousPropositionShapes() {
+    _prev_proposition_shapes = Array(_prev_proposition_shape_types.length);
+    _prev_proposition_shape_index = 0;
+}
+
+function resetPreviousPropositionParams() {
+    _prev_proposition_shape_types = [];
+    clearPreviousPropositionShapes();
+    _prev_proposition_func = () => {};
+}
+
+function previousPropositionModeOff() {
+    resetPreviousPropositionParams();
+}
+
+function previousPropositionKeyPressed(e) {
+
+}
+
+function previousPropositionMouseDragged() {
+
+}
+
+function previousPropositionMouseMoved() {
+
+}
+
+function previousPropositionMousePressed() {
+    const proximity_shape = proximityShape(mouse_data.pt);
+    if (!proximity_shape.proximity)
+        return;
+    if (!isSelectableForPreviousProposition(proximity_shape.shape.type))
+        return;
+    _prev_proposition_shapes[_prev_proposition_shape_index] = proximity_shape.shape;
+    _prev_proposition_shape_index ++;
+    if (_prev_proposition_shape_index >= _prev_proposition_shapes.length) {
+        const shapes = _prev_proposition_func(..._prev_proposition_shapes);
+        shapes.forEach(shape => {
+            addShape(shape);
+        })
+        clearPreviousPropositionShapes();
+    }
+}
+
+function previousPropositionMouseReleased() {
+
+}
+
+function isSelectableForPreviousProposition(type) {
+    if (!_prev_proposition_shape_types || _prev_proposition_shape_index >= _prev_proposition_shape_types.length)
+        return;
+    return type === _prev_proposition_shape_types[_prev_proposition_shape_index];
+}

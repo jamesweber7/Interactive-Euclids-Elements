@@ -31,6 +31,9 @@ function getProp1Info() {
                 }
             )
         ],
+        given_shape_types:[
+            SHAPE_TYPES.LINE,
+        ],
         simple_description: "Place an equilateral triangle on a given line",
         objective: "Construct an equilateral triangle on the given line AB.",
         steps: [
@@ -41,6 +44,7 @@ function getProp1Info() {
         ],
         explanation: "Let the intersection between the circles be point C. \nThe circle at origin A has radius AB and passes through C, so \nAC = AB. \nThe circle at origin B has radius AB and passes through C, so \nBC = AB. \nAC = AB = BC \n The sides of triangle ABC are equal, so it is equilateral.",
         pass_func: prop1PassInfo,
+        perform_func: performProp1, // function for adding triangle to given line
     })
 }
 
@@ -203,6 +207,10 @@ function getProp2Info() {
                 }
             )
         ],
+        given_shape_types:[
+            SHAPE_TYPES.LINE,
+            SHAPE_TYPES.POINT,
+        ],
         simple_description: "Given a line, place a line of equal length on a given point",
         objective: "Place (as an extremity) at a given point A a line equal to the given line BC.",
         steps: [
@@ -218,6 +226,33 @@ function getProp2Info() {
         on_change: prop2OnChange,
     })
 }
+
+let off = Math.PI;
+// add triangle to given line
+function performProp1(line) {
+    const diff_vec = getLineDiffVec(line);
+    let angle = TWO_PI / 3;
+    let heading = diff_vec.heading();
+    if (isBetweenBitonic(heading, -PI/2, PI/2)) {
+        angle *= -1;
+    }
+
+    // get opposing point that two sides will meet at
+    const heading1 = heading+angle;
+    const diff = diff_vec.copy().setHeading(heading1);
+    const opposing_pt_vec = ptToVec(line.p1).add(diff);
+    const opposing_pt = vecToPt(opposing_pt_vec);
+
+    return [
+        lineShape(line.p1, opposing_pt),
+        lineShape(line.p2, opposing_pt),
+    ];
+}
+
+
+/*----------  Proposition 2  ----------*/
+
+
 
 function prop2OnChange(event) {
     const shape = event.shape;

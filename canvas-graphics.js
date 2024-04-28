@@ -68,6 +68,7 @@ const INTERACTION_RADIUS = 20;
 
 var HOVER_COLOR = 0;
 var HIGHLIGHT_COLOR = 0;
+var ERASER_COLOR = 0;
 
 var icons = {};
 function preload() {
@@ -82,7 +83,8 @@ function setup() {
     createCanvas(windowWidth*0.999, windowHeight*0.999);
     setSizing();
     HOVER_COLOR = color(50, 100, 255);
-    HIGHLIGHT_COLOR = color(255, 0, 0);
+    HIGHLIGHT_COLOR = color(0, 255, 0);
+    ERASER_COLOR = color(255, 0, 0);
     openBookToIntro();
 }
 
@@ -136,17 +138,38 @@ function highlightProximityShape() {
     const proximity_shape = proximityShape(mouse_data.unsnapped_pt);
     if (!proximity_shape.proximity)
         return;
-    highlightShape(proximity_shape.shape);
+    if (!isShapeTypeHighlightable(proximity_shape.shape.type))
+        return proximity_shape;
+    highlightShape(proximity_shape.shape, highlightColor());
 }
 
-function highlightShape(shape) {
+function highlightColor() {
+    switch (mouse_mode) {
+        case MOUSE_MODES.ERASER:
+            return ERASER_COLOR;
+        case MOUSE_MODES.PREVIOUS_PROPOSITION:
+            return HIGHLIGHT_COLOR;
+    }
+    return HIGHLIGHT_COLOR;
+}
+
+function isShapeTypeHighlightable(type) {
+    switch (mouse_mode) {
+        case MOUSE_MODES.ERASER:
+            return true;
+        case MOUSE_MODES.PREVIOUS_PROPOSITION:
+            return isSelectableForPreviousProposition(type);
+    }
+}
+
+function highlightShape(shape, color=highlightColor()) {
     switch (shape.type) {
         case SHAPE_TYPES.POINT:
-            return highlightPoint(shape);
+            return highlightPoint(shape, color);
         case SHAPE_TYPES.LINE:
-            return highlightLine(shape);
+            return highlightLine(shape, color);
         case SHAPE_TYPES.ARC:
-            return highlightArc(shape);
+            return highlightArc(shape, color);
     }
 }
 
@@ -316,7 +339,7 @@ function drawArc(arc_, options={}) {
 function drawVisualMouseInteractions() {
     if (!mouse_data.pt)
         return;
-    if ([MOUSE_MODES.ERASER].includes(getMouseMode())) {
+    if ([MOUSE_MODES.ERASER, MOUSE_MODES.PREVIOUS_PROPOSITION].includes(getMouseMode())) {
         highlightProximityShape();
     } else {
         drawProximityPoint();
@@ -334,9 +357,9 @@ function drawProximityPoint() {
     drawPoint(pt, options)
 }
 
-function highlightPoint(pt) {
+function highlightPoint(pt, color=HIGHLIGHT_COLOR) {
     const options = {
-        fill: HIGHLIGHT_COLOR,
+        fill: color,
         r: unit*24,
         no_label: true, // don't redraw label for highlight
     };
@@ -345,9 +368,9 @@ function highlightPoint(pt) {
     drawPoint(pt, {no_label: true});
 }
 
-function highlightLine(line) {
+function highlightLine(line, color=HIGHLIGHT_COLOR) {
     const options = {
-        stroke: HIGHLIGHT_COLOR,
+        stroke: color,
         stroke_weight: unit*8,
         no_label: true,
     };
@@ -375,11 +398,11 @@ function highlightLine(line) {
 }
 
 
-function highlightArc(arc) {
+function highlightArc(arc, color=HIGHLIGHT_COLOR) {
     const options = {
-        stroke: HIGHLIGHT_COLOR,
+        stroke: color,
         stroke_weight: unit*8,
-        pt_fill: HIGHLIGHT_COLOR,
+        pt_fill: color,
         pt_r: unit*16,
         no_label: false,
     };
