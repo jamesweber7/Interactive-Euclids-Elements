@@ -193,7 +193,10 @@ function updateDomProposition(prop_info, options={}) {
 
     prop_info.steps.forEach(step => {
         const li = document.createElement('li');
-        li.innerText = step;
+        const step_els = splitStepIntoTextAndPropositionButtons(step);
+        step_els.forEach(el => {
+            li.append(el);
+        })
         prop_steps.append(li);
     })
 
@@ -638,4 +641,39 @@ function openBookToPreviousPropositionTool() {
         num_propositions = proposition_info.number - firstPropositionNumber();
     }
     setBookPages(getPreviousPropositionsPages(num_propositions));
+}
+
+// array w/ regular text and elements that can be clicked on to go to a certain proposition
+// returns array where each item can be appended to element
+function splitStepIntoTextAndPropositionButtons(step) {
+    // look for [Proposition <int>]
+    const regex = /\[Proposition (\d+)\]/g;
+    
+    const pieces = [];
+    let i = 0;
+
+    step.replace(regex, (match, number, index) => {
+        // text before proposition
+        if (i !== index)
+        pieces.push(step.substring(i, index));
+
+        
+        // proposition
+        const prop = document.createElement('inlineprop');
+        prop.title = `Use Proposition ${number}`;
+        const prop_num = parseInt(number);
+        prop.innerText = match;
+        prop.addEventListener('click', () => {
+            usePreviousProposition(prop_num);
+        })
+        pieces.push(prop);
+
+        // update i
+        i = index + match.length;
+    });
+
+    // text after last proposition
+    pieces.push(step.substring(i));
+
+    return pieces;
 }

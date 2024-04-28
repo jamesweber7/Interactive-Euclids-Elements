@@ -30,7 +30,8 @@ body {
     user-select: none;
 }
 
-#left-gui button {
+#left-gui button,
+#left-gui inlineprop {
     pointer-events: auto;
 }
 
@@ -384,4 +385,9 @@ quoteauthor {
 
 button.disabled {
     opacity: 0.6;
+}
+
+inlineprop {
+    font-weight: bold;
+    cursor: pointer;
 }
