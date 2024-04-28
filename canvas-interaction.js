@@ -460,7 +460,14 @@ function addLine(p1, p2) {
     addShape(line);
 }
 
-function lineShape(p1, p2) {
+function lineShape(p1, p2, options={}) {
+    options = configureDefaults(options, {
+        no_point_overwrite: false
+    });
+    if (!options.no_point_overwrite) {
+        p1 = copyPoint(p1);
+        p2 = copyPoint(p2);
+    }
     return {
         type: SHAPE_TYPES.LINE,
         p1: p1,
@@ -848,7 +855,13 @@ function addArc(arc_) {
     addShape(arc_);
 }
 
-function arcShape(origin, r, start_theta, stop_theta) {
+function arcShape(origin, r, start_theta, stop_theta, options={}) {
+    options = configureDefaults(options, {
+        no_point_overwrite: false
+    });
+    if (!options.no_point_overwrite) {
+        origin = copyPoint(origin);
+    }
     return {
         type: SHAPE_TYPES.ARC,
         origin: origin,

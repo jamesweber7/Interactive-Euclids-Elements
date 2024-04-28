@@ -31,7 +31,8 @@ function getProp1Info() {
                     x: width*0.6,
                     y: height/2,
                     label: 'B',
-                }
+                },
+                {no_point_overwrite: true}
             )
         ],
         simple_description: "Place an equilateral triangle on a given line",
@@ -229,7 +230,8 @@ function getProp2Info() {
                     x: width*0.55+2**-10, // epsilon so labels will be on right
                     y: height*0.2,
                     label: 'C',
-                }
+                },
+                {no_point_overwrite: true}
             )
         ],
         simple_description: "Given a line, place a line of equal length on a given point",
