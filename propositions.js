@@ -8,9 +8,12 @@ function propInfo(info) {
         pass_func: () => {return {pass: false}},
         on_change: () => {},
         objective: "",
+        simple_description: "",
         steps: [],
         explanation: "",
         passed: false,
+        given_shape_types:[],
+        perform_func: () => {return []},
     })
 }
 
@@ -31,9 +34,6 @@ function getProp1Info() {
                 }
             )
         ],
-        given_shape_types:[
-            SHAPE_TYPES.LINE,
-        ],
         simple_description: "Place an equilateral triangle on a given line",
         objective: "Construct an equilateral triangle on the given line AB.",
         steps: [
@@ -44,6 +44,9 @@ function getProp1Info() {
         ],
         explanation: "Let the intersection between the circles be point C. \nThe circle at origin A has radius AB and passes through C, so \nAC = AB. \nThe circle at origin B has radius AB and passes through C, so \nBC = AB. \nAC = AB = BC \n The sides of triangle ABC are equal, so it is equilateral.",
         pass_func: prop1PassInfo,
+        given_shape_types: [ // shapes that perform func can be called on
+            SHAPE_TYPES.LINE,
+        ],
         perform_func: performProp1, // function for adding triangle to given line
     })
 }
@@ -229,10 +232,6 @@ function getProp2Info() {
                 }
             )
         ],
-        given_shape_types:[
-            SHAPE_TYPES.LINE,
-            SHAPE_TYPES.POINT,
-        ],
         simple_description: "Given a line, place a line of equal length on a given point",
         objective: "Place (as an extremity) at a given point A a line equal to the given line BC.",
         steps: [
@@ -246,6 +245,10 @@ function getProp2Info() {
         explanation: "Let F be the intersection between the extension of line DA and the circle with origin D and radius DE. \nDF and DE are both radii of the same circle, so \nDF = DE. \nBE and BC are both radii of the circle with origin B and radius BC, so \nBE = BC. \nDA and DB are both sides of an equilateral triangle, so \nDA = DB. \nDF = DE \nDF = DB + BE \nDF = DA + BC \nAF = DF - DA \n AF = DA + BC - DA \n AF = BC",
         pass_func: prop2PassInfo,
         on_change: prop2OnChange,
+        given_shape_types:[ // shapes that perform func can be called on
+            SHAPE_TYPES.LINE,
+            SHAPE_TYPES.POINT,
+        ],
         perform_func: performProp2, // function for adding a line equal to a given line at a given point
     })
 }
@@ -383,6 +386,31 @@ function prop2PassInfo() {
     };
 }
 
-function performProp2() {
+function performProp2(line, point) {
+    const line_diff_vec = getLineDiffVec(line);
+    const mag = line_diff_vec.mag();
     
+    const d1 = getDiffVec(line.p1, point).magSq();
+    const d2 = getDiffVec(line.p2, point).magSq();
+    const closer_line_pt = d1 < d2 ? line.p1 : line.p2;
+
+    const connect_line = lineShape(closer_line_pt, point);
+    const triangle_lines = performProp1(connect_line);
+
+    let opposite_pt;
+    triangle_lines.forEach(tri_line => {
+        if (pointsWithinEpsilon(tri_line.p1, point)) {
+            opposite_pt = tri_line.p2;
+        } else if (pointsWithinEpsilon(tri_line.p2, point)) {
+            opposite_pt = tri_line.p1;
+        } 
+    })
+    if (!opposite_pt)
+        return;
+    const new_line_heading = getDiffVec(point, opposite_pt).heading();
+    const new_line_endpoint = trigPointRA(point, mag, new_line_heading);
+
+    return [
+        lineShape(copyPoint(point), new_line_endpoint)
+    ]
 }

@@ -296,6 +296,13 @@ function vecToPt(vec) {
     };
 }
 
+function copyPoint(pt) {
+    return {
+        x: pt.x,
+        y: pt.y
+    };
+}
+
 function escapeAction() {
     const mode = getMouseMode();
     mouseModeOff(mode);
@@ -730,11 +737,15 @@ function extendedForwardPoint(p1, p2) {
 
 function getLineDist(pt, line) {
     const closest_pt = getClosestPointOnLine(pt, line);
+    if (!closest_pt)
+        return;
     return getPointDist(pt, closest_pt);
 }
 
 function getClosestPointOnLine(pt, line) {
     const closest_inf = getClosestPointOnInfLine(pt, line);
+    if (!closest_inf)
+        return;
     if (linePointInBounds(closest_inf, line))
         return closest_inf;
     // off the end of line, therefore will be closest to an endpont
@@ -759,7 +770,7 @@ function getClosestPointOnInfLine(pt, line) {
     };
     const pts = findInfLineLineIntersectionPoints(line, orthog_line);
     if (!pts.length)
-        throw 'bad';
+        return;
     return pts[0];
 }
 
