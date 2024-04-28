@@ -228,7 +228,7 @@ function quickAccessPage(options={}) {
                     onclick: () => {setProposition(nextPropositionNumber())},
                     closeBookOnClick: true,
                     classList: ['simple-border-button', 'centered'],
-                    style: 'padding: 20px;',
+                    style: 'padding: 20px; width: 80%;',
                     attributes: [
                         {
                             name: 'title',
@@ -242,7 +242,7 @@ function quickAccessPage(options={}) {
                     onclick: setFreeformMode,
                     closeBookOnClick: true,
                     classList: ['simple-border-button', 'centered'],
-                    style: 'padding: 20px;',
+                    style: 'padding: 20px; width: 80%;',
                     attributes: [
                         {
                             name: 'title',
