@@ -189,6 +189,28 @@ function getTrianglePoints(triangle) {
     }
 }
 
+// add triangle to given line
+function performProp1(line) {
+    const diff_vec = getLineDiffVec(line);
+    const angle = TWO_PI / 3;
+    const heading = diff_vec.heading();
+    const d_theta_direction = isBetweenBitonic(heading, -PI/2, PI/2) ? -1 : 1;
+
+    // get opposing point that two sides will meet at
+    const heading1 = heading+angle*d_theta_direction;
+    const diff = diff_vec.copy().setHeading(heading1);
+    const opposing_pt_vec = ptToVec(line.p1).add(diff);
+    const opposing_pt = vecToPt(opposing_pt_vec);
+
+    return [
+        lineShape(line.p1, opposing_pt),
+        lineShape(line.p2, opposing_pt),
+    ];
+}
+
+/*----------  Proposition 2  ----------*/
+
+
 function getProp2Info() {
     return propInfo({
         number: 2,
@@ -224,34 +246,9 @@ function getProp2Info() {
         explanation: "Let F be the intersection between the extension of line DA and the circle with origin D and radius DE. \nDF and DE are both radii of the same circle, so \nDF = DE. \nBE and BC are both radii of the circle with origin B and radius BC, so \nBE = BC. \nDA and DB are both sides of an equilateral triangle, so \nDA = DB. \nDF = DE \nDF = DB + BE \nDF = DA + BC \nAF = DF - DA \n AF = DA + BC - DA \n AF = BC",
         pass_func: prop2PassInfo,
         on_change: prop2OnChange,
+        perform_func: performProp2, // function for adding a line equal to a given line at a given point
     })
 }
-
-let off = Math.PI;
-// add triangle to given line
-function performProp1(line) {
-    const diff_vec = getLineDiffVec(line);
-    let angle = TWO_PI / 3;
-    let heading = diff_vec.heading();
-    if (isBetweenBitonic(heading, -PI/2, PI/2)) {
-        angle *= -1;
-    }
-
-    // get opposing point that two sides will meet at
-    const heading1 = heading+angle;
-    const diff = diff_vec.copy().setHeading(heading1);
-    const opposing_pt_vec = ptToVec(line.p1).add(diff);
-    const opposing_pt = vecToPt(opposing_pt_vec);
-
-    return [
-        lineShape(line.p1, opposing_pt),
-        lineShape(line.p2, opposing_pt),
-    ];
-}
-
-
-/*----------  Proposition 2  ----------*/
-
 
 
 function prop2OnChange(event) {
@@ -384,4 +381,8 @@ function prop2PassInfo() {
     return {
         pass: false,
     };
+}
+
+function performProp2() {
+    
 }
