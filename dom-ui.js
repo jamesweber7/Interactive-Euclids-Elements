@@ -40,6 +40,8 @@ function setupToolFunctionalities() {
                     return setMouseMode(MOUSE_MODES.RULER);
                 case 'compass-tool':
                     return setMouseMode(MOUSE_MODES.COMPASS);
+                case 'proposition-tool':
+                    return openBookToPreviousPropositionTool();
                 case 'eraser-tool':
                     return setMouseMode(MOUSE_MODES.ERASER);
             }
@@ -595,4 +597,9 @@ function toggleHidden(div, set_value=undefined) {
     } else {
         div.classList.remove('hidden');
     }
+}
+
+function openBookToPreviousPropositionTool() {
+    showBook();
+    setBookPages(getPreviousPropositionsPages());
 }

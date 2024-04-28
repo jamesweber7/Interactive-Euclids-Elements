@@ -474,6 +474,84 @@ function propositionPage(prop_number, options={}) {
 }
 
 
+/*----------  Reuse Previous Propositions Pages  ----------*/
+
+function getPreviousPropositionsPages(options={}, last_number=numberOfPropositions()) {
+    const pages = [
+        usePreviousPropositionsIntroPage(options)
+    ];
+    for (let i = 0; i < last_number; i++) {
+        pages.push(previousPropositionsPage(i+firstPropositionNumber(), options));
+    }
+    return pages;
+}
+
+function usePreviousPropositionsIntroPage(options={}) {
+    return bookPage({
+        items: [
+            {
+                tagName: 'text1',
+                innerText: "Use a Previous Proposition"
+            },
+            {
+                tagName: 'text2',
+                innerText: "Select a Proposition to use",
+                classList: ['padded', 'centered']
+            },
+            {
+                tagName: 'img',
+                attributes: [
+                    {
+                        name: 'src',
+                        value: 'icons/previous-proposition.svg'
+                    }
+                ],
+                classList: ['centered-vertical'],
+            },
+        ],
+    }, options);
+}
+
+function previousPropositionsPage(prop_number, options={}) {
+    const prop_info = getPropositionInfo(prop_number);
+    return bookPage({
+        items: [
+            {
+                tagName: 'text1',
+                innerText: `Proposition ${prop_number}`,
+                style: 'font-size: 28px;'
+            },
+            {
+                tagName: 'text2',
+                innerText: prop_info.simple_description,
+                classList: ['centered'],
+                style: 'margin-top: 10px;'
+            },
+            {
+                tagName: 'img',
+                attributes: [
+                    {
+                        name: 'src',
+                        value: `icons/proposition${prop_number}.svg`
+                    }
+                ],
+                classList: ['centered', 'centered-vertical'],
+                style: 'width: -webkit-fill-available; max-width: 40%;'
+            },
+            {
+                tagName: 'button',
+                innerText: `Use Proposition ${prop_number}`,
+                classList: ['bottom', 'simple-border-button'],
+                style: 'padding: 8px; margin-bottom: 8%;',
+                onclick: () => {
+                    usePreviousProposition(prop_number);
+                },
+                closeBookOnClick: true,
+            }
+        ]
+    }, options);
+}
+
 /*----------  Definitions, Postulates, and Axioms  ----------*/
 
 

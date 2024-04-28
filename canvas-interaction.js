@@ -4,6 +4,7 @@ const MOUSE_MODES = {
     RULER: 'RULER',
     COMPASS: 'COMPASS',
     ERASER: 'ERASER',
+    PREVIOUS_PROPOSITION: 'PREVIOUS_PROPOSITIONS',
 }
 
 const MOUSE_EVENTS = {
@@ -53,6 +54,8 @@ function keyPressed(e) {
             return compassKeyPressed(e);
         case MOUSE_MODES.ERASER:
             return eraserKeyPressed(e);
+        case MOUSE_MODES.PREVIOUS_PROPOSITION:
+            return previousPropositionKeyPressed(e);
     }
 }
 
@@ -83,6 +86,8 @@ function mousePressed(e) {
             return compassMousePressed();
         case MOUSE_MODES.ERASER:
             return eraserMousePressed();
+        case MOUSE_MODES.PREVIOUS_PROPOSITION:
+            return previousPropositionMousePressed();
     }
 }
 
@@ -102,6 +107,8 @@ function mouseReleased() {
             return compassMouseReleased();
         case MOUSE_MODES.ERASER:
             return eraserMouseReleased();
+        case MOUSE_MODES.PREVIOUS_PROPOSITION:
+            return previousPropositionMouseReleased();
     }
 }
 
@@ -125,6 +132,8 @@ function mouseDragged(e) {
             return compassMouseDragged();
         case MOUSE_MODES.ERASER:
             return eraserMouseDragged();
+        case MOUSE_MODES.PREVIOUS_PROPOSITION:
+            return previousPropositionMouseDragged();    
     }
 }
 
@@ -143,6 +152,8 @@ function mouseMoved() {
             return compassMouseMoved();
         case MOUSE_MODES.ERASER:
             return eraserMouseMoved();
+        case MOUSE_MODES.PREVIOUS_PROPOSITION:
+            return previousPropositionMouseMoved();
     }
 }
 
@@ -216,6 +227,8 @@ function mouseModeOff(mode=mouse_mode) {
             return compassModeOff();
         case MOUSE_MODES.ERASER:
             return eraserModeOff();
+        case MOUSE_MODES.PREVIOUS_PROPOSITION:
+            return previousPropositionModeOff();
     }
 }
 
@@ -1188,3 +1201,18 @@ function proximityInteractionsOnly() {
             return true;
     }
 }
+
+
+/*=============================================
+=       Previous Proposition Mode Events      =
+=============================================*/
+
+let _prev_proposition_shapes = [];
+let _prev_proposition_shape_index = 0;
+
+function usePreviousProposition(prop_number) {
+    setMouseMode(MOUSE_MODES.PREVIOUS_PROPOSITION);
+    updatePreviousPropositionShapes(prop_number);
+}
+
+
