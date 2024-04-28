@@ -31,6 +31,7 @@ function getProp1Info() {
                 }
             )
         ],
+        simple_description: "Place an equilateral triangle on a given line",
         objective: "Construct an equilateral triangle on the given line AB.",
         steps: [
             "Draw a circle with origin A and radius AB",
@@ -202,6 +203,7 @@ function getProp2Info() {
                 }
             )
         ],
+        simple_description: "Given a line, place a line of equal length on a given point",
         objective: "Place (as an extremity) at a given point A a line equal to the given line BC.",
         steps: [
             "Draw line AB",

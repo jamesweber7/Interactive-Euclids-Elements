@@ -3,6 +3,8 @@ var proposition_info = {};
 
 let completed_propositions = [];
 
+const no_prop_info_func = () => {return {valid: false}};
+
 function checkPropositionPass() {
     if (proposition_info.passed)    // already passed
         return;
@@ -122,14 +124,31 @@ function setNoProposition() {
     setPropositionInfo({});
 }
 
-function getPropositionInfo(prop_number=proposition_info.number) {
+function getPropositionInfoFunction(prop_number=proposition_info.number) {
     switch (prop_number) {
         case 1:
-            return getProp1Info();
+            return getProp1Info;
         case 2:
-            return getProp2Info();
+            return getProp2Info;
     }
-    return {valid: false};
+    return no_prop_info_func;
+}
+
+function getPropositionInfo(prop_number=proposition_info.number) {
+    const prop_info_func = getPropositionInfoFunction(prop_number);
+    if (prop_info_func === no_prop_info_func)
+        return {valid: false};
+    return prop_info_func();
+}
+
+function numberOfPropositions() {
+    let num_propositions = 0;
+    let prop_info_func = getPropositionInfoFunction(1);
+    while (prop_info_func != no_prop_info_func) {
+        num_propositions ++;
+        prop_info_func = getPropositionInfoFunction(num_propositions+1);
+    }
+    return num_propositions;
 }
 
 function displayPropositionCompleteAnimation(pass_info) {

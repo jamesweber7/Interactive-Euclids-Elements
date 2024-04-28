@@ -36,6 +36,13 @@ const standard_book_contents = [
             page: axiomsPage,
             name: "Axioms",
         },
+        {
+            is_page_group: true,
+            pages: getPropositionPages,
+            name: (page, index) => {
+                return `Proposition ${index+firstPropositionNumber()}`;
+            }
+        },
     ];
 
 const intro_book_contents = [
@@ -56,7 +63,7 @@ const intro_book_contents = [
             name: "Tutorial (Compass Tool)"
         },
         {
-            page: startFirstPropositionPage,
+            page: startPropositionModePage,
             name: "Proposition 1"
         },
         {
@@ -68,7 +75,13 @@ const intro_book_contents = [
 function bookPagesFromContents(contents) {
     const pages = [];
     contents.forEach(page_info => {
-        pages.push(page_info.page());
+        if (!page_info.is_page_group) {
+            pages.push(page_info.page());
+        } else {
+            page_info.pages().forEach(page => {
+                pages.push(page);
+            })
+        }
     })
     return pages;
 }
@@ -162,13 +175,13 @@ function euclidHistoryPage(options={}) {
 function contentsPage(contents=standard_book_contents, options={}) {
     const contents_buttons = [];
     contents.forEach((page_info, index) => {
-        contents_buttons.push({
-            tagName: 'button',
-            innerText: page_info.name,
-            onclick: () => {
-                goToBookPage(index);
-            }
-        });
+        if (!page_info.is_page_group) {
+            addContentsButton(page_info.name);
+        } else {
+            page_info.pages().forEach((page2_info, index2) => {
+                addContentsButton(page_info.name(page2_info, index2));
+            })
+        }
     });
     return bookPage({
         items: [
@@ -184,6 +197,17 @@ function contentsPage(contents=standard_book_contents, options={}) {
             }
         ]
     }, options);
+
+    function addContentsButton(name) {
+        const index = contents_buttons.length;
+        contents_buttons.push({
+            tagName: 'button',
+            innerText: name,
+            onclick: () => {
+                goToBookPage(index);
+            },
+        })
+    }
 }
 
 function quickAccessPage(options={}) {
@@ -322,7 +346,7 @@ function compassTutorialPage(options={}) {
     }, options)
 }
 
-function startFirstPropositionPage(options={}) {
+function startPropositionModePage(options={}) {
     return bookPage({
         items: [
             {
@@ -401,7 +425,53 @@ function startFreeformModePage(options={}) {
 
 /*----------  Propositions  ----------*/
 
+function getPropositionPages(options={}) {
+    const pages = [];
+    for (let i = 0; i < numberOfPropositions(); i++) {
+        pages.push(propositionPage(i+firstPropositionNumber(), options));
+    }
+    return pages;
+}
 
+function propositionPage(prop_number, options={}) {
+    const prop_info = getPropositionInfo(prop_number);
+    return bookPage({
+        items: [
+            {
+                tagName: 'text1',
+                innerText: `Proposition ${prop_number}`,
+                style: 'font-size: 28px;'
+            },
+            {
+                tagName: 'text2',
+                innerText: prop_info.simple_description,
+                classList: ['centered'],
+                style: 'margin-top: 10px;'
+            },
+            {
+                tagName: 'img',
+                attributes: [
+                    {
+                        name: 'src',
+                        value: `icons/proposition${prop_number}.svg`
+                    }
+                ],
+                classList: ['centered', 'centered-vertical'],
+                style: 'width: -webkit-fill-available; max-width: 40%;'
+            },
+            {
+                tagName: 'button',
+                innerText: `Proposition ${prop_number}`,
+                classList: ['bottom', 'simple-border-button'],
+                style: 'padding: 8px; margin-bottom: 8%;',
+                onclick: () => {
+                    setProposition(prop_number);
+                },
+                closeBookOnClick: true,
+            }
+        ]
+    }, options);
+}
 
 
 /*----------  Definitions, Postulates, and Axioms  ----------*/
