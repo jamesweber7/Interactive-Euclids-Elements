@@ -476,11 +476,12 @@ function propositionPage(prop_number, options={}) {
 
 /*----------  Reuse Previous Propositions Pages  ----------*/
 
-function getPreviousPropositionsPages(options={}, last_number=numberOfPropositions()) {
+function getPreviousPropositionsPages(num_propositions=numberOfPropositions(), options={}) {
+    num_propositions = min(num_propositions, numberOfPropositions());
     const pages = [
         usePreviousPropositionsIntroPage(options)
     ];
-    for (let i = 0; i < last_number; i++) {
+    for (let i = 0; i < num_propositions; i++) {
         pages.push(previousPropositionsPage(i+firstPropositionNumber(), options));
     }
     return pages;

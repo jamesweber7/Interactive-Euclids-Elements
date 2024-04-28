@@ -631,5 +631,11 @@ function toggleHidden(div, set_value=undefined) {
 
 function openBookToPreviousPropositionTool() {
     showBook();
-    setBookPages(getPreviousPropositionsPages());
+    let num_propositions;
+    if (isFreeformMode()) {
+        num_propositions = numberOfPropositions();
+    } else {
+        num_propositions = proposition_info.number - firstPropositionNumber();
+    }
+    setBookPages(getPreviousPropositionsPages(num_propositions));
 }
