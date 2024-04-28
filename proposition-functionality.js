@@ -50,7 +50,7 @@ function setPropositionInfo(prop_info) {
     proposition_info = prop_info;
     
     // After updating proposition info
-    updateDomPropositionInfo(prop_info);
+    updateDomProposition(prop_info);
     if (!proposition_info || !proposition_info.valid)
         return;
     prop_info.given_shapes.forEach(shape => {

@@ -168,7 +168,7 @@ function fadeInEl(el, t=1) {
     }, 0);
 }
 
-function updateDomPropositionInfo(prop_info, options={}) {
+function updateDomProposition(prop_info, options={}) {
     const prop_title = document.getElementById('proposition-title');
     const prop_objective = document.getElementById('proposition-objective');
     const prop_steps = document.getElementById('proposition-steps');
@@ -181,6 +181,8 @@ function updateDomPropositionInfo(prop_info, options={}) {
     prop_explanation.innerText = '';
     hideDomPropositionExplanation();
     hideToggleStepsVisibilityButton();
+    showPointTool();
+    showPreviousPropositionsTool();
 
     if (!isValidProposition(prop_info))
         return;
@@ -189,7 +191,6 @@ function updateDomPropositionInfo(prop_info, options={}) {
 
     prop_objective.innerText = prop_info.objective;
 
-    showToggleStepsVisibilityButton();
     prop_info.steps.forEach(step => {
         const li = document.createElement('li');
         li.innerText = step;
@@ -199,6 +200,15 @@ function updateDomPropositionInfo(prop_info, options={}) {
     prop_explanation.innerText = prop_info.explanation;
     if (options.show_explanation)
         showDomPropositionExplanation();
+
+    // other buttons
+    // toggle steps visibility
+    showToggleStepsVisibilityButton();
+
+    // tools
+    hidePointTool();
+    if (prop_info.number <= firstPropositionNumber())
+        hidePreviousPropositionsTool();
 }
 
 function showDomPropositionExplanation() {
@@ -209,6 +219,26 @@ function showDomPropositionExplanation() {
 function hideDomPropositionExplanation() {
     const prop_explanation = document.getElementById('proposition-explanation');
     hideDiv(prop_explanation);
+}
+
+function showPointTool() {
+    const point_tool = document.getElementById('point-tool');
+    unhideDiv(point_tool);
+}
+
+function hidePointTool() {
+    const point_tool = document.getElementById('point-tool');
+    hideDiv(point_tool);
+}
+
+function showPreviousPropositionsTool() {
+    const proposition_tool = document.getElementById('proposition-tool');
+    unhideDiv(proposition_tool);
+}
+
+function hidePreviousPropositionsTool() {
+    const proposition_tool = document.getElementById('proposition-tool');
+    hideDiv(proposition_tool);
 }
 
 function showBook() {
