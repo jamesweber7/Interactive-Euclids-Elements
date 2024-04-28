@@ -10,6 +10,10 @@ body {
     font-family: 'Times New Roman', Times, serif;
 }
 
+.hidden {
+    display: none !important;
+}
+
 #left-gui {
     position: fixed;
     display: flex;

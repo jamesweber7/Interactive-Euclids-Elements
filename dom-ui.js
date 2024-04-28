@@ -170,10 +170,13 @@ function updateDomPropositionInfo(prop_info, options={}) {
     const prop_title = document.getElementById('proposition-title');
     const prop_objective = document.getElementById('proposition-objective');
     const prop_steps = document.getElementById('proposition-steps');
+    const prop_explanation = document.getElementById('proposition-explanation');
+
     // reset proposition info
     prop_title.innerText = '';
     prop_objective.innerText = '';
     [...prop_steps.getElementsByTagName('li')].forEach(li => li.remove());
+    prop_explanation.innerText = '';
     hideDomPropositionExplanation();
 
     if (!isValidProposition(prop_info))
@@ -186,17 +189,20 @@ function updateDomPropositionInfo(prop_info, options={}) {
         li.innerText = step;
         prop_steps.append(li);
     })
+
+    prop_explanation.innerText = prop_info.explanation;
     if (options.show_explanation)
-        showDomPropositionExplanation(prop_info.explanation);
+        showDomPropositionExplanation();
 }
 
-function showDomPropositionExplanation(explanation) {
+function showDomPropositionExplanation() {
     const prop_explanation = document.getElementById('proposition-explanation');
-    prop_explanation.innerText = explanation;
+    unhideDiv(prop_explanation);
 }
 
 function hideDomPropositionExplanation() {
-
+    const prop_explanation = document.getElementById('proposition-explanation');
+    hideDiv(prop_explanation);
 }
 
 function showBook() {
@@ -519,7 +525,18 @@ function turnPage(page) {
 /*----------  Extra Control Buttons Pressed  ----------*/
 
 function toggleStepsVisibilityPressed() {
+    const btn = document.getElementById('show-steps-btn');
+    const set_visible = btn.classList.contains('disabled');
+    const prop_steps = document.getElementById('proposition-steps');
 
+    if (set_visible) {
+        btn.title = 'Hide Steps';
+    } else {
+        btn.title = 'Show Steps';
+    }
+    
+    toggleHidden(prop_steps, !set_visible);
+    btn.classList.toggle('disabled');
 }
 
 function toggleGuidedModePressed() {
@@ -544,4 +561,23 @@ function redoPressed() {
 
 function openBookPressed() {
     openBookStandard();
+}
+
+function hideDiv(div) {
+    div.classList.add('hidden');
+}
+
+function unhideDiv(div) {
+    div.classList.remove('hidden');
+}
+
+// toggles hidden if set_value undefined, otherwise hides if set_value and unhides if !set_value 
+function toggleHidden(div, set_value=undefined) {
+    if (set_value === undefined) {
+        div.classList.toggle('hidden');
+    } else if (set_value) {
+        div.classList.add('hidden');
+    } else {
+        div.classList.remove('hidden');
+    }
 }
