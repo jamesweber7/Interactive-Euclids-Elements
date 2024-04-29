@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+<svg width="50" height="50" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Undo icon. Represented by arrow curving to the left">
     <path d="M 30 48 C 47 35, 47 12.5, 20 12.5 H 10" fill="none" stroke="black" stroke-width="3" stroke-linecap="round"/>
 <polyline points="20,2.5 10,12.5 20,22.5" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+<svg width="50" height="50" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Interactive Euclid Help Book">
     <g transform="translate(-3, 0)">
         <!-- Back Cover lines -->
         <polyline points="10,4 45,2 45,47" fill="none" stroke="black" stroke-width="2" />

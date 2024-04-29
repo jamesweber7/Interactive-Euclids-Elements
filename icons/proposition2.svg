@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+<svg width="50" height="50" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Example for proposition 2. Solid line and point. Point has dotted line coming out of it, equal in length to the solid line">
     <!-- Book Cover Illustration -->
     <line x1="30" y1="2" x2="30" y2="20" stroke="black" stroke-width="2"/>
 

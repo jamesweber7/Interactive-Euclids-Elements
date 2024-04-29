@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+<svg width="50" height="50" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Example for proposition 1. Solid line with two dotted lines forming equilateral triangle above it">
     <!-- Book Cover Illustration -->
     <line x1="2" y1="48" x2="48" y2="48" stroke="black" stroke-width="2"/>
     <polyline points="2,48 25,6.698729810778062 48,48" stroke="black" stroke-width="2" fill="none" stroke-dasharray="10, 4"/>
