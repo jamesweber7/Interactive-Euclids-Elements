@@ -43,6 +43,10 @@ const standard_book_contents = [
                 return `Proposition ${index+firstPropositionNumber()}`;
             }
         },
+        {
+            page: endPropositionsPage,
+            name: "Closing",
+        },
     ];
 
 const intro_book_contents = [
@@ -166,7 +170,8 @@ function euclidHistoryPage(options={}) {
                         innerText: `~ Carl Boyer on Euclid's Elements`,
                     },
                 ],
-                classList: ['centered-vertical', 'padded']
+                classList: ['bottom', 'padded'],
+                style: 'margin-bottom: 30px;'
             },
         ],
     }, options);
@@ -470,6 +475,77 @@ function propositionPage(prop_number, options={}) {
                 closeBookOnClick: true,
             }
         ]
+    }, options);
+}
+
+// "that's all the propositions for now"
+function endPropositionsPage(options={}) {
+    return bookPage({
+        items: [
+            {
+                tagName: 'text1',
+                innerText: "That's all the Propositions..."
+            },
+            {
+                tagName: 'text1',
+                innerText: "...for now."
+            },
+            {
+                tagName: 'text3',
+                innerText: "There are 465 Propositions across 13 books in Euclid's Elements.",
+                classList: ['padded', 'centered']
+            },
+            {
+                tagName: 'text3',
+                innerText: "They increase in complexity by orders of magnitude, and serve as evidence that genius is a human attribute, not a modern attribute.",
+                classList: ['padded', 'centered']
+            },
+            {
+                tagName: 'img',
+                attributes: [
+                    {
+                        name: 'src',
+                        value: 'icons/shapes.svg'
+                    }
+                ],
+                classList: ['centered'],
+                style: 'height: -webkit-fill-available;'
+            },
+            {
+                tagName: 'text3',
+                innerText: "I made this visualization for scalability, so more Propositions can definitely be added in the future.",
+                classList: ['padded', 'centered']
+            },
+            {
+                tagName: 'text4',
+                innerText: "If you'd like to express interest, it may motivate me to add more:",
+                classList: ['padded', 'centered']
+            },
+            {
+                tagName: 'a',
+                innerText: 'jaweber7@asu.edu',
+                classList: ['centered'],
+                attributes: [{
+                    name: 'href',
+                    value: 'mailto:jaweber7@asu.edu'
+                }]
+            },
+            {
+                tagName: 'text4',
+                innerText: "Or you can add to this yourself:",
+                classList: ['padded', 'centered']
+            },
+            {
+                tagName: 'a',
+                classList: ['centered'],
+                innerText: 'GitHub/Interactive-Euclids-Elements',
+                attributes: [{
+                    name: 'href',
+                    value: 'https://github.com/jamesweber7/Interactive-Euclids-Elements'
+                }],
+                style: 'margin-bottom: 20px;'
+            }
+        ],
     }, options);
 }
 
