@@ -98,6 +98,8 @@ function draw() {
 
     drawShapes();
 
+    drawDialogBox();
+
     runDrawEndEvents();
 }
 
@@ -779,6 +781,56 @@ function drawCursor() {
         image(mode_cursor_icon.icon, 0, 0);
         pop();
     }
+}
+
+function drawDialogBox() {
+    if (getMouseMode() != MOUSE_MODES.PREVIOUS_PROPOSITION)
+        return;
+    const message = getDialogBoxMessage();
+    // fixed on canvas
+    rectMode(CORNERS);
+    const boundary_cushion = width*0.04;
+    const padding = 20;
+    const size_per_char = 12;
+    const char_height = 20;
+    stroke(0);
+    strokeWeight(4);
+    fill(255);
+    const n = height-boundary_cushion-char_height-padding*2;
+    const e = boundary_cushion+size_per_char*message.length+padding*2;
+    const s = height-boundary_cushion;
+    const w = boundary_cushion;
+    rect(w, n, e, s, 20);
+
+    noStroke();
+    fill(0);
+    textAlign(CENTER, CENTER);
+    textSize(24);
+    text(message, lerp(w, e, 0.5), lerp(n, s, 0.5)+2);
+}
+
+function getDialogBoxMessage() {
+    switch (getMouseMode()) {
+        case MOUSE_MODES.PREVIOUS_PROPOSITION:
+            return getPreviousPropositionNextShapeMessage();
+    }
+}
+
+function getPreviousPropositionNextShapeMessage() {
+    const type = nextSelectableTypeForPreviousProposition();
+    let prop_type_text;
+    switch (type) {
+        case SHAPE_TYPES.LINE:
+            prop_type_text = 'line';
+            break;
+        case SHAPE_TYPES.POINT:
+            prop_type_text = 'point';
+            break;
+        case SHAPE_TYPES.ARC:
+            prop_type_text = 'circle';
+            break;
+    }
+    return `Select a ${prop_type_text}`;
 }
 
 function windowResized() {
