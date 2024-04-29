@@ -405,7 +405,7 @@ function startFreeformModePage(options={}) {
             },
             {
                 tagName: 'text2',
-                innerText: "Place lines and circles at your leisure, exploring geometric constructions just like the great Ancient Greek geometers.",
+                innerText: "Place lines and circles at your leisure, exploring geometric constructions just like the great ancient Greek geometers.",
                 classList: ['centered'],
             },
             {
