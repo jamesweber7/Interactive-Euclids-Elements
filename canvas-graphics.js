@@ -77,6 +77,7 @@ function preload() {
     icons.ruler = loadImage('icons/ruler.svg');
     icons.compass = loadImage('icons/compass.svg');
     icons.eraser = loadImage('icons/eraser.svg');
+    icons.previous_proposition = loadImage('icons/previous-proposition.svg');
 }
 
 function setup() {
@@ -1078,6 +1079,12 @@ function getModeCursorIcon() {
         case MOUSE_MODES.ERASER:
             info.valid = true;
             info.icon = icons.eraser;
+            info.scale = 1.5;
+            info.offset_x = 7;
+            break;
+        case MOUSE_MODES.PREVIOUS_PROPOSITION:
+            info.valid = true;
+            info.icon = icons.previous_proposition;
             info.scale = 1.5;
             info.offset_x = 7;
             break;
