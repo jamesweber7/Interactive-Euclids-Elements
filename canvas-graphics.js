@@ -135,12 +135,25 @@ function drawShape(shape) {
 }
 
 function highlightProximityShape() {
+    switch (getMouseMode()) {
+        case MOUSE_MODES.ERASER:
+            return highlightProximityEraserShape();
+        case MOUSE_MODES.PREVIOUS_PROPOSITION:
+            return highlightProximityPreviousPropositionShape();
+    }
+}
+function highlightProximityEraserShape() {
     const proximity_shape = proximityShape(mouse_data.unsnapped_pt);
     if (!proximity_shape.proximity)
         return;
-    if (!isShapeTypeHighlightable(proximity_shape.shape.type))
-        return proximity_shape;
-    highlightShape(proximity_shape.shape, highlightColor());
+    highlightShape(proximity_shape.shape, ERASER_COLOR);
+}
+
+function highlightProximityPreviousPropositionShape() {
+    const proximity_shape = getProximityPrevPropShape(mouse_data.unsnapped_pt);
+    if (!proximity_shape)
+        return;
+    highlightShape(proximity_shape, HIGHLIGHT_COLOR);
 }
 
 function highlightColor() {

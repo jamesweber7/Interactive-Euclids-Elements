@@ -1,3 +1,15 @@
+function getPropositionInfoFunction(prop_number=proposition_info.number) {
+    switch (prop_number) {
+        case 1:
+            return getProp1Info;
+        case 2:
+            return getProp2Info;
+        case 3:
+            return getProp3Info;
+    }
+    return no_prop_info_func;
+}
+
 // fill out prop info with default information
 function propInfo(info) {
     return configureDefaults(info, {
@@ -415,4 +427,55 @@ function performProp2(line, point) {
     return [
         lineShape(copyPoint(point), new_line_endpoint)
     ]
+}
+
+
+/*----------  Proposition 3  ----------*/
+
+function getProp3Info() {
+    return propInfo({
+        number: 3,
+        given_shapes: [
+            lineShape(
+                {
+                    x: width*0.35,
+                    y: height*0.2,
+                    label: 'A',
+                },
+                {
+                    x: width*0.65,
+                    y: height*0.2,
+                    label: 'B',
+                },
+                {no_point_overwrite: true}
+            ),
+            lineShape(
+                {
+                    x: width*0.35,
+                    y: height/2,
+                    label: 'C',
+                },
+                {
+                    x: width*0.8,
+                    y: height/2,
+                    label: 'D',
+                },
+                {no_point_overwrite: true}
+            )
+        ],
+        simple_description: "Place an equilateral triangle on a given line",
+        objective: "Construct an equilateral triangle on the given line AB.",
+        steps: [
+            "Draw a circle with origin A and radius AB",
+            "Draw a circle with origin B and radius BA",
+            "Draw a line from A to the intersection between the circles",
+            "Draw a line from B to the intersection between the circles",
+        ],
+        explanation: "Let the intersection between the circles be point C. \nThe circle at origin A has radius AB and passes through C, so \nAC = AB. \nThe circle at origin B has radius AB and passes through C, so \nBC = AB. \nAC = AB = BC \n The sides of triangle ABC are equal, so it is equilateral.",
+        pass_func: prop1PassInfo,
+        given_shape_types: [ // shapes that perform func can be called on
+            SHAPE_TYPES.LINE,
+        ],
+        perform_func: performProp1, // function for adding triangle to given line
+    })
 }

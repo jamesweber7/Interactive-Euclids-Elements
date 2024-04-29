@@ -1289,12 +1289,10 @@ function previousPropositionMouseMoved() {
 }
 
 function previousPropositionMousePressed() {
-    const proximity_shape = proximityShape(mouse_data.pt);
-    if (!proximity_shape.proximity)
+    const proximity_shape = getProximityPrevPropShape();
+    if (!proximity_shape)
         return;
-    if (!isSelectableForPreviousProposition(proximity_shape.shape.type))
-        return;
-    _prev_proposition_shapes[_prev_proposition_shape_index] = proximity_shape.shape;
+    _prev_proposition_shapes[_prev_proposition_shape_index] = proximity_shape;
     _prev_proposition_shape_index ++;
     if (_prev_proposition_shape_index >= _prev_proposition_shapes.length) {
         const shapes = _prev_proposition_func(..._prev_proposition_shapes);
@@ -1310,7 +1308,30 @@ function previousPropositionMouseReleased() {
 }
 
 function isSelectableForPreviousProposition(type) {
+    return type === nextSelectableTypeForPreviousProposition();
+}
+
+function nextSelectableTypeForPreviousProposition() {
     if (!_prev_proposition_shape_types || _prev_proposition_shape_index >= _prev_proposition_shape_types.length)
         return;
-    return type === _prev_proposition_shape_types[_prev_proposition_shape_index];
+    return _prev_proposition_shape_types[_prev_proposition_shape_index];
+}
+
+function getProximityPrevPropShape(pt=mouse_data.unsnapped_pt) {
+    const proximity_shape = proximityShape(pt);
+
+    // highlight proximity shape
+    if (proximity_shape.proximity)
+        if (nextSelectableTypeForPreviousProposition() === proximity_shape.shape.type)
+            return proximity_shape.shape;
+
+    // proximity shape bad; try proximity point (if right type)
+
+    if (nextSelectableTypeForPreviousProposition() !== SHAPE_TYPES.POINT)
+        return;
+
+    const proximity_pt = proximityPoint(pt);
+    proximity_pt.type = SHAPE_TYPES.POINT;
+    if (proximity_pt.proximity)
+        return proximity_pt;
 }

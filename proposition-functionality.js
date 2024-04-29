@@ -125,16 +125,6 @@ function setNoProposition() {
     setPropositionInfo({});
 }
 
-function getPropositionInfoFunction(prop_number=proposition_info.number) {
-    switch (prop_number) {
-        case 1:
-            return getProp1Info;
-        case 2:
-            return getProp2Info;
-    }
-    return no_prop_info_func;
-}
-
 function getPropositionInfo(prop_number=proposition_info.number) {
     const prop_info_func = getPropositionInfoFunction(prop_number);
     if (prop_info_func === no_prop_info_func)
