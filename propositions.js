@@ -479,6 +479,7 @@ function getProp3Info() {
         on_change: prop3OnChange,
         given_shape_types: [ // shapes that perform func can be called on
             SHAPE_TYPES.LINE,
+            SHAPE_TYPES.LINE,
         ],
         perform_func: performProp3, // function for adding triangle to given line
     })
@@ -566,11 +567,24 @@ function performProp3(line1, line2) {
     const diff_vec2 = getLineDiffVec(line2);
 
     let shorter, longer;
+    let shorter_vec, longer_vec;
     if (diff_vec1.magSq() < diff_vec2.magSq()) {
-        shorter = diff_vec1;
-        longer = diff_vec2;
+        shorter = line1;
+        shorter_vec = diff_vec1;
+        longer = line2;
+        longer_vec = diff_vec2;
     } else {
-        shorter = diff_vec2;
-        longer = diff_vec1;
+        shorter = line2;
+        shorter_vec = diff_vec2;
+        longer = line1;
+        longer_vec = diff_vec1;
     }
+
+    const shortened_diff_vec = longer_vec.copy().setMag(shorter_vec.mag());
+    const new_pt_vec = ptToVec(longer.p1).sub(shortened_diff_vec);
+    const new_pt = vecToPt(new_pt_vec);
+    return [
+        pointShape(new_pt.x, new_pt.y),
+        lineShape(longer.p1, new_pt),
+    ];
 }
