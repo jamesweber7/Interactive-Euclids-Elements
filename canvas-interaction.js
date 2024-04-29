@@ -33,7 +33,9 @@ function keyPressed(e) {
         case 's':
             return setMouseMode(MOUSE_MODES.SELECT);
         case 'p':
-            return setMouseMode(MOUSE_MODES.POINT);
+            if (isFreeformMode()) // only go to point mode if not in proposition
+                return setMouseMode(MOUSE_MODES.POINT);
+            break;
         case 'r':
             return setMouseMode(MOUSE_MODES.RULER);
         case 'c':

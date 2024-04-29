@@ -38,6 +38,7 @@ function propositionOnChange(event) {
 }
 
 function setProposition(prop_number) {
+    setMouseMode(MOUSE_MODES.SELECT);
     setPropositionInfo(getPropositionInfo(prop_number));
 }
 
