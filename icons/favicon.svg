@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        :root {
+           --favicon-stroke: black;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --favicon-stroke: white;
+            }
+        }
+     </style>
+    <circle cx="25" cy="25" r="16" fill="none" stroke="var(--favicon-stroke)" stroke-width="3.5" />
+    <line x1="0.5" y1="40" x2="48" y2="27" stroke="var(--favicon-stroke)" stroke-width="3.5" />
+</svg>
