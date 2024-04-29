@@ -353,7 +353,7 @@ function setBookPages(pages, page_index=0) {
         }
         if (i+1 < pages.length) {
             const right_page = pages[i+1];
-            left_page.right_pages = [];
+            right_page.right_pages = [];
             if (i+1 +1 < pages.length) {
                 right_page.right_pages.push(pages[i+1 +1]);
             }
