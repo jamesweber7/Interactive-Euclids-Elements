@@ -85,7 +85,8 @@ function setup() {
     HOVER_COLOR = color(50, 100, 255);
     HIGHLIGHT_COLOR = color(0, 255, 0);
     ERASER_COLOR = color(255, 0, 0);
-    openBookToIntro();
+    // openBookToIntro();
+    setProposition(3);
 }
 
 function draw() {

@@ -358,46 +358,51 @@ function prop2PassInfo() {
     const a = getShapeByLabel('A', proposition_info.given_shapes);
     const bc = getLineByLabels('B', 'C', proposition_info.given_shapes);
     if (!a || !bc)
-        return;
+        return {pass: false}
 
-    const dist_sq = getLineDiffVec(bc).magSq();
+    const seg = findLineEqualToLineOnPoint(bc, a);
+    if (!seg)
+        return {pass: false}
+    
+    // add F label
+    const f_pt = pointsWithinEpsilon(seg.p1, a) ? seg.p2 : seg.p1;
+    const f = pointShape(f_pt.x, f_pt.y, {
+        not_erasable: true,
+        label: 'F'
+    });
+    addShape(f, {
+        no_event_trigger: true,
+    });
+
+    // return pass
+    return {
+        pass: true,
+        passing_shapes: [
+            bc,
+            a,
+            seg,
+            f
+        ]
+    };
+}
+
+function findLineEqualToLineOnPoint(line, pt) {
+    const dist_sq = getLineDiffVec(line).magSq();
 
     const lines = getShapesOfType(SHAPE_TYPES.LINE);
-    for (const line of lines) {
-        if (onLine(a, line)) {
-            const segments = splitIntoSegments(line);
+    for (const line_ of lines) {
+        if (onLine(pt, line_)) {
+            const segments = splitIntoSegments(line_);
             for (const seg of segments) {
                 if (withinEpsilon(dist_sq, getLineDiffVec(seg).magSq())) {
-                    // pass: line on a
-
-                    // add F label
-                    const f_pt = pointsWithinEpsilon(seg.p1, a) ? seg.p2 : seg.p1;
-                    const f = pointShape(f_pt.x, f_pt.y, {
-                        not_erasable: true,
-                        label: 'F'
-                    });
-                    addShape(f, {
-                        no_event_trigger: true,
-                    });
-
-                    // return pass
-                    return {
-                        pass: true,
-                        passing_shapes: [
-                            bc,
-                            a,
-                            seg,
-                            f
-                        ]
-                    };
+                    if (pointsWithinEpsilon(pt, seg.p1) || pointsWithinEpsilon(pt, seg.p2)) {
+                        // pass: line of right size on pt
+                        return seg;
+                    }
                 }
             }
         }
     }
-
-    return {
-        pass: false,
-    };
 }
 
 function performProp2(line, point) {
@@ -438,44 +443,134 @@ function getProp3Info() {
         given_shapes: [
             lineShape(
                 {
-                    x: width*0.35,
-                    y: height*0.2,
-                    label: 'A',
+                    x: width*0.425,
+                    y: height*0.15,
+                    label: 'C',
                 },
                 {
-                    x: width*0.65,
-                    y: height*0.2,
-                    label: 'B',
+                    x: width*0.575,
+                    y: height*0.15,
+                    label: 'D',
                 },
                 {no_point_overwrite: true}
             ),
             lineShape(
                 {
-                    x: width*0.35,
-                    y: height/2,
-                    label: 'C',
+                    x: width*0.425,
+                    y: height*.6,
+                    label: 'A',
                 },
                 {
-                    x: width*0.8,
-                    y: height/2,
-                    label: 'D',
+                    x: width*0.65,
+                    y: height*.6,
+                    label: 'B',
                 },
                 {no_point_overwrite: true}
             )
         ],
-        simple_description: "Place an equilateral triangle on a given line",
-        objective: "Construct an equilateral triangle on the given line AB.",
+        simple_description: "Cut a line to the length of a shorter line",
+        objective: "Given two unequal lines, cut the longer line AB to the length of the shorter line CD.",
         steps: [
-            "Draw a circle with origin A and radius AB",
-            "Draw a circle with origin B and radius BA",
-            "Draw a line from A to the intersection between the circles",
-            "Draw a line from B to the intersection between the circles",
+            "On point A, add a line AE equal to CD [Proposition 2]",
+            "Draw a circle with origin A and radius AE",
         ],
-        explanation: "Let the intersection between the circles be point C. \nThe circle at origin A has radius AB and passes through C, so \nAC = AB. \nThe circle at origin B has radius AB and passes through C, so \nBC = AB. \nAC = AB = BC \n The sides of triangle ABC are equal, so it is equilateral.",
-        pass_func: prop1PassInfo,
+        explanation: "Let F be the intersection between the circle and AB. \nThen AF and AE are radii of the same circle, so \nAF = AE \nAE = CD \nAF = CD",
+        pass_func: prop3PassInfo,
+        on_change: prop3OnChange,
         given_shape_types: [ // shapes that perform func can be called on
             SHAPE_TYPES.LINE,
         ],
-        perform_func: performProp1, // function for adding triangle to given line
+        perform_func: performProp3, // function for adding triangle to given line
     })
+}
+
+function prop3PassInfo() {
+    const ab = getLineByLabels('A', 'B', proposition_info.given_shapes);
+    const cd = getLineByLabels('C', 'D', proposition_info.given_shapes);
+    if (!ab || !cd)
+        return;
+
+    const dist_sq = getLineDiffVec(cd).magSq();
+
+    const segments = splitIntoSegments(ab);
+    for (const seg of segments) {
+        if (withinEpsilon(dist_sq, getLineDiffVec(seg).magSq())) {
+            // pass: segment correct length
+
+            // add F label
+            const f_pt = (pointsWithinEpsilon(seg.p1, ab.p1) || pointsWithinEpsilon(seg.p1, ab.p2)) ? seg.p2 : seg.p1;
+            const f = pointShape(f_pt.x, f_pt.y, {
+                not_erasable: true,
+                label: 'F'
+            });
+            addShape(f, {
+                no_event_trigger: true,
+            });
+
+            // return pass
+            return {
+                pass: true,
+                passing_shapes: [
+                    cd,
+                    ab,
+                    f
+                ]
+            };
+        }
+    }
+
+    return {
+        pass: false,
+    };
+}
+
+function prop3OnChange(event) {
+    // Add E label
+
+    // E label: line equal to CD, on point A (or B)
+
+    if (!getPointByLabel('E')) {
+        const cd = getLineByLabels('C', 'D', proposition_info.given_shapes);
+        if (!cd)
+            return;
+        for (const label of ['A', 'B']) {
+            const pt = getPointByLabel(label);
+            if (!pt)
+                return;
+            const seg = findLineEqualToLineOnPoint(cd, pt);
+            if (seg) {
+                const ab = getLineByLabels('A', 'B');
+                if (!ab)
+                    return;
+                const e_pt = pointsWithinEpsilon(seg.p1, pt) ? seg.p2 : seg.p1;
+                // some methods of solving this proof solving proposition before E point; don't want to place E point AT F point
+                if (!onLine(e_pt, ab)) {
+                    // found E point
+                    // add label
+                    const e = pointShape(e_pt.x, e_pt.y, {
+                        not_erasable: true,
+                        label: 'E'
+                    });
+                    addShape(e, {
+                        no_event_trigger: true,
+                    });
+                    return;
+                }
+            }
+        }
+    }
+}
+
+function performProp3(line1, line2) {
+    const diff_vec1 = getLineDiffVec(line1);
+    const diff_vec2 = getLineDiffVec(line2);
+
+    let shorter, longer;
+    if (diff_vec1.magSq() < diff_vec2.magSq()) {
+        shorter = diff_vec1;
+        longer = diff_vec2;
+    } else {
+        shorter = diff_vec2;
+        longer = diff_vec1;
+    }
 }
