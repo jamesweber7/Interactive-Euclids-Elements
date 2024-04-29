@@ -155,6 +155,10 @@ function euclidHistoryPage(options={}) {
             },
             {
                 tagName: 'text3',
+                innerText: `All Propositions can be completed with only a straightedge and a compass.`
+            },
+            {
+                tagName: 'text3',
                 innerText: `This is largely believed to be one of the first major compilations of collective mathematical knowledge.`
             },
             {
@@ -497,7 +501,7 @@ function endPropositionsPage(options={}) {
             },
             {
                 tagName: 'text3',
-                innerText: "They increase in complexity by orders of magnitude, and serve as evidence that genius is a human attribute, not a modern attribute.",
+                innerText: "They increase in complexity by orders of magnitude, and serve as evidence that genius is an attribute of humanity, not modernity.",
                 classList: ['padded', 'centered']
             },
             {
