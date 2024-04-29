@@ -107,7 +107,7 @@ function titlePage(options={}) {
         items: [
             {
                 tagName: 'text1',
-                innerText: "Welcome to an Interactive Euclid's Elements Visualization"
+                innerText: "Welcome to this Interactive Euclid's Elements Visualization"
             },
             {
                 tagName: 'text2',
