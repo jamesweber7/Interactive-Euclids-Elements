@@ -8,13 +8,15 @@
 
 This interactive visualization allows users to perform straightedge and compass geometric constructions.
 
-The straightedge and the compass were the tools of many great ancient Greek geometers, and can be adapted to form complex and interesting shapes.
+The straightedge and compass were the tools of many great ancient Greek geometers, and were adapted to form complex and interesting constructions.
 
 Users can work through the first three propositions of Euclid's *Elements*, or use "Freeform" mode to create their own geometric constructions unrestricted.
 
 ## History of *Elements*
 
-Euclid was an ancient Greek geometer around 300 BC, known as the “Father of Geometry”. He is famous for his treatise, *Elements*. 
+Euclid was an ancient Greek geometer around 300 BC, known as the “Father of Geometry”. 
+
+He is famous for his treatise, *Elements*. 
 
 *Elements* consists of 13 books filled with 465 "Propositions". 
 
